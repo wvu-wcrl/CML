@@ -1,0 +1,14 @@
+task creator for executing cml simulations using pcs
+
+
+tac/
+   tac.m     - primary function.  calls other functions in tac/ directory
+
+CMLROOT/
+        ClusterStartup.m    - wrapper function which initializes cml under generic worker execution
+
+
+trace tac.m for details of execution
+
+
+next step - rewrite cml data file handling to support execution as pcs user
