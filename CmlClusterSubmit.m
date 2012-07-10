@@ -12,28 +12,32 @@
 %     For full copyright information see the bottom of this file.
 
 
+
+
 function CmlClusterSubmit( scenario, records )
 
+[ PROJECT_ROOT ] = ReadCmlCfg();        % read user's .cml_cfg to locate project directory
 
-[] = ReadCmlCfg();        % read user's .cml_cfg to locate project directory
+[sim_param sim_state] = ReadScenario( scenario, records );    % read cml records from disk
 
-N = length( records );    % how many records are we simulating?
-
-for k = 1:N,        % create a job file for every record
-    [sim_state sim_param] = ReadScenario( scenario, records(k) );
-    
-    CreateJob( sim_param, sim_state );  % create job file for this scenario and record
-    % and move to user's job input queue    
+CreateJob( scenario, records, sim_param, sim_state, PROJECT_ROOT );  % create job file for this scenario and record
+                                                                                  % and move to user's job input queue
 end
 
 
 
 
-end
 
 
 
-function ReadCmlCfg()
+
+
+
+
+
+
+
+function [ PROJECT_ROOT ] = ReadCmlCfg()
 
 UTIL_PATH = '/home/pcs/util';   % add path to file reading utility
 addpath(UTIL_PATH);
@@ -46,13 +50,16 @@ key = 'CmlRoot';
 out = util.fp(CML_PROJ_CF, heading, key);
 CML_ROOT = out{1};
 
+addpath(CML_ROOT);
+
 % get path to cml project root
 heading = '[GeneralSpec]';
 key = 'ProjectRoot';
 out = util.fp(CML_PROJ_CF, heading, key);
-obj.gq.iq = out{1};
+PROJECT_ROOT = out{1};
 
 end
+
 
 
 function cf_path = get_proj_cf()    % get config file for this user
@@ -64,7 +71,19 @@ end
 
 
 
-function CreateJob( sim_param, sim_state )
+function CreateJob( scenario, records, sim_param, sim_state, PROJECT_ROOT )
+
+JobParam = sim_param;   % convert data structures to naming convention used by job manager
+JobState = sim_state;
+
+job_name = [scenario '_' int2str( records(1) ) '_' int2str( records(end) ) '.mat'];  % create job filename
+
+job_input_queue = [PROJECT_ROOT '/' 'JobIn'];
+
+full_path_job_file = [job_input_queue job_name];
+
+save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job input queue
+
 end
 
 
