@@ -48,7 +48,7 @@ CML_PROJ_CF = get_proj_cf();     % path to user cml project file
 heading = '[GeneralSpec]';
 key = 'CmlRoot';
 out = util.fp(CML_PROJ_CF, heading, key);
-CML_ROOT = out{1};
+CML_ROOT = out{1}{1};
 
 addpath(CML_ROOT);
 
@@ -56,7 +56,7 @@ addpath(CML_ROOT);
 heading = '[GeneralSpec]';
 key = 'ProjectRoot';
 out = util.fp(CML_PROJ_CF, heading, key);
-PROJECT_ROOT = out{1};
+PROJECT_ROOT = out{1}{1};
 
 end
 
@@ -64,6 +64,7 @@ end
 
 function cf_path = get_proj_cf()    % get config file for this user
 [dontcare USER] = system('whoami');
+USER = USER(1:end-1);
 
 CML_PROJ_CFG_FILE = '.cml_cfg';
 cf_path = ['/home' '/' USER '/' CML_PROJ_CFG_FILE];
@@ -80,7 +81,7 @@ job_name = [scenario '_' int2str( records(1) ) '_' int2str( records(end) ) '.mat
 
 job_input_queue = [PROJECT_ROOT '/' 'JobIn'];
 
-full_path_job_file = [job_input_queue job_name];
+full_path_job_file = ['/' job_input_queue '/' job_name];
 
 save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job input queue
 
