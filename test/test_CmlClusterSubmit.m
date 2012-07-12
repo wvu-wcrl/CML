@@ -16,7 +16,7 @@ cd(test_home);
 
 
 % test job submission using one instance of 'FskScenarios'
-CmlClusterSubmit('FskScenarios', 1);
+CmlClusterSubmit('FskScenarios', [1 2]);
 
 
 
