@@ -16,11 +16,9 @@
 
 function CmlClusterSubmit( scenario, records )
 
-[ PROJECT_ROOT ] = ReadCmlCfg();        % read user's .cml_cfg to locate project directory
+[ CML_ROOT PROJECT_ROOT ] = ReadCmlCfg();        % read user's .cml_cfg to locate project directory
 
-[sim_param sim_state] = ReadScenario( scenario, records );    % read cml records from disk
-
-CreateJob( scenario, records, sim_param, sim_state, PROJECT_ROOT );  % create job file for this scenario and record
+CreateJobs( scenario, records, PROJECT_ROOT, CML_ROOT );  % create job file for this scenario and record
                                                                                   % and move to user's job input queue
 end
 
@@ -28,16 +26,7 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-function [ PROJECT_ROOT ] = ReadCmlCfg()
+function [ CML_ROOT PROJECT_ROOT ] = ReadCmlCfg()
 
 UTIL_PATH = '/home/pcs/util';   % add path to file reading utility
 addpath(UTIL_PATH);
@@ -72,24 +61,49 @@ end
 
 
 
-function CreateJob( scenario, records, sim_param, sim_state, PROJECT_ROOT )
 
-JobParam = sim_param;   % convert data structures to naming convention used by job manager
-JobState = sim_state;
+function CreateJobs( scenario, records, PROJECT_ROOT, CML_ROOT )
 
-job_name = [scenario '_' int2str( records(1) ) '_' int2str( records(end) ) '.mat'];  % create job filename
+[sim_param sim_state] = ReadScenario( scenario, records );    % read cml records from disk
 
-job_input_queue = [PROJECT_ROOT '/' 'JobIn'];
+CML_CLUSTER_WORKER = 'CmlWorker';    % PCS specific worker function.
 
-full_path_job_file = ['/' job_input_queue '/' job_name];
+JOB_INPUT_QUEUE = [PROJECT_ROOT '/' 'JobIn'];
+FunctionName = CML_CLUSTER_WORKER;   % TaskParam structure fields
 
-save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job input queue
+CML_ROOT_REMOTE = rename_local_remote(CML_ROOT);
+
+FunctionPath = [CML_ROOT '/' 'mat'];   %Construct function path.
+FunctionPath = rename_local_remote(FunctionPath);
+
+N = length(records);   % number of simulation records
+for k = 1:N,
+    JobParam = sim_param(k);   % convert data structures to naming convention used by job manager
+    JobState = sim_state(k);
+   
+    CreateJob(k, scenario, records(k), JobParam, JobState,  JOB_INPUT_QUEUE, FunctionPath, FunctionName);
+end
 
 end
 
 
+function FunctionPathRemote = rename_local_remote(FunctionPathLocal)
+
+[dc suffix] = strtok(FunctionPathLocal, '/');
+
+FunctionPathRemote = ['/rhome' suffix];
+
+end
 
 
+function CreateJob(k, scenario, records, JobParam, JobState, JOB_INPUT_QUEUE, FunctionPath, FunctionName)
+
+JOB_NAME = [scenario '_' int2str( records ) '.mat'];  % create job filename
+
+full_path_job_file = ['/' JOB_INPUT_QUEUE '/' JOB_NAME];
+save(full_path_job_file, 'JobParam', 'JobState', 'FunctionName', 'FunctionPath');% save job file in user's job input queue
+
+end
 
 
 %     This library is free software;
