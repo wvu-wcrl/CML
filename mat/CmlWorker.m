@@ -29,12 +29,14 @@ function TaskState = CmlWorker( TaskParam )
 % read simulation parameters and state into local workspace
 [sim_param sim_state cml_home] = ReadParams(TaskParam);  
 
+TaskParam
+
 InitCml(cml_home);
 
-[sim_param, code_param] = InitializeCodeParam( sim_param, cml_home );
+[sim_param, code_param] = InitializeCodeParam( sim_param,cml_home );
 
  % selects and runs the particular simulation type - throughput, ber
-[sim_param sim_state] = SelectSimTypeAndRun(sim_param, code_param); 
+  [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
 
 TaskState = sim_state;   % return simulation results to generic worker
 
@@ -45,8 +47,8 @@ end
 
 
 function [sim_param sim_state cml_home] = ReadParams(TaskParam)
-sim_param = TaskParam.sim_param;
-sim_state = TaskParam.sim_state;
+sim_param = TaskParam.JobParam;
+sim_state = TaskParam.JobState;
 cml_home = TaskParam.cml_home;
 end
 
@@ -59,7 +61,7 @@ end
 
 
 
-function [sim_param sim_state] = SelectSimTypeAndRun(sim_param, code_param)
+function [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param)
 
 if ( ( strcmp( sim_param.sim_type, 'throughput' ) ) )
     [sim_param, sim_state] = CalculateThroughput( sim_param, sim_state, code_param );
