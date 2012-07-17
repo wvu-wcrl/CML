@@ -1,3 +1,5 @@
+function CmlStartup( SimLocation )
+
 % CmlStartup
 %
 % Initializes the Coded Modulation Library
@@ -5,6 +7,20 @@
 % Last updated June 11, 2010
 
 % determine the version of matlab version
+
+%%%%% check input argument for errors and set default if necessary
+if( nargin<1 ), SimLocation = 'local'; end
+
+switch SimLocation,   % error check input
+    case 'local',
+    case 'cluster',
+    otherwise
+        fprintf('Please specify a valid value for SimLocation. \n');
+        return;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 version_text = version;
 if ( str2num( version_text(1) ) > 6)
     save_flag = '-v6';
@@ -75,4 +91,22 @@ switch computer
         addpath( strcat( cml_home, '/mex/maci64') );
 end
 
-save( save_directory, save_flag, 'cml_home' );
+
+switch( SimLocation )
+    case 'cluster'
+        % save to temporary location
+        [dc user] = system('whoami');
+        user = user(1:end-1);
+        
+        tmp_filename = [user '_' 'cml_home.mat'];
+        tmp_file = ['/var/tmp' '/' tmp_filename];
+    
+        save( tmp_file, save_flag, 'cml_home' );
+        
+        %sudo move
+        cmd = ['sudo mv' ' ' tmp_file ' ' save_directory]; system(cmd);
+        cmd = ['sudo chown' ' ' user ':' user ' ' save_directory];
+            
+    case 'local'
+    save( save_directory, save_flag, 'cml_home' );
+end

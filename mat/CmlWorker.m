@@ -54,7 +54,7 @@ end
 
 function InitCml(cml_home)
 cd(cml_home);
-CmlStartup;
+CmlStartup('cluster');
 end
 
 
