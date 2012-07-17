@@ -54,10 +54,15 @@ t0 = clock;
 
 % simulate
 for snrpoint = 1:length(EsNo)
-    fprintf( strcat( '\n', sim_param.SNR_type, ' = %f dB\n'), sim_param.SNR(snrpoint) );
+    CmlPrint(strcat( '\n', sim_param.SNR_type, ' = %f dB\n'), sim_param.SNR(snrpoint), 'verbose' )
+    %fprintf( strcat( '\n', sim_param.SNR_type, ' = %f dB\n'), sim_param.SNR(snrpoint) );
     current_time = fix(clock);
-    fprintf(  'Clock %2d:%2d:%2d\n',  current_time(4), current_time(5), current_time(6) );
-
+    
+    if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+    CmlPrint(  'Clock %2d:%2d:%2d\n',  [current_time(4) current_time(5) current_time(6)], verbosity );
+    
+    %fprintf(  'Clock %2d:%2d:%2d\n',  current_time(4), current_time(5), current_time(6) );
+    
     % loop until either there are enough trials or enough errors
     while ( ( sim_state.trials( code_param.max_iterations, snrpoint ) < sim_param.max_trials( snrpoint ) )&( sim_state.frame_errors(code_param.max_iterations, snrpoint) < sim_param.max_frame_errors(snrpoint) ) )
 
@@ -79,7 +84,9 @@ for snrpoint = 1:length(EsNo)
 
             % Echo an x if there was an error
             if ( errors( code_param.max_iterations ) );
-                fprintf( 'x' );
+                if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+                CmlPrint('x',[], verbosity);
+                %fprintf( 'x' );
             end
 
             % update frame error and bit error counters
@@ -122,7 +129,9 @@ for snrpoint = 1:length(EsNo)
                 sim_state.frame_errors( 1, snrpoint ) = sim_state.frame_errors( 1, snrpoint ) + 1;
                 sim_state.FER(1, snrpoint) = sim_state.frame_errors(1, snrpoint)./sim_state.trials(1, snrpoint);
                 % Echo an x if there was an error
-                fprintf( 'x' );
+                if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+                CmlPrint('x',[], verbosity);
+                %fprintf( 'x' );
             end
         end
 
@@ -135,19 +144,26 @@ for snrpoint = 1:length(EsNo)
             % fprintf( '%f\n', etime(clock,t0) );
             % t0=clock;
             
-            fprintf('.');
-            save_state = sim_state;
-            save_param = sim_param;           
+            if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+                CmlPrint('.',[], verbosity);
+            %fprintf('.');
+            
+            
+            save_struct.tempfile = tempfile;
+            save_struct.save_state = sim_state;
+            save_struct.save_param = sim_param;
+            save_struct.save_flag = code_param.save_flag;
+            save_struct.code_param.filename = code_param.filename;
+            
+            CmlSave(save_struct, 'local');
+            
+            
+            
+                        
+                       
             
             % Aded on April 22, 2006 in case system crashes during save
-            save( tempfile, code_param.save_flag, 'save_state', 'save_param');
-
-            % Store into local directory (if running locally)
-            if ( sim_param.compiled_mode )
-                copyfile( tempfile, sim_param.filename, 'f' );
-            end
-
-            movefile( tempfile, code_param.filename, 'f');
+   
             
             % redraw the BICM interleaver (so that it is uniform)
             if (code_param.coded)
@@ -169,15 +185,21 @@ for snrpoint = 1:length(EsNo)
             break;
         else
             code_param.max_iterations = sim_param.plot_iterations( iteration_index );
-            fprintf( '\nNumber of iterations = %d\n', code_param.max_iterations );
+            
+            if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+            CmlPrint( '\nNumber of iterations = %d\n', code_param.max_iterations, verbosity);
+            
         end
     % elseif ( code_param.outage & ( sim_state.FER(code_param.max_iterations, snrpoint) < sim_param.minFER  ) )
     % break when the FER is low enough (changed on 12-31-07)
     elseif ( sim_state.FER(code_param.max_iterations, snrpoint) < sim_param.minFER  )
         break;
     end  
-end
+    end
 
-fprintf( 'Simulation Complete\n' );
+CmlPrint( 'Simulation Complete\n', [], 'verbose');
+%fprintf( 'Simulation Complete\n' );
 current_time = fix(clock);
-fprintf(  'Clock %2d:%2d:%2d\n',  current_time(4), current_time(5), current_time(6) );
+            
+if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+CmlPrint( 'Clock %2d:%2d:%2d\n', [current_time(4) current_time(5) current_time(6)], verbosity);   

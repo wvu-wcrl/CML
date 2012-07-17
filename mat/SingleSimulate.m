@@ -48,9 +48,11 @@ else
     error( 'SingleSimulate must have either 0 or 3 inputs' );
 end 
 
-fprintf( '\n' );
-fprintf( sim_param.comment );
-fprintf( '\n' );
+CmlPrint( ['\n' sim_param.comment '\n'], [], 'verbose');
+
+%fprintf( '\n' );
+%fprintf( sim_param.comment );
+%fprintf( '\n' );
 
 % randomly seed the random number generators
 rand('state',sum(100*clock));
