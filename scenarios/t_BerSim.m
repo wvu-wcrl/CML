@@ -25,7 +25,7 @@ end
 
 % uncoded 8NFSK modulation in AWGN
 record = 1;
-sim_param(record).comment = 'Uncoded 8-NFSK in AWGN (CSI), cluster';
+sim_param(record).comment = 'Uncoded 8-NFSK in AWGN (CSI), local';
 sim_param(record).SimLocation = 'local';
 sim_param(record).sim_type = 'uncoded';
 sim_param(record).SNR = [0:0.5:0];

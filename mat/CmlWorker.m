@@ -1,4 +1,4 @@
-function TaskState = CmlWorker( TaskParam )
+function TaskState = CmlWorker( InputParam )
 
 % CmlWorker is the task entry function for cluster-parallelized CML.
 %
@@ -27,16 +27,14 @@ function TaskState = CmlWorker( TaskParam )
 
 
 % read simulation parameters and state into local workspace
-[sim_param sim_state cml_home] = ReadParams(TaskParam);  
-
-TaskParam
+[sim_param sim_state cml_home] = ReadParams(InputParam);  
 
 InitCml(cml_home);
 
 [sim_param, code_param] = InitializeCodeParam( sim_param,cml_home );
 
  % selects and runs the particular simulation type - throughput, ber
-  [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
+ [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
 
 TaskState = sim_state;   % return simulation results to generic worker
 
@@ -46,10 +44,10 @@ end
 
 
 
-function [sim_param sim_state cml_home] = ReadParams(TaskParam)
-sim_param = TaskParam.JobParam;
-sim_state = TaskParam.JobState;
-cml_home = TaskParam.cml_home;
+function [sim_param sim_state cml_home] = ReadParams(InputParam)
+sim_param = InputParam.JobParam;
+sim_state = InputParam.JobState;
+cml_home = InputParam.cml_home;
 end
 
 
