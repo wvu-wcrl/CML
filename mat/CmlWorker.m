@@ -27,14 +27,16 @@ function TaskState = CmlWorker( InputParam )
 
 
 % read simulation parameters and state into local workspace
-[sim_param sim_state cml_home] = ReadParams(InputParam);  
+[sim_param sim_state cml_home RandSeed] = ReadParams(InputParam);  
 
 InitCml(cml_home);
+
+SetRandSeed(RandSeed);
 
 [sim_param, code_param] = InitializeCodeParam( sim_param,cml_home );
 
  % selects and runs the particular simulation type - throughput, ber
- [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
+ [sim_param sim_state] = SelectSimTypeAndRun(sim_param, code_param); 
 
 TaskState = sim_state;   % return simulation results to generic worker
 
@@ -44,10 +46,13 @@ end
 
 
 
-function [sim_param sim_state cml_home] = ReadParams(InputParam)
+function [sim_param sim_state cml_home RandSeed] = ReadParams(InputParam)
+
 sim_param = InputParam.JobParam;
 sim_state = InputParam.JobState;
-cml_home = InputParam.cml_home;
+cml_home = sim_param.cml_home;
+RandSeed = sim_param.RandSeed;
+
 end
 
 
@@ -90,7 +95,24 @@ end
 end
 
 
-
+ function PrevStream = SetRandSeed(SeedValue)
+            if( nargin<1 || isempty(SeedValue) ), SeedValue = 1000*sum(clock); end
+            if( verLessThan('matlab','7.7') || ~exist('RandStream','class') )
+                % RandStream class was added to MATLAB Version 7.7 Release (R2008b).
+                PrevStream = rand('twister');
+                rand('twister',SeedValue);
+                randn('state',SeedValue);
+            else
+                % In newer than Version 7.7 Release (R2008b) of MATLAB, it is recommended to use RandStream class.
+                CurRndStream = RandStream('mt19937ar','Seed',SeedValue);
+                MethodList = methods(CurRndStream);
+                if sum( strcmpi(MethodList,'setGlobalStream') )==1
+                    PrevStream = RandStream.setGlobalStream(CurRndStream);
+                elseif sum( strcmpi(MethodList,'setDefaultStream') )==1
+                    PrevStream = RandStream.setDefaultStream(CurRndStream);
+                end
+            end
+        end
 
 
 %     Function CmlSimulate is part of the Iterative Solutions Coded Modulation

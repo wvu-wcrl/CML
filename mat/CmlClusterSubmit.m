@@ -35,7 +35,7 @@ CML_PROJ_CF = get_proj_cf();     % path to user cml project file
 
 % get path to cml
 heading = '[GeneralSpec]';
-key = 'CmlRoot';
+key = 'CodeRoot';
 out = util.fp(CML_PROJ_CF, heading, key);
 CML_ROOT = out{1}{1};
 
@@ -81,7 +81,7 @@ for k = 1:N,
     JobParam = sim_param(k);   % convert data structures to naming convention used by job manager
     JobState = sim_state(k);
    
-    CreateJob(k, scenario, records(k), JobParam, JobState,  JOB_INPUT_QUEUE, FunctionPath, FunctionName);
+    CreateJob( k, scenario, records(k), JobParam, JobState,  JOB_INPUT_QUEUE );
 end
 
 end
@@ -97,16 +97,17 @@ end
 
 
 
-function CreateJob(k, scenario, records, JobParam, JobState, JOB_INPUT_QUEUE, FunctionPath, FunctionName)
+function CreateJob( k, scenario, records, JobParam, JobState, JOB_INPUT_QUEUE )
 
 load('CmlHome.mat');    % create path to cml_home
 [dc suffix] = strtok('cml_home', '/');
 cml_home = ['/rhome' suffix];
+JobParam.cml_home = cml_home;
 
 JOB_NAME = [scenario '_' int2str( records ) '.mat'];  % create job filename
 
 full_path_job_file = ['/' JOB_INPUT_QUEUE '/' JOB_NAME];
-save(full_path_job_file, 'JobParam', 'JobState', 'FunctionName', 'FunctionPath', 'cml_home');% save job file in user's job input queue
+save(full_path_job_file, 'JobParam', 'JobState', 'cml_home');% save job file in user's job input queue
 
 end
 

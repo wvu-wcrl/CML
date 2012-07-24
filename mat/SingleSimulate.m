@@ -55,8 +55,10 @@ CmlPrint( ['\n' sim_param.comment '\n'], [], 'verbose');
 %fprintf( '\n' );
 
 % randomly seed the random number generators
-rand('state',sum(100*clock));
-randn('state',sum(100*clock));
+if( strcmp( sim_param.SimLocation, 'local' ) ),
+    rand('state',sum(100*clock));
+    randn('state',sum(100*clock));
+end
 
 % close open files (4/22/06)
 fclose all;

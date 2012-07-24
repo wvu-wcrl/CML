@@ -15,8 +15,9 @@ FunctionName = 'CmlWorker';
 clear TaskParam;
 TaskParam.FunctionName = FunctionName;
 TaskParam.FunctionPath = FunctionPath;
-TaskParam.InputParam.cml_home = cml_home_remote;
 TaskParam.InputParam.JobParam = sim_param;
+TaskParam.InputParam.JobParam.cml_home = cml_home_remote;
+TaskParam.InputParam.JobParam.RandSeed = 100;
 TaskParam.InputParam.JobState = sim_state;
 
 
