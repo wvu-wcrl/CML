@@ -3,7 +3,7 @@ load('CmlHome.mat');
 [dc path_suffix] = strtok(cml_home, '/');
 cml_home_remote = ['/rhome' path_suffix];
 
-[sim_param sim_state] = ReadScenario('t_BerSim', 1);
+[sim_param sim_state] = ReadScenario('t_BerSim', 2);
 
 
 % TaskParam data structures
