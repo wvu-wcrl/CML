@@ -33,10 +33,10 @@ InitCml(cml_home);
 
 SetRandSeed(RandSeed);
 
-[sim_param, code_param] = InitializeCodeParam( sim_param,cml_home );
+[sim_param, code_param] = InitializeCodeParam( sim_param, cml_home );
 
  % selects and runs the particular simulation type - throughput, ber
- [sim_param sim_state] = SelectSimTypeAndRun(sim_param, code_param); 
+ [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
 
 TaskState = sim_state;   % return simulation results to generic worker
 
