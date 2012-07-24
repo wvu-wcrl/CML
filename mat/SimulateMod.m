@@ -162,7 +162,7 @@ while ( continue_simulation )
             save_struct.save_flag = code_param.save_flag;
             save_struct.code_param.filename = code_param.filename;
             
-            CmlSave(save_struct, 'local');
+            CmlSave(save_struct, sim_param.SimLocation);
             
             
             
