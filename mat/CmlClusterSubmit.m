@@ -16,9 +16,9 @@
 
 function CmlClusterSubmit( scenario, records )
 
-[ CML_ROOT PROJECT_ROOT ] = ReadCmlCfg();        % read user's .cml_cfg to locate project directory
+[ project_root ] = ReadCmlCfg();        % read user's .cml_cfg to locate project directory
 
-CreateJobs( scenario, records, PROJECT_ROOT, CML_ROOT );  % create job file for this scenario and record
+CreateJobs( scenario, records, project_root );  % create job file for this scenario and record
                                                                                   % and move to user's job input queue
 end
 
@@ -26,62 +26,56 @@ end
 
 
 
-function [ CML_ROOT PROJECT_ROOT ] = ReadCmlCfg()
+function [ project_root ] = ReadCmlCfg()
 
-UTIL_PATH = '/home/pcs/util';   % add path to file reading utility
-addpath(UTIL_PATH);
+util_path = '/home/pcs/util';   % add path to file reading utility
+addpath(util_path);
 
-CML_PROJ_CF = get_proj_cf();     % path to user cml project file
+cml_proj_cf = get_proj_cf();     % path to user cml project file
 
 % get path to cml
 heading = '[GeneralSpec]';
 key = 'CodeRoot';
-out = util.fp(CML_PROJ_CF, heading, key);
-CML_ROOT = out{1}{1};
+out = util.fp(cml_proj_cf, heading, key);
+cml_home = out{1}{1};
 
-addpath(CML_ROOT);
+addpath(cml_home);
 
 % get path to cml project root
 heading = '[GeneralSpec]';
 key = 'ProjectRoot';
-out = util.fp(CML_PROJ_CF, heading, key);
-PROJECT_ROOT = out{1}{1};
+out = util.fp(cml_proj_cf, heading, key);
+project_root = out{1}{1};
 
 end
 
 
 
 function cf_path = get_proj_cf()    % get config file for this user
-[dontcare USER] = system('whoami');
-USER = USER(1:end-1);
+[dontcare user] = system('whoami');
+user = user(1:end-1);
 
-CML_PROJ_CFG_FILE = '.cml_cfg';
-cf_path = ['/home' '/' USER '/' CML_PROJ_CFG_FILE];
+cml_proj_cf = '.cml_cfg';
+cf_path = ['/home' '/' user '/' cml_proj_cf];
 end
 
 
 
 
-function CreateJobs( scenario, records, PROJECT_ROOT, CML_ROOT )
+function CreateJobs( scenario, records, project_root )
 
 [sim_param sim_state] = ReadScenario( scenario, records );    % read cml records from disk
 
-CML_CLUSTER_WORKER = 'CmlWorker';    % PCS specific worker function.
+job_input_queue = [project_root '/' 'JobIn'];
 
-JOB_INPUT_QUEUE = [PROJECT_ROOT '/' 'JobIn'];
-FunctionName = CML_CLUSTER_WORKER;   % TaskParam structure fields
-
-CML_ROOT_REMOTE = rename_local_remote(CML_ROOT);
-
-FunctionPath = [CML_ROOT '/' 'mat'];   %Construct function path.
-FunctionPath = rename_local_remote(FunctionPath);
+%CML_ROOT_REMOTE = rename_local_remote(CML_ROOT);
 
 N = length(records);   % number of simulation records
 for k = 1:N,
     JobParam = sim_param(k);   % convert data structures to naming convention used by job manager
     JobState = sim_state(k);
    
-    CreateJob( k, scenario, records(k), JobParam, JobState,  JOB_INPUT_QUEUE );
+    CreateJob( k, scenario, records(k), JobParam, JobState,  job_input_queue );
 end
 
 end
@@ -97,16 +91,16 @@ end
 
 
 
-function CreateJob( k, scenario, records, JobParam, JobState, JOB_INPUT_QUEUE )
+function CreateJob( k, scenario, records, JobParam, JobState, job_input_queue )
 
-load('CmlHome.mat');    % create path to cml_home
-[dc suffix] = strtok(cml_home, '/');
-cml_home = ['/rhome' suffix];
-JobParam.cml_home = cml_home;
+%load('CmlHome.mat');    % create path to cml_home
+%[dc suffix] = strtok(cml_home, '/');
+%cml_home = ['/rhome' suffix];
+%JobParam.cml_home = cml_home;
 
-JOB_NAME = [scenario '_' int2str( records ) '.mat'];  % create job filename
+job_name = [scenario '_' int2str( records ) '.mat'];  % create job filename
 
-full_path_job_file = ['/' JOB_INPUT_QUEUE '/' JOB_NAME];
+full_path_job_file = ['/' job_input_queue '/' job_name];
 save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job input queue
 
 end
