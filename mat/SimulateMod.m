@@ -223,37 +223,27 @@ end
 
 
 function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time )
-
 c1 = snrpoint < length(EsNo);
-
 if( sim_param.max_sim_time == 0 ),
     c2 = 1;
 else
     c2 = elapsed_time/60 < sim_param.max_sim_time;
 end
-
 if c2 == 0,
        if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
        CmlPrint('\nSimulation time expired.\n', [], verbosity);
 end
-
 continue_simulation = c1&c2;
-
 end
 
 
 function execute_this_snr = evaluate_snr_point_stopping_conditions(sim_param, sim_state, code_param, snrpoint, elapsed_time)
-
 c1 =  sim_state.trials( code_param.max_iterations, snrpoint ) < sim_param.max_trials( snrpoint ) ;
-
 c2 =  sim_state.frame_errors(code_param.max_iterations, snrpoint) < sim_param.max_frame_errors(snrpoint);
-
 if( sim_param.max_sim_time == 0 ),
     c3 = 1;
 else
     c3 = elapsed_time/60 < sim_param.max_sim_time;
 end
-
 execute_this_snr = c1&c2&c3;
-
 end
