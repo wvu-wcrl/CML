@@ -224,10 +224,10 @@ end
 
 function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time )
 c1 = snrpoint < length(EsNo);
-if( sim_param.max_sim_time == 0 ),
+if( sim_param.MaxRunTime == 0 ),
     c2 = 1;
 else
-    c2 = elapsed_time/60 < sim_param.max_sim_time;
+    c2 = elapsed_time < sim_param.MaxRunTime;
 end
 if c2 == 0,
        if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
@@ -240,10 +240,10 @@ end
 function execute_this_snr = evaluate_snr_point_stopping_conditions(sim_param, sim_state, code_param, snrpoint, elapsed_time)
 c1 =  sim_state.trials( code_param.max_iterations, snrpoint ) < sim_param.max_trials( snrpoint ) ;
 c2 =  sim_state.frame_errors(code_param.max_iterations, snrpoint) < sim_param.max_frame_errors(snrpoint);
-if( sim_param.max_sim_time == 0 ),
+if( sim_param.MaxRunTime == 0 ),
     c3 = 1;
 else
-    c3 = elapsed_time/60 < sim_param.max_sim_time;
+    c3 = elapsed_time < sim_param.MaxRunTime;
 end
 execute_this_snr = c1&c2&c3;
 end

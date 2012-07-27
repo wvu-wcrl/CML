@@ -45,7 +45,7 @@ sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-6; 
 sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
-sim_param(record).max_sim_time = 5;
+sim_param(record).MaxRunTime = 0;  % infinite time
 
 
 record = 2;
@@ -69,4 +69,4 @@ sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-6; 
 sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
-sim_param(record).max_sim_time = 1;
+sim_param(record).MaxRunTime = 5*60;
