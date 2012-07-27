@@ -1,5 +1,3 @@
-function TaskState = CmlWorker( InputParam )
-
 % CmlWorker is the task entry function for cluster-parallelized CML.
 %
 % The calling syntax is:
@@ -26,23 +24,33 @@ function TaskState = CmlWorker( InputParam )
 %     Last updated on Oct. 7/13/2012
 
 
+function TaskState = CmlWorker( InputParam )
+
 % read simulation parameters and state into local workspace
 [sim_param sim_state cml_home RandSeed] = ReadParams(InputParam);  
 
-InitCml(cml_home);
+InitCml( cml_home );
 
-SetRandSeed(RandSeed);
+SetRandSeed( RandSeed );
 
-[sim_param, code_param] = InitializeCodeParam( sim_param, cml_home );
+
+[code_param] = ReadCodeParam( cml_home );
+% read short code param
+
+%read long code param
+
+% concatenate
+
+%[sim_param, code_param] = InitializeCodeParam( sim_param, cml_home );
 
  % selects and runs the particular simulation type - throughput, ber
  [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
 
 TaskState = sim_state;   % return simulation results to generic worker
 
-%TaskParam.sim_param = sim_param;
-%TaskParam.sim_state = sim_state;
 end
+
+
 
 
 
@@ -112,8 +120,45 @@ end
                     PrevStream = RandStream.setDefaultStream(CurRndStream);
                 end
             end
-        end
+ end
 
+
+ 
+ function [code_param] = ReadCodeParam( sim_param, cml_home )
+
+code_param_short = sim_param.code_param_short;
+
+code_param_long = read_code_param_long( sim_param, cml_home );
+
+code_param = concatenate_structs( code_param_short, code_param_long );
+
+ end
+
+
+
+function code_param_long = read_code_param_long( sim_param, cml_home )
+
+[str1 str2] = strtok( cml_home, '/' );
+[str3 str4] = strtok(str2, '/');
+project_path = ['/' str1 '/' str3 '/' 'Projects/cml/data' ];
+
+task_data_file = [sim_param.scenario '_' sim_param.record '.mat'];
+
+project_data_file_path = [project_path '/' task_data_file];
+
+load(project_data_file_path);
+
+end
+
+
+function struct_concat = concatenate_structs( struct1, struct2 )
+fields = fieldnames(struct1);
+N = length(fields);
+for k = 1:N,
+    struct2 = setfield(struct2, fields{k}, getfield( struct1, fields{k}) );
+end
+struct_concat = struct2;
+end
 
 %     Function CmlSimulate is part of the Iterative Solutions Coded Modulation
 %     Library (ISCML).
