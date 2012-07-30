@@ -34,7 +34,7 @@ SetRandSeed( RandSeed );
 
 [code_param] = ReadCodeParam( sim_param, cml_home );
 
- [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
+[sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
 
 TaskState = sim_state;   % return simulation results to generic worker
 
@@ -57,7 +57,8 @@ end
 
 function InitCml(cml_home)
 cd(cml_home);
-CmlStartup('cluster');
+cd('mat');
+CmlInit(cml_home, 'cluster');
 end
 
 
