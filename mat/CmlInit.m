@@ -135,7 +135,7 @@ switch( SimLocation )
         save( tmp_file_name_and_location, save_flag, 'cml_home' );
         
         mv_cmd = ['sudo mv' ' ' tmp_file_name_and_location ' ' save_directory]; system(mv_cmd);   % sudo move to user's home directory
-        chown_cmd = ['sudo chown' ' ' user ':' user ' ' save_directory]; system(chown_cmd);
+        chown_cmd = ['sudo chown' ' ' user ' ' save_directory]; system(chown_cmd);
         
     case 'local' % save directly
         save( save_directory, save_flag, 'cml_home' );
