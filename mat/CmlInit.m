@@ -131,7 +131,7 @@ switch( SimLocation )
         user = user(1:end-1);
  
         tmp_file_name = [user '_' 'cml_home.mat'];   % save to temporary location
-        tmp_file_name_and_location = ['/var/tmp' '/' tmp_filename];
+        tmp_file_name_and_location = ['/var/tmp' '/' tmp_file_name];
         save( tmp_file_name_and_location, save_flag, 'cml_home' );
         
         mv_cmd = ['sudo mv' ' ' tmp_file_name_and_location ' ' save_directory]; system(mv_cmd);   % sudo move to user's home directory
