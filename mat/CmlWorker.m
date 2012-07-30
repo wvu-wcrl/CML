@@ -26,9 +26,9 @@
 
 function TaskState = CmlWorker( InputParam )
 
-[sim_param sim_state cml_home RandSeed] = ReadParams(InputParam);  
+[sim_param sim_state cml_home RandSeed wid] = ReadParams(InputParam);  
 
-InitCml( cml_home );
+InitCml( cml_home, wid );
 
 SetRandSeed( RandSeed );
 
@@ -44,21 +44,23 @@ end
 
 
 
-function [sim_param sim_state cml_home RandSeed] = ReadParams(InputParam)
+function [sim_param sim_state cml_home RandSeed wid] = ReadParams(InputParam)
+
 
 sim_param = InputParam.JobParam;
 sim_state = InputParam.JobState;
 cml_home = sim_param.cml_home;
 RandSeed = sim_param.RandSeed;
+wid = InputParam.wid;
 
 end
 
 
 
-function InitCml(cml_home)
+function InitCml(cml_home, wid)
 cd(cml_home);
 cd('mat');
-CmlInit(cml_home, 'cluster');
+CmlInit(cml_home, 'cluster', wid);
 end
 
 

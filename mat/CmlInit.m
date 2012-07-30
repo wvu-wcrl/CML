@@ -14,7 +14,7 @@
 %     For full copyright information see the bottom of this file.
 
 
-function CmlInit( cml_home, SimLocation )
+   function CmlInit( cml_home, SimLocation, wid )
 
                             error_check_input( SimLocation );
                            
@@ -24,7 +24,7 @@ save_flag         = determine_matlab_version();
 
 save_directory = set_cml_paths( cml_home );     
             
-                            save_cml_home( SimLocation, save_directory, save_flag, cml_home );               
+save_cml_home( SimLocation, save_directory, save_flag, cml_home, wid );               
                             
 end
 
@@ -123,16 +123,17 @@ end
 end
 
 
-function save_cml_home( SimLocation, save_directory, save_flag, cml_home )
+function save_cml_home( SimLocation, save_directory, save_flag, cml_home, wid )
 
 switch( SimLocation )
     case 'cluster' % save to temporary location and sudo move
-        user = get_current_user( cml_home );   % get current user
-         
-        tmp_file_name = [user '_' 'cml_home.mat'];   % save to temporary location
+  
+      
+        tmp_file_name = [wid '_' 'cml_home.mat'];   % save to temporary location
         tmp_file_name_and_location = ['/var/tmp' '/' tmp_file_name];
         save( tmp_file_name_and_location, save_flag, 'cml_home' );
-        
+  
+        user = get_current_user( cml_home );   % get current user         
         mv_cmd = ['sudo mv' ' ' tmp_file_name_and_location ' ' save_directory]; system(mv_cmd);   % sudo move to user's home directory
         chown_cmd = ['sudo chown' ' ' user ' ' save_directory]; system(chown_cmd);
         
@@ -148,6 +149,7 @@ function user = get_current_user( cml_home )
 
 user = str3;
 end
+
 
 
 %     This library is free software;

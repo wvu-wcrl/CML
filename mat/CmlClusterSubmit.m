@@ -68,8 +68,6 @@ function CreateJobs( scenario, records, project_root )
 
 job_input_queue = [project_root '/' 'JobIn'];
 
-%CML_ROOT_REMOTE = rename_local_remote(CML_ROOT);
-
 N = length(records);   % number of simulation records
 for k = 1:N,
     JobParam = sim_param(k);   % convert data structures to naming convention used by job manager
