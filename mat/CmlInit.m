@@ -127,9 +127,8 @@ function save_cml_home( SimLocation, save_directory, save_flag, cml_home )
 
 switch( SimLocation )
     case 'cluster' % save to temporary location and sudo move
-        [dc user] = system('whoami');   % get current user
-        user = user(1:end-1);
- 
+        user = get_current_user( cml_home );   % get current user
+         
         tmp_file_name = [user '_' 'cml_home.mat'];   % save to temporary location
         tmp_file_name_and_location = ['/var/tmp' '/' tmp_file_name];
         save( tmp_file_name_and_location, save_flag, 'cml_home' );
@@ -142,6 +141,13 @@ switch( SimLocation )
 end
 end
 
+
+function user = get_current_user( cml_home )
+[str1 str2] = strtok( cml_home, '/' );
+[str3 str4] = strtok(str2, '/');
+
+user = str3;
+end
 
 
 %     This library is free software;
