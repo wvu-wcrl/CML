@@ -16,7 +16,7 @@ load('code_param_short.mat');
 
 % copy code_param_long example to data directory  
 load('code_param_long.mat');
-save('/home/tferrett/Projects/cml/data/t_BerSim_2.mat');
+save('/home/tferrett/Projects/cml/data/t_BerSim_2.mat', 'code_param_long');
 
 
 % create TaskParam
