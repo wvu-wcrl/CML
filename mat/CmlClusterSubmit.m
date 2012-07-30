@@ -81,6 +81,7 @@ end
 end
 
 
+
 function FunctionPathRemote = rename_local_remote(FunctionPathLocal)
 
 [dc suffix] = strtok(FunctionPathLocal, '/');
@@ -91,12 +92,15 @@ end
 
 
 
-function CreateJob( k, scenario, records, JobParam, JobState, job_input_queue )
+function CreateJob( k, scenario, record, JobParam, JobState, job_input_queue )
 
 %load('CmlHome.mat');    % create path to cml_home
 %[dc suffix] = strtok(cml_home, '/');
 %cml_home = ['/rhome' suffix];
 %JobParam.cml_home = cml_home;
+
+JobParam.scenario = scenario;  % this might get chopped off in job manager processing
+JobParam.record = record;
 
 job_name = [scenario '_' int2str( records ) '.mat'];  % create job filename
 

@@ -26,24 +26,14 @@
 
 function TaskState = CmlWorker( InputParam )
 
-% read simulation parameters and state into local workspace
 [sim_param sim_state cml_home RandSeed] = ReadParams(InputParam);  
 
 InitCml( cml_home );
 
 SetRandSeed( RandSeed );
 
+[code_param] = ReadCodeParam( sim_param, cml_home );
 
-[code_param] = ReadCodeParam( cml_home );
-% read short code param
-
-%read long code param
-
-% concatenate
-
-%[sim_param, code_param] = InitializeCodeParam( sim_param, cml_home );
-
- % selects and runs the particular simulation type - throughput, ber
  [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
 
 TaskState = sim_state;   % return simulation results to generic worker
@@ -151,12 +141,17 @@ load(project_data_file_path);
 end
 
 
+
 function struct_concat = concatenate_structs( struct1, struct2 )
 fields = fieldnames(struct1);
 N = length(fields);
+
 for k = 1:N,
-    struct2 = setfield(struct2, fields{k}, getfield( struct1, fields{k}) );
+    current_field = fields{k};
+    field_value = getfield( struct1, current_field );
+    struct2 = setfield(struct2, current_field, field_value );
 end
+
 struct_concat = struct2;
 end
 
