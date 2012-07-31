@@ -16,7 +16,7 @@ cml_home = pwd;
 
 set_path_to_mat_files( cml_home );
 
-CmlInit( cml_home, 'local' );  % assume local operation
+CmlInit( cml_home, 'local', 0 );  % assume local operation
 
 end
 

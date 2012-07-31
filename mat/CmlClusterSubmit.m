@@ -55,7 +55,7 @@ function cf_path = get_proj_cf()    % get config file for this user
 [dontcare user] = system('whoami');
 user = user(1:end-1);
 
-cml_proj_cf = '.cml_cfg';
+cml_proj_cf = 'cml_cfg';
 cf_path = ['/home' '/' user '/' cml_proj_cf];
 end
 
@@ -100,7 +100,7 @@ function CreateJob( k, scenario, record, JobParam, JobState, job_input_queue )
 JobParam.scenario = scenario;  % this might get chopped off in job manager processing
 JobParam.record = record;
 
-job_name = [scenario '_' int2str( records ) '.mat'];  % create job filename
+job_name = [scenario '_' int2str( record ) '.mat'];  % create job filename
 
 full_path_job_file = ['/' job_input_queue '/' job_name];
 save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job input queue

@@ -26,13 +26,13 @@
 
 function TaskState = CmlWorker( InputParam )
 
-[sim_param sim_state cml_home RandSeed wid] = ReadParams(InputParam);  
+[sim_param sim_state cml_rhome RandSeed wid] = ReadParams(InputParam);  
 
-InitCml( cml_home, wid );
+InitCml( cml_rhome, wid );
 
 SetRandSeed( RandSeed );
 
-[code_param] = ReadCodeParam( sim_param, cml_home );
+[code_param] = ReadCodeParam( sim_param, cml_rhome );
 
 [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
 
@@ -44,12 +44,12 @@ end
 
 
 
-function [sim_param sim_state cml_home RandSeed wid] = ReadParams(InputParam)
+function [sim_param sim_state cml_rhome RandSeed wid] = ReadParams(InputParam)
 
 
 sim_param = InputParam.JobParam;
 sim_state = InputParam.JobState;
-cml_home = sim_param.cml_home;
+cml_rhome = sim_param.cml_rhome;
 RandSeed = sim_param.RandSeed;
 wid = InputParam.wid;
 
@@ -57,10 +57,10 @@ end
 
 
 
-function InitCml(cml_home, wid)
-cd(cml_home);
+function InitCml(cml_rhome, wid)
+cd(cml_rhome);
 cd('mat');
-CmlInit(cml_home, 'cluster', wid);
+CmlInit(cml_rhome, 'cluster', wid);
 end
 
 
@@ -117,11 +117,11 @@ end
 
 
  
- function [code_param] = ReadCodeParam( sim_param, cml_home )
+ function [code_param] = ReadCodeParam( sim_param, cml_rhome )
 
 code_param_short = sim_param.code_param_short;
 
-code_param_long = read_code_param_long( sim_param, cml_home );
+code_param_long = read_code_param_long( sim_param, cml_rhome );
 
 code_param = concatenate_structs( code_param_short, code_param_long );
 
@@ -129,9 +129,9 @@ code_param = concatenate_structs( code_param_short, code_param_long );
 
 
 
-function code_param_long = read_code_param_long( sim_param, cml_home )
+function code_param_long = read_code_param_long( sim_param, cml_rhome )
 
-[str1 str2] = strtok( cml_home, '/' );
+[str1 str2] = strtok( cml_rhome, '/' );
 [str3 str4] = strtok(str2, '/');
 project_path = ['/' str1 '/' str3 '/' 'Projects/cml/data' ];
 
@@ -139,7 +139,13 @@ task_data_file = [sim_param.scenario '_' int2str(sim_param.record) '.mat']
 
 project_data_file_path = [project_path '/' task_data_file];
 
-load(project_data_file_path);
+if exist( project_data_file_path, 'file' ) == 0,
+  code_param_long = struct;  % create empty struct
+  else
+ load(project_data_file_path);
+end
+
+
 
 end
 
