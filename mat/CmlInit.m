@@ -81,17 +81,6 @@ save_directory = fullfile( cml_home, 'scenarios', 'CmlHome.mat' );
 % this is the location of the mex directory for this architecture
 addpath( fullfile( cml_home, 'mex', lower(computer) ) );
 
-<<<<<<< .mine
-=======
-
-% this is the location of the mex directory for this architecture
-
-if ispc, fs = '\'; else, fs='/';  end
-mex_path = [cml_home fs 'mex' fs lower(computer) ];
-addpath(mex_path);
-
-
->>>>>>> .r455
 end
 
 
