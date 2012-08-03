@@ -43,7 +43,7 @@ addpath(cml_home);
 
 % get path to cml project root
 heading = '[GeneralSpec]';
-key = 'ProjectRoot';
+key = 'JobQueueRoot';
 out = util.fp(cml_proj_cf, heading, key);
 project_root = out{1}{1};
 
@@ -97,8 +97,12 @@ function CreateJob( k, scenario, record, JobParam, JobState, job_input_queue )
 %cml_home = ['/rhome' suffix];
 %JobParam.cml_home = cml_home;
 
-JobParam.scenario = scenario;  % this might get chopped off in job manager processing
-JobParam.record = record;
+%JobParam.scenario = scenario;  % this might get chopped off in job manager processing
+%JobParam.record = record;
+
+
+JobParam.code_param_long_filename = [scenario '_' record '.mat'];
+
 
 job_name = [scenario '_' int2str( record ) '.mat'];  % create job filename
 

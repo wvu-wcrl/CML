@@ -40,8 +40,9 @@ function [sim_param sim_state cml_rhome RandSeed wid] = ReadParams(InputParam)
 
 sim_param = InputParam.JobParam;
 sim_state = InputParam.JobState;
+RandSeed = InputParam.RandSeed;
 cml_rhome = sim_param.cml_rhome;
-RandSeed = sim_param.RandSeed;
+
 wid = InputParam.wid;
 
 end
@@ -127,7 +128,7 @@ function code_param_long = read_code_param_long( sim_param, cml_rhome )
 [str3 str4] = strtok(str2, filesep);
 project_path = fullfile(filesep, str1, str3, 'Projects', 'cml', 'data');
 
-task_data_file = [sim_param.scenario '_' int2str(sim_param.record) '.mat'];
+task_data_file = sim_param.code_param_long_filename;
 
 project_data_file_path = fullfile(project_path, task_data_file);
 
