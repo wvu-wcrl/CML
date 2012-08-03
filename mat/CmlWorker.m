@@ -135,7 +135,7 @@ function code_param_long = read_code_param_long( sim_param, cml_rhome )
 [str3 str4] = strtok(str2, '/');
 project_path = ['/' str1 '/' str3 '/' 'Projects/cml/data' ];
 
-task_data_file = [sim_param.scenario '_' int2str(sim_param.record) '.mat']
+task_data_file = [sim_param.scenario '_' int2str(sim_param.record) '.mat'];
 
 project_data_file_path = [project_path '/' task_data_file];
 
