@@ -1,32 +1,26 @@
 % CmlWorker is the task entry function for cluster-parallelized CML.
 %
 % The calling syntax is:
-%     [sim_param, sim_state] = CmlSimulate( scenario_filename, cases )
+%     TaskState = CmlWorker( InputParam )
 %
-%     Outputs:
-%     sim_param = A structure containing simulation parameters.
-%     sim_state = A structure containing the simulation state.
+%     Output:
+%     TaskState = A structure containing the simulation state.
 %     Note: See readme.txt for a description of the structure formats.
 %
 %     Required inputs:
-%	  scenario_filename = the name of the file containing an array of sim_param structures.
-%     cases = a list of the array indices to simulate.
-%
-%     Note: Multiple scenario files can be specified.  In this case, the argument list
-%     should contain each scenario file to be used followed by the list of array indices
-%     to read from that file.
+%	  
 %
 %     Example:
-%     [sim_param, sim_state] = CmlSimulate( 'Scenario1', [1 2 5], 'Scenario2', [1 4 6] );
+%     
 %
 %     Copyright (C) 2012, Terry R. Ferrett and Matthew C. Valenti
 %
-%     Last updated on Oct. 7/13/2012
+%     Last updated on August 08/03/2012.
 
 
 function TaskState = CmlWorker( InputParam )
 
-[sim_param sim_state cml_rhome RandSeed wid] = ReadParams(InputParam);  
+[sim_param sim_state cml_rhome RandSeed wid] = ReadParams(InputParam);
 
 InitCml( cml_rhome, wid );
 
@@ -34,18 +28,15 @@ SetRandSeed( RandSeed );
 
 [code_param] = ReadCodeParam( sim_param, cml_rhome );
 
-[sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param); 
+[sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param);
 
-TaskState = sim_state;   % return simulation results to generic worker
+TaskState = sim_state;   % return simulation results to generic worker.
 
 end
 
 
 
-
-
 function [sim_param sim_state cml_rhome RandSeed wid] = ReadParams(InputParam)
-
 
 sim_param = InputParam.JobParam;
 sim_state = InputParam.JobState;
@@ -96,28 +87,29 @@ end
 end
 
 
- function PrevStream = SetRandSeed(SeedValue)
-            if( nargin<1 || isempty(SeedValue) ), SeedValue = 1000*sum(clock); end
-            if( verLessThan('matlab','7.7') || ~exist('RandStream','class') )
-                % RandStream class was added to MATLAB Version 7.7 Release (R2008b).
-                PrevStream = rand('twister');
-                rand('twister',SeedValue);
-                randn('state',SeedValue);
-            else
-                % In newer than Version 7.7 Release (R2008b) of MATLAB, it is recommended to use RandStream class.
-                CurRndStream = RandStream('mt19937ar','Seed',SeedValue);
-                MethodList = methods(CurRndStream);
-                if sum( strcmpi(MethodList,'setGlobalStream') )==1
-                    PrevStream = RandStream.setGlobalStream(CurRndStream);
-                elseif sum( strcmpi(MethodList,'setDefaultStream') )==1
-                    PrevStream = RandStream.setDefaultStream(CurRndStream);
-                end
-            end
- end
+
+function PrevStream = SetRandSeed(SeedValue)
+if( nargin<1 || isempty(SeedValue) ), SeedValue = 1000*sum(clock); end
+if( verLessThan('matlab','7.7') || ~exist('RandStream','class') )
+    % RandStream class was added to MATLAB Version 7.7 Release (R2008b).
+    PrevStream = rand('twister');
+    rand('twister',SeedValue);
+    randn('state',SeedValue);
+else
+    % In newer than Version 7.7 Release (R2008b) of MATLAB, it is recommended to use RandStream class.
+    CurRndStream = RandStream('mt19937ar','Seed',SeedValue);
+    MethodList = methods(CurRndStream);
+    if sum( strcmpi(MethodList,'setGlobalStream') )==1
+        PrevStream = RandStream.setGlobalStream(CurRndStream);
+    elseif sum( strcmpi(MethodList,'setDefaultStream') )==1
+        PrevStream = RandStream.setDefaultStream(CurRndStream);
+    end
+end
+end
 
 
- 
- function [code_param] = ReadCodeParam( sim_param, cml_rhome )
+
+function [code_param] = ReadCodeParam( sim_param, cml_rhome )
 
 code_param_short = sim_param.code_param_short;
 
@@ -125,27 +117,25 @@ code_param_long = read_code_param_long( sim_param, cml_rhome );
 
 code_param = concatenate_structs( code_param_short, code_param_long );
 
- end
+end
 
 
 
 function code_param_long = read_code_param_long( sim_param, cml_rhome )
 
-[str1 str2] = strtok( cml_rhome, '/' );
-[str3 str4] = strtok(str2, '/');
-project_path = ['/' str1 '/' str3 '/' 'Projects/cml/data' ];
+[str1 str2] = strtok( cml_rhome, filesep );
+[str3 str4] = strtok(str2, filesep);
+project_path = fullfile(filesep, str1, str3, 'Projects', 'cml', 'data');
 
 task_data_file = [sim_param.scenario '_' int2str(sim_param.record) '.mat'];
 
-project_data_file_path = [project_path '/' task_data_file];
+project_data_file_path = fullfile(project_path, task_data_file);
 
 if exist( project_data_file_path, 'file' ) == 0,
-  code_param_long = struct;  % create empty struct
-  else
- load(project_data_file_path);
+    code_param_long = struct;  % create empty struct
+else
+    load(project_data_file_path);
 end
-
-
 
 end
 

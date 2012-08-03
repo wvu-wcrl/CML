@@ -14,23 +14,23 @@
 %     For full copyright information see the bottom of this file.
 
 
-   function CmlInit( cml_home, SimLocation, wid )
+function CmlInit( cml_home, SimLocation, wid )
 
-                            error_check_input( SimLocation );
-                           
+error_check_input( SimLocation );
+
 SimLocation     = set_defaults( nargin, SimLocation );
 
 save_flag         = determine_matlab_version();
 
-save_directory = set_cml_paths( cml_home );     
-            
-save_cml_home( SimLocation, save_directory, save_flag, cml_home, wid );               
-                            
+save_directory = set_cml_paths( cml_home );
+
+save_cml_home( SimLocation, save_directory, save_flag, cml_home, wid );
+
 end
 
 
 function error_check_input( SimLocation )
-switch SimLocation,   
+switch SimLocation,
     case 'local',
     case 'cluster',
     otherwise
@@ -59,49 +59,30 @@ end
 
 function save_directory = set_cml_paths( cml_home )
 
-if ispc
-    % setup the path
-    addpath( strcat( cml_home, '\mat'), ...
-        strcat( cml_home, '\matalt' ), ...
-        strcat( cml_home, '\mex\mexhelp'), ...
-        strcat( cml_home, '\demos' ), ...
-        strcat( cml_home, '\scenarios'), ...
-        strcat( cml_home, '\localscenarios'),...
-        strcat( cml_home, '\data\interleavers'), ...
-        strcat( cml_home, '\data\ldpc'), ...
-        strcat( cml_home, '\data\tables'), ...
-        strcat( cml_home, '\data\bandwidth') );
-    
-    % if CML grid is installed
-    if exist( '.\grid\mat' )
-        addpath( strcat( cml_home, '\grid\mat' ) );
-    end
-    
-    % save the home directory
-    save_directory = strcat( cml_home, '\scenarios\CmlHome.mat' );
-else
-    % setup the path
-    addpath( strcat( cml_home, '/mat'), ...
-        strcat( cml_home, '/matalt' ), ...
-        strcat( cml_home, '/mex/mexhelp'), ...
-        strcat( cml_home, '/demos' ), ...
-        strcat( cml_home, '/scenarios'), ...
-        strcat( cml_home, '/localscenarios'),...
-        strcat( cml_home, '/data/interleavers'), ...
-        strcat( cml_home, '/data/ldpc'), ...
-        strcat( cml_home, '/data/tables'), ...
-        strcat( cml_home, '/data/bandwidth') );
-    
-    % if CML grid is installed
-    if exist( './grid/mat' )
-        addpath( strcat( cml_home, '/grid/mat' ) );
-    end
-    
-    % save the home directory
-    save_directory = strcat( cml_home, '/scenarios/CmlHome.mat' );
+% setup the path
+addpath( fullfile( cml_home, 'mat'), ...
+    fullfile( cml_home, 'matalt' ), ...
+    fullfile( cml_home, 'mex', 'mexhelp'), ...
+    fullfile( cml_home, 'demos' ), ...
+    fullfile( cml_home, 'scenarios'), ...
+    fullfile( cml_home, 'localscenarios'),...
+    fullfile( cml_home, 'data', 'interleavers'), ...
+    fullfile( cml_home, 'data', 'ldpc'), ...
+    fullfile( cml_home, 'data', 'tables'), ...
+    fullfile( cml_home, 'data', 'bandwidth') );
+
+% if CML grid is installed
+if exist( fullfile('.', 'grid', 'mat') )
+    addpath( fullfile( cml_home, 'grid', 'mat' ) );
 end
 
+% save the home directory
+save_directory = fullfile( cml_home, 'scenarios', 'CmlHome.mat' );
+% this is the location of the mex directory for this architecture
+addpath( fullfile( cml_home, 'mex', lower(computer) ) );
 
+<<<<<<< .mine
+=======
 
 % this is the location of the mex directory for this architecture
 
@@ -110,6 +91,7 @@ mex_path = [cml_home fs 'mex' fs lower(computer) ];
 addpath(mex_path);
 
 
+>>>>>>> .r455
 end
 
 
@@ -117,13 +99,12 @@ function save_cml_home( SimLocation, save_directory, save_flag, cml_home, wid )
 
 switch( SimLocation )
     case 'cluster' % save to temporary location and sudo move
-  
-      
+        
         tmp_file_name = [wid '_' 'cml_home.mat'];   % save to temporary location
         tmp_file_name_and_location = ['/var/tmp' '/' tmp_file_name];
         save( tmp_file_name_and_location, save_flag, 'cml_home' );
-  
-        user = get_current_user( cml_home );   % get current user         
+        
+        user = get_current_user( cml_home );   % get current user
         mv_cmd = ['sudo mv' ' ' tmp_file_name_and_location ' ' save_directory]; system(mv_cmd);   % sudo move to user's home directory
         chown_cmd = ['sudo chown' ' ' user ' ' save_directory]; system(chown_cmd);
         
@@ -139,7 +120,6 @@ function user = get_current_user( cml_home )
 
 user = str3;
 end
-
 
 
 %     This library is free software;
