@@ -46,6 +46,7 @@ heading = '[GeneralSpec]';
 key = 'JobQueueRoot';
 out = util.fp(cml_proj_cf, heading, key);
 project_root = out{1}{1};
+project_root = project_root(1:end-1);  %TEMP
 
 end
 
@@ -101,12 +102,14 @@ function CreateJob( k, scenario, record, JobParam, JobState, job_input_queue )
 %JobParam.record = record;
 
 
-JobParam.code_param_long_filename = [scenario '_' record '.mat'];
+
 
 
 job_name = [scenario '_' int2str( record ) '.mat'];  % create job filename
+JobParam.code_param_long_filename = job_name;
 
-full_path_job_file = ['/' job_input_queue '/' job_name];
+
+full_path_job_file = [job_input_queue '/' job_name];
 save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job input queue
 
 end
