@@ -15,12 +15,12 @@ function CmlClusterConsume( )
 
 [project_root] = ReadCmlCfg();
 
-running_queue = [project_root '/JobRunning'];
-listing = get_directory_listing( running_queue );
+running_queue = [project_root '/JobRunning']
+listing = get_directory_listing( running_queue )
 consume_running_queue( running_queue, listing ); 
 
-output_queue = [project_root '/JobOut'];
-listing = get_directory_listing( output_queue );
+output_queue = [project_root '/JobOut']
+listing = get_directory_listing( output_queue )
 consume_output_queue( output_queue, listing );
 
 end
@@ -68,7 +68,7 @@ save_state = JobState;
 
 eval( scenario_name );
 
-save( sim_param(record).filename, 'save_param', 'save_state');
+save( [cml_home sim_param(record).filename], 'save_param', 'save_state');
 
 delete( full_path_to_job_output_file );
 
@@ -83,7 +83,7 @@ save_state = JobState;
 
 eval( scenario_name );
 
-save( sim_param(record).filename, 'save_param', 'save_state');
+save( [cml_home sim_param(record).filename], 'save_param', 'save_state');
 
 end
 
@@ -117,7 +117,7 @@ heading = '[GeneralSpec]';
 key = 'JobQueueRoot';
 out = util.fp(cml_proj_cf, heading, key);
 project_root = out{1}{1};
-project_root = project_root(1:end-1);  %TEMP
+%project_root = project_root(1:end-1);  %TEMP
 
 end
 

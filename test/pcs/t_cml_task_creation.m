@@ -24,10 +24,9 @@ clear TaskParam;
 TaskParam.FunctionName = FunctionName;
 TaskParam.FunctionPath = FunctionPath;
 TaskParam.InputParam.JobParam = sim_param;
-TaskParam.InputParam.JobParam.scenario = 't_BerSim';
-TaskParam.InputParam.JobParam.record = 2;
+TaskParam.InputParam.JobParam.code_param_long_filename = ['t_BerSim' '_' '2' '.mat'];
 TaskParam.InputParam.JobParam.code_param_short = code_param_short;
-TaskParam.InputParam.JobParam.cml_home = cml_home_remote;
+TaskParam.InputParam.JobParam.cml_rhome = cml_home_remote;
 TaskParam.InputParam.RandSeed = 100;
 TaskParam.InputParam.JobState = sim_state;
 
