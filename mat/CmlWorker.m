@@ -24,6 +24,8 @@ function TaskState = CmlWorker( InputParam )
 
 InitCml( cml_rhome, wid );
 
+[sim_param] = SetLocationToCluster(sim_param);
+
 SetRandSeed( RandSeed );
 
 [code_param] = ReadCodeParam( sim_param, cml_rhome );
@@ -55,6 +57,10 @@ cd('mat');
 CmlInit(cml_rhome, 'cluster', wid);
 end
 
+
+function sim_param = SetLocationToCluster( sim_param )
+  sim_param.SimLocation = 'cluster';
+end
 
 
 function [sim_param sim_state] = SelectSimTypeAndRun(sim_param, sim_state, code_param)

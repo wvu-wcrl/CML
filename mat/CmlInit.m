@@ -22,7 +22,7 @@ SimLocation     = set_defaults( nargin, SimLocation );
 
 save_flag         = determine_matlab_version();
 
-save_directory = set_cml_paths( cml_home );
+save_directory = set_cml_paths( cml_home, SimLocation );
 
 save_cml_home( SimLocation, save_directory, save_flag, cml_home, wid );
 
@@ -57,7 +57,7 @@ end
 end
 
 
-function save_directory = set_cml_paths( cml_home )
+function save_directory = set_cml_paths( cml_home, SimLocation )
 
 % setup the path
 addpath( fullfile( cml_home, 'mat'), ...
@@ -77,7 +77,13 @@ if exist( fullfile('.', 'grid', 'mat') )
 end
 
 % save the home directory
-save_directory = fullfile( cml_home, 'scenarios', 'CmlHome.mat' );
+if strcmp(SimLocation, 'cluster'),
+  cml_home_file = 'CmlRHome.mat';
+elseif strcmp( SimLocation, 'local')
+   cml_home_file = 'CmlHome.mat';
+ end
+
+ save_directory = fullfile( cml_home, 'scenarios', cml_home_file );
 % this is the location of the mex directory for this architecture
 addpath( fullfile( cml_home, 'mex', lower(computer) ) );
 

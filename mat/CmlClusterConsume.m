@@ -14,13 +14,15 @@
 function CmlClusterConsume( )
 
 [project_root] = ReadCmlCfg();
+project_root = project_root(1:end-1);
 
-running_queue = [project_root '/JobRunning']
-listing = get_directory_listing( running_queue )
+running_queue = [project_root '/JobRunning'];
+  listing = get_directory_listing( running_queue );
 consume_running_queue( running_queue, listing ); 
 
-output_queue = [project_root '/JobOut']
-listing = get_directory_listing( output_queue )
+output_queue = [project_root '/JobOut'];
+
+  listing = get_directory_listing( output_queue );
 consume_output_queue( output_queue, listing );
 
 end
@@ -56,6 +58,15 @@ end
 function [scenario_name record] = read_scenario_name_and_record( name_record )
 [scenario_name suffix] = strtok( name_record, '_' );
 record = str2double( suffix(1:end-4) );
+
+flipped_name_record = name_record(end:-1:1);
+[rec_flip scen_flip] = strtok( flipped_name_record, '_' );
+
+
+scenario_name = scen_flip( end : -1 : 1+1 );
+
+rec_flipped_back = rec_flip(end:-1:1);
+record = str2double( strtok(rec_flipped_back, '.') );
 end
 
 
@@ -66,7 +77,10 @@ load( full_path_to_job_output_file );
 save_param = JobParam;
 save_state = JobState;
 
+save_param = SetSimLocationLocal( save_param );
+
 eval( scenario_name );
+
 
 save( [cml_home sim_param(record).filename], 'save_param', 'save_state');
 
@@ -81,12 +95,18 @@ load( full_path_to_job_output_file );
 save_param = JobParam;
 save_state = JobState;
 
+save_param = SetSimLocationLocal( save_param );
+
 eval( scenario_name );
 
 save( [cml_home sim_param(record).filename], 'save_param', 'save_state');
 
 end
 
+
+function save_param = SetSimLocationLocal( save_param )
+  save_param.SimLocation = 'local';
+end
 
 
 function listing = get_directory_listing( directory )

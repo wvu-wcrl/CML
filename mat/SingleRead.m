@@ -74,7 +74,8 @@ for i=1:length( sim_param_changeable_fieldnames )
 end
 
 % determine where your root directory is (added 10-12-07)
-load( 'CmlHome.mat' );
+cml_home = CmlLoadCmlHome( sim_param_changeable.SimLocation );
+%load( 'CmlHome.mat' );
 
 % determine if sim_param_in.filename is relative or absolute
 if ( length( sim_param_in.filename ) >= length( cml_home ) )

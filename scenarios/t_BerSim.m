@@ -26,7 +26,6 @@ end
 % uncoded 8NFSK modulation in AWGN
 record = 1;
 sim_param(record).comment = 'Uncoded 8-NFSK in AWGN (CSI), local';
-sim_param(record).SimLocation = 'local';
 sim_param(record).sim_type = 'uncoded';
 sim_param(record).SNR = [0:0.5:5];
 sim_param(record).SNR_type = 'Eb/No in dB';
@@ -45,12 +44,11 @@ sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-6; 
 sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
-sim_param(record).MaxRunTime = 0;  % infinite time
+sim_param(record).MaxRunTime = 3*60;  % infinite time
 
 
 record = 2;
 sim_param(record).comment = 'Uncoded 8-NFSK in AWGN (CSI), cluster';
-sim_param(record).SimLocation = 'cluster';
 sim_param(record).sim_type = 'uncoded';
 sim_param(record).SNR = [0:0.5:5];
 sim_param(record).SNR_type = 'Eb/No in dB';
@@ -69,4 +67,4 @@ sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-6; 
 sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
-sim_param(record).MaxRunTime = 5*60;
+sim_param(record).MaxRunTime = 0.5*60;
