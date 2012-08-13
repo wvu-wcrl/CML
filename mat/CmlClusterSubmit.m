@@ -13,10 +13,9 @@
 
 
 
-
 function CmlClusterSubmit( scenario, records )
 
-[ project_root ] = ReadCmlCfg();        % read user's .cml_cfg to locate project directory
+[ project_root ] = CmlReadProjectRoot();        % read user's .cml_cfg to locate project directory
 
 CreateJobs( scenario, records, project_root );  % create job file for this scenario and record
                                                                                   % and move to user's job input queue
@@ -25,40 +24,6 @@ end
 
 
 
-
-function [ project_root ] = ReadCmlCfg()
-
-util_path = '/home/pcs/util';   % add path to file reading utility
-addpath(util_path);
-
-cml_proj_cf = get_proj_cf();     % path to user cml project file
-
-% get path to cml
-heading = '[GeneralSpec]';
-key = 'CodeRoot';
-out = util.fp(cml_proj_cf, heading, key);
-cml_home = out{1}{1};
-
-addpath(cml_home);
-
-% get path to cml project root
-heading = '[GeneralSpec]';
-key = 'JobQueueRoot';
-out = util.fp(cml_proj_cf, heading, key);
-project_root = out{1}{1};
-project_root = project_root(1:end-1);  %TEMP
-
-end
-
-
-
-function cf_path = get_proj_cf()    % get config file for this user
-
-user = get_current_user();
-
-cml_proj_cf = 'cml_cfg';
-cf_path = ['/home' '/' user '/' cml_proj_cf];
-end
 
 
 
@@ -109,11 +74,6 @@ JobParam.code_param_long_filename = job_name;
 full_path_job_file = [job_input_queue '/' job_name];
 save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job input queue
 
-end
-
-function user = get_current_user()
-  [dontcare user] = system('whoami');
-  user = user(1:end-1);
 end
 
 

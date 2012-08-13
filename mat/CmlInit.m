@@ -22,9 +22,9 @@ SimLocation     = set_defaults( nargin, SimLocation );
 
 save_flag         = determine_matlab_version();
 
-save_directory = set_cml_paths( cml_home, SimLocation );
+set_cml_paths( cml_home, SimLocation );
 
-save_cml_home( SimLocation, save_directory, save_flag, cml_home, wid );
+save_cml_home( SimLocation, save_flag, cml_home, wid );
 
 end
 
@@ -57,7 +57,7 @@ end
 end
 
 
-function save_directory = set_cml_paths( cml_home, SimLocation )
+function set_cml_paths( cml_home, SimLocation )
 
 % setup the path
 addpath( fullfile( cml_home, 'mat'), ...
@@ -76,37 +76,40 @@ if exist( fullfile('.', 'grid', 'mat') )
     addpath( fullfile( cml_home, 'grid', 'mat' ) );
 end
 
-% save the home directory
-if strcmp(SimLocation, 'cluster'),
-  cml_home_file = 'CmlRHome.mat';
-elseif strcmp( SimLocation, 'local')
-   cml_home_file = 'CmlHome.mat';
- end
 
- save_directory = fullfile( cml_home, 'scenarios', cml_home_file );
 % this is the location of the mex directory for this architecture
 addpath( fullfile( cml_home, 'mex', lower(computer) ) );
 
+
 end
 
 
-function save_cml_home( SimLocation, save_directory, save_flag, cml_home, wid )
 
-switch( SimLocation )
-    case 'cluster' % save to temporary location and sudo move
-        
-        tmp_file_name = [wid '_' 'cml_home.mat'];   % save to temporary location
-        tmp_file_name_and_location = ['/var/tmp' '/' tmp_file_name];
-        save( tmp_file_name_and_location, save_flag, 'cml_home' );
-        
-        user = get_current_user( cml_home );   % get current user
-        mv_cmd = ['sudo mv' ' ' tmp_file_name_and_location ' ' save_directory]; system(mv_cmd);   % sudo move to user's home directory
-        chown_cmd = ['sudo chown' ' ' user ' ' save_directory]; system(chown_cmd);
-        
-    case 'local' % save directly
-        save( save_directory, save_flag, 'cml_home' );
+
+function save_cml_home( SimLocation, save_flag, cml_home, wid )
+
+
+if strcmp( SimLocation, 'local' ),
+cml_local_home = cml_home;
+
+cml_home_file = 'CmlHome.mat';
+save_directory = fullfile( cml_local_home, 'scenarios', cml_home_file );
+save( save_directory, save_flag, 'cml_home' );
+
+
+cml_home_file = 'CmlRHome.mat';
+cml_home = cml_home(2:end);
+cml_home = ['/r' cml_home];
+save_directory = fullfile( cml_local_home, 'scenarios', cml_home_file );
+save( save_directory, save_flag, 'cml_home' );
 end
+
 end
+
+
+
+
+
 
 
 function user = get_current_user( cml_home )

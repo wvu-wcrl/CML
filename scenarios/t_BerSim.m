@@ -27,7 +27,7 @@ end
 record = 1;
 sim_param(record).comment = 'Uncoded 8-NFSK in AWGN (CSI), local';
 sim_param(record).sim_type = 'uncoded';
-sim_param(record).SNR = [0:0.5:5];
+sim_param(record).SNR = [0:0.5:1];
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).framesize = 10000;
 sim_param(record).modulation = 'FSK';
