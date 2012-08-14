@@ -223,7 +223,7 @@ end
 
 
 function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time )
-c1 = snrpoint < length(EsNo);
+c1 = snrpoint <= length(EsNo);
 if( sim_param.MaxRunTime == 0 ),
     c2 = 1;
 else
