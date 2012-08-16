@@ -16,11 +16,11 @@
 
 function CmlInit( cml_home, SimLocation, wid )
 
+if( nargin<2 || isempty(SimLocation) ), SimLocation = 'local'; end
+
 error_check_input( SimLocation );
 
-SimLocation     = set_defaults( nargin, SimLocation );
-
-save_flag         = determine_matlab_version();
+save_flag = determine_matlab_version();
 
 set_cml_paths( cml_home, SimLocation );
 
@@ -38,11 +38,6 @@ switch SimLocation,
         fprintf(' ''cluster'' or ''local'' \n');
         return;
 end
-end
-
-
-function SimLocation = set_defaults( nargs, SimLocation )
-if( nargs<2 ), SimLocation = 'local'; end
 end
 
 
@@ -76,40 +71,29 @@ if exist( fullfile('.', 'grid', 'mat') )
     addpath( fullfile( cml_home, 'grid', 'mat' ) );
 end
 
-
 % this is the location of the mex directory for this architecture
 addpath( fullfile( cml_home, 'mex', lower(computer) ) );
 
-
 end
-
-
 
 
 function save_cml_home( SimLocation, save_flag, cml_home, wid )
 
-
-if strcmp( SimLocation, 'local' ),
-cml_local_home = cml_home;
-
-cml_home_file = 'CmlHome.mat';
-save_directory = fullfile( cml_local_home, 'scenarios', cml_home_file );
-save( save_directory, save_flag, 'cml_home' );
-
-
-cml_home_file = 'CmlRHome.mat';
-cml_home = cml_home(2:end);
-cml_home = ['/r' cml_home];
-save_directory = fullfile( cml_local_home, 'scenarios', cml_home_file );
-save( save_directory, save_flag, 'cml_home' );
+if strcmp( SimLocation, 'local' )
+    cml_local_home = cml_home;
+    
+    cml_home_file = 'CmlHome.mat';
+    save_directory = fullfile( cml_local_home, 'scenarios', cml_home_file );
+    save( save_directory, save_flag, 'cml_home' );
+    
+    cml_home_file = 'CmlRHome.mat';
+    cml_home = cml_home(2:end);
+    cml_home = ['/r' cml_home];
+    save_directory = fullfile( cml_local_home, 'scenarios', cml_home_file );
+    save( save_directory, save_flag, 'cml_home' );
 end
 
 end
-
-
-
-
-
 
 
 function user = get_current_user( cml_home )

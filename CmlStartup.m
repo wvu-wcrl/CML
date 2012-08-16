@@ -14,21 +14,12 @@ function CmlStartup()
 
 cml_home = pwd;
 
-set_path_to_mat_files( cml_home );
+% set path to mat files.
+addpath( fullfile( cml_home, 'mat') );
 
 CmlInit( cml_home, 'local', 0 );  % assume local operation
 
 end
-
-
-function set_path_to_mat_files( cml_home )
-
-if ispc,  fs = '\';  else fs = '/'; end
-
-addpath( strcat( cml_home, fs, 'mat') );   
-
-end
-
 
 
 %     This library is free software;
