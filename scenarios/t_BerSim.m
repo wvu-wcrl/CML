@@ -11,7 +11,7 @@
 load( 'CmlHome.mat' );
 
 % determine where to store your files
-base_name = 't_bersim';
+base_name = 't_BerSim';
 if ispc
     data_directory = strcat( '\output\', base_name, '\' );
 else

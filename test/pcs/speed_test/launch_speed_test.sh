@@ -1,5 +1,8 @@
 #!/bin/bash
-# speed_test.sh
+# launch_speed_test.sh
+#
+# Execute CML simulation record using cluster and single-core operation.
+#
 # Inputs
 #  1. CML Scenario
 #  2. Record
@@ -56,20 +59,6 @@ start_cluster_sim(){
 screen -S $CLUSTER_SIM -m -d matlab -r "cd $RUNSIM; cluster('$SCENARIO',$RECORD,'$CML_ROOT','$TD_2P')"
 }
 
-wait_for_file(){
-    echo Waiting for $1...
-    while [ ! -f $1 ]
-    do
-        sleep 2
-	echo .
-    done
-}
-
-compute_timing_statistics(){
- matlab -r "cd $TIMING; compute_timing_stats"
-}
-
-
 
 # main execution flow (continuous)
 
@@ -78,11 +67,6 @@ clear_timing
 
 start_local_sim $SCENARIO $RECORD
 start_cluster_sim $SCENARIO $RECORD
-
-wait_for_file $TD_1P
-wait_for_file $TD_2P
-
-compute_timing_statistics
 
 
 
