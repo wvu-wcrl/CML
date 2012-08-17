@@ -32,7 +32,7 @@ heading = '[GeneralSpec]';
 key = 'JobQueueRoot';
 out = util.fp(cml_proj_cf, heading, key);
 project_root = out{1}{1};
-project_root = project_root(1:end-1);  %TEMP
+project_root = project_root(1:end);  %TEMP
 
 end
 
