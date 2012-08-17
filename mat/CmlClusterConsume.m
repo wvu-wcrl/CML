@@ -47,7 +47,7 @@ end
 function consume_output_queue( output_queue, listing )
 N = size( listing );
 for k = 1:N,
-        [scenario_name record] = read_scenario_name_and_record( listing(k).name );
+	  [scenario_name record] = read_scenario_name_and_record( listing(k).name );
         full_path_to_output_file = [ output_queue '/' listing(k).name ];        
         move_job_out_to_cml_out( full_path_to_output_file, scenario_name, record);
 end
@@ -73,6 +73,8 @@ end
 
 function move_job_out_to_cml_out( full_path_to_job_output_file, scenario_name, record)
 
+cur_record = record;
+
 load( full_path_to_job_output_file );
 save_param = JobParam;
 save_state = JobState;
@@ -82,7 +84,7 @@ save_param = SetSimLocationLocal( save_param );
 eval( scenario_name );
 
 
-save( [cml_home sim_param(record).filename], 'save_param', 'save_state');
+save( [cml_home sim_param(cur_record).filename], 'save_param', 'save_state');
 
 delete( full_path_to_job_output_file );
 
