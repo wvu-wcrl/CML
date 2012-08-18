@@ -71,11 +71,10 @@ sim_param(record).MaxRunTime = 0.5*60;
 
 
 
-
 record = 3;
 sim_param(record).comment = 'Uncoded 8-NFSK in AWGN (CSI), cluster';
 sim_param(record).sim_type = 'uncoded';
-sim_param(record).SNR = [0:0.5:1.5];
+sim_param(record).SNR = [0:0.5:2];
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).framesize = 10000;
 sim_param(record).modulation = 'FSK';
@@ -86,10 +85,12 @@ sim_param(record).bicm = 1;
 sim_param(record).demod_type = 1;  % max-log-map appropriate for uncoded
 sim_param(record).linetype = 'm:';
 sim_param(record).legend = sim_param(record).comment;
-sim_param(record).filename = strcat( data_directory, 't_bersim_3.mat');
+sim_param(record).filename = strcat( data_directory, 't_bersim_2.mat');
 sim_param(record).reset = 0;
 sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-6; 
 sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
-sim_param(record).MaxRunTime = 0.5*60;
+sim_param(record).MaxRunTime = 2*60;
+
+
