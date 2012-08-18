@@ -1,0 +1,31 @@
+error rate comparison test
+suite of scripts to automate error rate comparison between single-core
+and cluster cml
+
+
+== setup ==
+
+check cml out of the google code repository on the cluster and local machines
+
+on the windows machine, follow the instructions in winsync/readme
+to configure file synchronization
+
+
+
+== usage example ==
+
+on the cluster
+> ./launch_er_comparison.sh t_BerSim 1 2 /home/tferrett/cml
+
+
+two screen sessions will be launched containing cluster and single sims.
+ execute
+> screen -ls
+and wait for the screen sessions to complete
+
+
+on windows, execute
+winsync/sync
+which copies the CML results from the cluster to the local machine
+ 
+ 

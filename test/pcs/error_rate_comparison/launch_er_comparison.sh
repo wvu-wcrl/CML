@@ -1,72 +1,57 @@
 #!/bin/bash
-# launch_speed_test.sh
+# launch_er_comparison.sh
 #
-# Execute CML simulation record using cluster and single-core operation.
+# Execute CML simulation records using cluster and single-core operation.
 #
 # Inputs
 #  1. CML Scenario
-#  2. Record
-#  3. Path to CML Root
+#  2. Record 1
+#  3. Record 2
+#  4. Path to CML Root
 #
 #  Calling Example
-#   > ./speed_test.sh t_BerSim 1 /home/tferrett/cml
+#   > ./launch_er_comparison.sh t_BerSim 1 2 /home/tferrett/cml
 #                                                               
 #     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti   
 #     For full copyright information see the bottom of this file.
 
 # inputs
 SCENARIO=$1
-RECORD=$2
-CML_ROOT=$3
+RECORD_S=$2
+RECORD_C=$3
+CML_ROOT=$4
 
 
 # paths to cml root and output directory
 ROOT=`pwd`
-OUTPUT=$CML_ROOT/output/$SCENARIO
 
 
 # paths under speed test root
-TIMING=$ROOT/timing
+TIMING=$ROOT/er_results
 RUNSIM=$ROOT/runsim
 
 
-# paths to timing data
-TD_1=timedata1.mat
-TD_2=timedata2.mat
-TD_1P=$TIMING/$TD_1
-TD_2P=$TIMING/$TD_2
-
-
 # screen session names
-LOCAL_SIM=$SCENARIO\_$RECORD"L"
-CLUSTER_SIM=$SCENARIO\_$RECORD"C"
+SINGLE_SIM=$SCENARIO\_$RECORD_S"S"
+CLUSTER_SIM=$SCENARIO\_$RECORD_C"C"
 
 
 #### functions         
-clear_scenario_output(){
-rm $OUTPUT/*
+start_local_sim(){
+screen -S $SINGLE_SIM -m -d matlab -r "cd $RUNSIM; singlecore_er('$SCENARIO',$RECORD_S,'$CML_ROOT')"
 }
 
-clear_timing(){
-rm $TIMING/*.mat
-}
-                                                 
-start_local_sim(){
-screen -S $LOCAL_SIM -m -d matlab -r "cd $RUNSIM; singlecore_sp('$SCENARIO',$RECORD,'$CML_ROOT','$TD_1P')"
-}
 
 start_cluster_sim(){
-screen -S $CLUSTER_SIM -m -d matlab -r "cd $RUNSIM; cluster_sp('$SCENARIO',$RECORD,'$CML_ROOT','$TD_2P')"
+screen -S $CLUSTER_SIM -m -d matlab -r "cd $RUNSIM; cluster_er('$SCENARIO',$RECORD_C,'$CML_ROOT')"
 }
 
 
 # main execution flow (continuous)
-
-clear_scenario_output
 clear_timing
 
-start_local_sim $SCENARIO $RECORD
-start_cluster_sim $SCENARIO $RECORD
+start_local_sim $SCENARIO $RECORD_S
+start_cluster_sim $SCENARIO $RECORD_C
 
 
 
