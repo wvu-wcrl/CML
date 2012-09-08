@@ -46,7 +46,8 @@ end
 
 % derive the modulation parameters.
 if ( ( strcmp( sim_param.sim_type, 'coded' ) )||( strcmp( sim_param.sim_type, 'uncoded' ) )...
-        ||( strcmp( sim_param.sim_type, 'capacity' ) )||(strcmpi( sim_param.sim_type, 'bloutage' ) ) )
+        ||( strcmp( sim_param.sim_type, 'capacity' ) )||(strcmpi( sim_param.sim_type, 'bloutage' ) )...
+        || ( strcmp( sim_param.sim_type, 'exit' ) ) )
     code_param.bits_per_symbol = log2(sim_param.mod_order);    
     
     % bpsk is a special case (runs faster that way)
@@ -229,7 +230,8 @@ if strcmp( sim_param.sim_type, 'coded' )
     if ( code_param.symbols_per_frame ~= ceil( code_param.code_bits_per_frame / code_param.bits_per_symbol ) )
         error( 'Symbols per frame is inconsistent' );   
     end       
-elseif ( strcmpi( sim_param.sim_type, 'uncoded' )||strcmpi( sim_param.sim_type, 'capacity' ) )
+elseif ( strcmpi( sim_param.sim_type, 'uncoded' )||strcmpi( sim_param.sim_type, 'capacity' )...
+        || strcmpi( sim_param.sim_type, 'exit') )
     code_param.symbols_per_frame = sim_param.framesize;   
     code_param.data_bits_per_frame = code_param.symbols_per_frame*code_param.bits_per_symbol;
     code_param.rate = code_param.data_bits_per_frame/code_param.symbols_per_frame;

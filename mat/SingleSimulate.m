@@ -63,20 +63,27 @@ end
 % close open files (4/22/06)
 fclose all;
 
-% determine the simulation type
-if ( strcmpi( sim_param.sim_type, 'capacity' ) )
-    % capacity simulation
-    sim_state = SimulateCapacity( sim_param, sim_state, code_param );        
-elseif ( ( strcmpi( sim_param.sim_type, 'uncoded' ) )|( strcmpi( sim_param.sim_type, 'coded' ) )| (strcmpi( sim_param.sim_type, 'bloutage') ) )
-    % uncoded or coded modulation
+
+
+
+switch sim_param.sim_type,  % determine the simulation type
+    
+    case {'capacity', 'exit'}
+        sim_state = SimulateCapacity( sim_param, sim_state, code_param );        
+        
+    case {'uncoded', 'coded', 'bloutage'},
+    
     if (sim_param.mod_order>0)
         sim_state = SimulateMod( sim_param, sim_state, code_param );
     else % added 12/30/07
         sim_state = SimulateUGI( sim_param, sim_state, code_param );
     end        
-elseif ( strcmpi( sim_param.sim_type, 'outage' ) )
-    % simulates outage probability in block fading
-    sim_state = SimulateOutage( sim_param, sim_state, code_param );
-else
-    error( 'Simulation type is not supported' );
+    
+    case 'outage',
+        sim_state = SimulateOutage( sim_param, sim_state, code_param );
+    
+    otherwise,  
+        error( 'Simulation type is not supported' );      
+        
 end
+

@@ -41,6 +41,7 @@
 
 */
 #include <math.h>
+#include <stdio.h>
 #include <mex.h>
 #include <matrix.h>
 #include <stdlib.h>
@@ -98,7 +99,7 @@ void mexFunction(
 	
 	/* initialize the input data */
 	NumberSymbols = mxGetN(prhs[0]);
-	M = mxGetM(prhs[0]);
+    M = mxGetM(prhs[0]);
 
 	/* determine number of bits per symbol */
 	m = 0;

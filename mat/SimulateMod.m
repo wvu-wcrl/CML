@@ -43,6 +43,8 @@ while ( continue_simulation )
         %%% source operations
         [data] =                       gen_random_data( code_param );
         [s] =                            CmlEncode( data, sim_param, code_param );
+        % break CmlEncode down or return codeword
+        
         
         
         %%% channel operations
@@ -50,23 +52,33 @@ while ( continue_simulation )
         
         
         %%% receiver operations
-        if (code_param.outage == 0) % error rate simulation
-            [detected_data, errors] = CmlDecode( symbol_likelihood, data, sim_param, code_param );
-                                                    echo_x_on_error( errors, code_param, verbosity );
-            [ sim_state ] =                 update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors );
-            
-            if ~code_param.coded
-                [ sim_state ] =             update_symbol_error_rate( sim_param, sim_state, code_param, snrpoint, data, detected_data );
-            end
-
-        else % capacity simulation
-            if ( sim_param.bicm )             % bicm cap
-                cap = compute_bicm_capacity( sim_param, code_param, symbol_likelihood, bit_likelihood );
-            else                                        % cm cap
-                cap = log2(sim_param.mod_order)*Capacity( symbol_likelihood, data );
-            end
-            [sim_state] = update_fer_statistics( cap, code_param, sim_state, snrpoint, verbosity );
-        end
+        
+        switch sim_param.sim_type,
+            case 'exit'
+                
+                        
+            otherwise
+                if (code_param.outage == 0) % error rate simulation
+                    [detected_data, errors] = CmlDecode( symbol_likelihood, data, sim_param, code_param );
+                    echo_x_on_error( errors, code_param, verbosity );
+                    [ sim_state ] =                 update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors );
+                    
+                    if ~code_param.coded
+                        [ sim_state ] =             update_symbol_error_rate( sim_param, sim_state, code_param, snrpoint, data, detected_data );
+                    end
+                    
+                else % capacity simulation
+                    if ( sim_param.bicm )             % bicm cap
+                        cap = compute_bicm_capacity( sim_param, code_param, symbol_likelihood, bit_likelihood );
+                    else                                        % cm cap
+                        cap = log2(sim_param.mod_order)*Capacity( symbol_likelihood, data );
+                    end
+                    [sim_state] = update_fer_statistics( cap, code_param, sim_state, snrpoint, verbosity );
+                end
+                
+                
+        end       
+        
         
         
         %%% save and determine whether to continue simulating this snr
@@ -80,7 +92,7 @@ while ( continue_simulation )
     breaksim = break_simulation(code_param, sim_param, sim_state, snrpoint, verbosity ); % halt if BER or FER is low enough
     if breaksim == 1,  break;  end
     
-    
+       
     %%% determine whether to continue the simulation
     snrpoint = snrpoint + 1;  % next snr point
     elapsed_time = toc;
