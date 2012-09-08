@@ -23,29 +23,18 @@ function [sim_param, sim_state] = CmlPlot( varargin )
 %     Copyright (C) 2005-2006, Matthew C. Valenti
 %
 %     Last updated on June 4, 2006
-%
-%     Function CmlPlot is part of the Iterative Solutions Coded Modulation
-%     Library (ISCML).  
-%
-%     The Iterative Solutions Coded Modulation Library is free software;
-%     you can redistribute it and/or modify it under the terms of 
-%     the GNU Lesser General Public License as published by the 
-%     Free Software Foundation; either version 2.1 of the License, 
-%     or (at your option) any later version.
-%
-%     This library is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-%     Lesser General Public License for more details.
-%
-%     You should have received a copy of the GNU Lesser General Public
-%     License along with this library; if not, write to the Free Software
-%     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+% add exit plotting
+% accept snr point as input
 
 % setup structures are retrieve data
 % give an extra argument to force sim_param.reset = 0
-[sim_param, sim_state] = ReadScenario( varargin{:}, [] );
+[sim_param, sim_state] = ReadScenario( varargin{1:2}, [] );
 number_cases = length( sim_param );
+
+
+% determine the simulation type
+
 
 % determine the simulation types
 sim_types = zeros( 8, number_cases );
@@ -71,10 +60,17 @@ end
 
 fig_number = 0;
 
+
+
+
+% plot capacity
+
 % first plot capacity vs. Eb/No and Es/No, if there are any capacity curves requested
 if ( sum( sim_types(1,:) ) )
     fig_number = fig_number + 1;
     figure( fig_number );    
+    
+    
     
     for (i=find( sim_types(1,:) == 1 ) )
         EsNo = 10.^(sim_param(i).SNR/10); % assume SNR is Es/No in dB
@@ -133,6 +129,48 @@ if ( sum( sim_types(1,:) ) )
     ylabel( 'Capacity' );
     hold off;  
 end
+
+
+% plot error rate
+
+% exit
+if ( sum( sim_types(2,:) ) )
+    
+    % get snr point
+    
+    error_check_exit_input(varargin, sim_param, number_cases);
+    [snrpoint snr_ind] = get_snr_point( varargin, sim_param );
+    
+    
+    
+       
+    for (i=find( sim_types(2,:) == 1 ) )    
+    fig_number = fig_number + 1;
+    figure( fig_number );        
+        
+    plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IE_vnd(:,snr_ind), 'k-' );
+    hold on;
+    plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IA_cnd(:,snr_ind), 'r--' );
+    hold off;
+    
+    xlabel('I_{A,VND}, I_{E,CND}');
+    ylabel('I_{E,VND}, I_{E,CND}');
+       legend('VND', 'CND');
+       
+       
+       annotate_exit_params(sim_param(i), snr_ind);
+         
+    end 
+ 
+
+end
+
+
+
+
+
+
+
 
 % next plot BER vs. Eb/No if this is a coded or uncoded simulation
 if ( sum( sum( sim_types(3:4,:) ) ) )
@@ -201,6 +239,11 @@ if ( sum( sum( sim_types(3:4,:) ) ) )
     
     hold off;   
 
+    
+    
+    
+    % plot uncoded
+    
     % Now plot against Es/No, if uncoded
     if sum( sim_types(4,:) )    
         fig_number = fig_number + 1;
@@ -293,6 +336,8 @@ if ( sum( sum( sim_types(3,:) ) ) )
     hold off;   
 end
 
+
+% coded and outage
 % Plot the FER of coded and outage simulations
 if ( sum( sum( sim_types(4:5,:) ) ) )
     
@@ -462,6 +507,9 @@ if ( sum( sum( sim_types(4:5,:) ) ) )
     
 end
         
+
+% throughput
+
 % plot throughput vs. Es/No, if there are any throughput curves requested
 if ( sum( sim_types(6,:) ) )
     fig_number = fig_number + 1;
@@ -480,6 +528,7 @@ if ( sum( sim_types(6,:) ) )
 end
 
 
+% ebno vs h
 % plot min Eb/No vs. h for nonorthogonal FSK under BW constraints.
 if ( sum( sim_types(7,:) ) )
     fig_number = fig_number + 1;
@@ -580,3 +629,73 @@ if ( sum( sim_types(8,:) ) )
     hold off;  
     
 end
+
+
+
+end
+
+
+    function annotate_exit_params(sim_param, snr_ind)
+       
+       snr_str = ['E_b/N_0 = ' int2str(sim_param.SNR(snr_ind)) ' dB'];   
+       dv_st = ['d_v = ' int2str(sim_param.exit_param.dv)];   
+       dc_st = ['d_c = ' int2str(sim_param.exit_param.dc)];   
+       rate_st = ['r = ' num2str(sim_param.exit_param.rate)];   
+       
+       cell_str = {snr_str, dv_st, dc_st, rate_st};
+       
+       a = annotation('textbox',[0.70 0.2 0.2 0.2])
+       set(a, 'String', cell_str)
+       set(a, 'FontSize', 10)
+       set(a, 'LineStyle', 'none')
+       
+    end
+
+    
+    
+    function [snrpoint snr_ind] = get_snr_point( varargin, sim_param )
+    snrpoint = varargin{3};
+    snr_ind = find(sim_param.SNR == snrpoint );
+    end
+    
+    function error_check_exit_input(varargin, sim_param, number_cases),
+    if length(varargin) < 3,
+        error('Please specify an SNR point to plot.');
+    end
+    
+    snrpoint = varargin{3};
+    if length(snrpoint) > 1,
+        error('Please supply a single SNR point.');
+    end
+    
+    if number_cases > 1,
+        error('Please specify a single EXIT record.');
+    end
+    
+    snr_ind = find(sim_param.SNR == snrpoint );
+    
+    if isempty( snr_ind ),
+        error(['SNR point ' int2str(snrpoint) ' dB' ' not found.']);        
+    end
+    end
+    
+    
+
+%     Function CmlPlot is part of the Iterative Solutions Coded Modulation
+%     Library (ISCML).  
+%
+%     The Iterative Solutions Coded Modulation Library is free software;
+%     you can redistribute it and/or modify it under the terms of 
+%     the GNU Lesser General Public License as published by the 
+%     Free Software Foundation; either version 2.1 of the License, 
+%     or (at your option) any later version.
+%
+%     This library is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%     Lesser General Public License for more details.
+%
+%     You should have received a copy of the GNU Lesser General Public
+%     License along with this library; if not, write to the Free Software
+%     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+%     USA
