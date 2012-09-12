@@ -392,6 +392,10 @@ end
 function sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points);
 switch sim_param_in.exit_param.exit_type,
     case 'ldpc',
+        
+        
+        error_check_ldpc_exit( sim_param_in );
+        
         N = length(sim_param_in.exit_param.requested_IA);
         
         sim_state.trials = zeros( 1, number_new_SNR_points );
@@ -404,6 +408,71 @@ switch sim_param_in.exit_param.exit_type,
         error('Turbo EXIT is still in the oven.');
 end
 end
+
+
+
+function error_check_ldpc_exit( sim_param_in )
+
+if ~isfield(sim_param_in, 'exit_param')
+    error('Parameters for exit analysis not specified.  Please define sim_param.exit_param');
+end
+
+ep = sim_param_in.exit_param;  % shorter name for exit_param
+
+if ~isfield(ep, 'exit_type');
+    error('Exit type not specified in scenario file. Please define sim_param.exit_param.exit_type.');
+end
+
+if ~isfield(ep, 'rate')
+     error('Rate not specified in scenario file. Please define sim_param.exit_param.rate.');
+end
+
+if ~isfield(ep, 'dv')
+     error('Variable node degree not specified in scenario file. Please define sim_param.exit_param.dv.');
+end
+
+if ~isfield(ep, 'dv_dist')
+     error('Variable node degrees not specified in scenario file. Please define sim_param.exit_param.dv_dist.');
+end
+
+if ~isfield(ep, 'dc')
+     error('Check node degree not specified in scenario file. Please define sim_param.exit_param.dc.');
+end
+
+if ~isfield(ep, 'requested_IA')
+     error('Apriori mutual information not specified in scenario file. Please define sim_param.exit_param.requested_IA.');
+end
+
+if length(ep.dv) ~= length(ep.dv_dist),
+    error('Number of specified variable node degrees and number of specified degree distributions must match. length(dv) ~= length(dv_dist).');
+end
+
+% error check dv_dist
+check_valid_dv_dist(sim_param_in);
+end
+
+function check_valid_dv_dist(sim_param_in)
+%given
+n = sim_param_in.framesize;
+k= n*sim_param_in.exit_param.rate;
+dc  = sim_param_in.exit_param.dc;
+dv = sim_param_in.exit_param.dv;
+dv_dist = sim_param_in.exit_param.dv_dist;
+
+if sum(dv_dist) ~= 1,
+    error('vnd degree distribution, sim_param_in.exit_param.dv_dist, must sum to 1.');
+end
+
+% compute number of vnd edges
+vnd_edges = sum( n * dv_dist .* dv );
+cnd_edges = (n-k) * dc;
+
+if vnd_edges ~= cnd_edges,
+    error( 'vnd_dist not consistent with specified codeword length and check node degree.');
+end
+
+end
+
 
 
 function sim_state = init_uncoded(sim_param_in, sim_param_out, number_new_SNR_points, sim_state)

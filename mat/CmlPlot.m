@@ -16,7 +16,7 @@ function [sim_param, sim_state] = CmlPlot( varargin )
 %     Note: Multiple scenario files can be specified.  In this case, the argument list
 %     should contain each scenario file to be used followed by the list of array indices
 %     to read from that file.
-%     
+%
 %     Example:
 %     [sim_param, sim_state] = CmlPlot( 'Scenario1', [1 2 5], 'Scenario2', [1 4 6] );
 %
@@ -39,7 +39,7 @@ number_cases = length( sim_param );
 % determine the simulation types
 sim_types = zeros( 8, number_cases );
 for ( case_number=1:number_cases )
-    if ( strcmp( sim_param(case_number).sim_type, 'capacity' ) )        
+    if ( strcmp( sim_param(case_number).sim_type, 'capacity' ) )
         sim_types(1,case_number) = 1; % capacity simulation
     elseif ( strcmp( sim_param(case_number).sim_type, 'exit' ) )
         sim_types(2,case_number) = 1; % EXIT
@@ -63,12 +63,11 @@ fig_number = 0;
 
 
 
-% plot capacity
 
 % first plot capacity vs. Eb/No and Es/No, if there are any capacity curves requested
 if ( sum( sim_types(1,:) ) )
     fig_number = fig_number + 1;
-    figure( fig_number );    
+    figure( fig_number );
     
     
     
@@ -76,94 +75,94 @@ if ( sum( sim_types(1,:) ) )
         EsNo = 10.^(sim_param(i).SNR/10); % assume SNR is Es/No in dB
         EbNo = EsNo./(sim_state(i).capacity_avg*log2(sim_param(i).mod_order));
         EbNodB = 10*log10( EbNo );
-        plot( EbNodB, log2(sim_param(i).mod_order)*sim_state(i).capacity_avg, sim_param(i).linetype );        
+        plot( EbNodB, log2(sim_param(i).mod_order)*sim_state(i).capacity_avg, sim_param(i).linetype );
         hold on;
-    end 
+    end
     
     % compute unconstrained (Gaussian input) capacity
     EsNodB = sim_param(i).SNR;
-    EsNo = 10.^(EsNodB/10);    
+    EsNo = 10.^(EsNodB/10);
     cap_unconstrained = log2(1+EsNo);
     EbNo = EsNo./cap_unconstrained;
     EbNodB = 10*log10( EbNo );
-    legend( sim_param( find( sim_types(1,:) == 1 ) ).legend ); 
+    legend( sim_param( find( sim_types(1,:) == 1 ) ).legend );
     
-    % uncomment if you want to show unconstrained 
-    % plot( EbNodB, cap_unconstrained, '-.');    
-    % legend( sim_param( find( sim_types(1,:) == 1 ) ).legend, 'Unconstrained', 2 ); 
+    % uncomment if you want to show unconstrained
+    % plot( EbNodB, cap_unconstrained, '-.');
+    % legend( sim_param( find( sim_types(1,:) == 1 ) ).legend, 'Unconstrained', 2 );
     xlabel( 'Eb/No in dB' );
     ylabel( 'Capacity' );
-    hold off;       
+    hold off;
     
     % Eb/No vs. Capacity (useful for FSK modulation)
     fig_number = fig_number + 1;
-    figure( fig_number );    
+    figure( fig_number );
     
     for (i=find( sim_types(1,:) == 1 ) )
         EsNo = 10.^(sim_param(i).SNR/10); % assume SNR is Es/No in dB
         EbNo = EsNo./(sim_state(i).capacity_avg*log2(sim_param(i).mod_order));
-        EbNodB = 10*log10( EbNo );      
-        plot( sim_state(i).capacity_avg, EbNodB, sim_param(i).linetype ); 
+        EbNodB = 10*log10( EbNo );
+        plot( sim_state(i).capacity_avg, EbNodB, sim_param(i).linetype );
         hold on;
-    end 
+    end
     
     ylabel( 'Eb/No in dB' );
     xlabel( 'Rate' );
-    hold off;  
-   
+    hold off;
+    
     % plot capacity vs. Es/No
     fig_number = fig_number + 1;
     figure( fig_number );
     for (i=find( sim_types(1,:) == 1 ) )
-        plot( sim_param(i).SNR, log2(sim_param(i).mod_order)*sim_state(i).capacity_avg, sim_param(i).linetype );      
+        plot( sim_param(i).SNR, log2(sim_param(i).mod_order)*sim_state(i).capacity_avg, sim_param(i).linetype );
         hold on;
-    end 
+    end
     
     legend( sim_param( find( sim_types(1,:) == 1 ) ).legend );
     
-    % uncomment if you want to show unconstrained 
-    % plot( EsNodB, cap_unconstrained, '-.');    
+    % uncomment if you want to show unconstrained
+    % plot( EsNodB, cap_unconstrained, '-.');
     % legend( sim_param( find( sim_types(1,:) == 1 ) ).legend, 'Unconstrained', 2 );
     
     xlabel( 'Es/No in dB' );
     ylabel( 'Capacity' );
-    hold off;  
+    hold off;
 end
 
 
-% plot error rate
 
 % exit
 if ( sum( sim_types(2,:) ) )
     
     % get snr point
-    
     error_check_exit_input(varargin, sim_param, number_cases);
     [snrpoint snr_ind] = get_snr_point( varargin, sim_param );
     
     
     
-       
-    for (i=find( sim_types(2,:) == 1 ) )    
-    fig_number = fig_number + 1;
-    figure( fig_number );        
-        
-    plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IE_vnd(:,snr_ind), 'k-' );
-    hold on;
-    plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IA_cnd(:,snr_ind), 'r--' );
-    hold off;
     
-    xlabel('I_{A,VND}, I_{E,CND}');
-    ylabel('I_{E,VND}, I_{E,CND}');
-       legend('VND', 'CND');
-       
-       
-       annotate_exit_params(sim_param(i), snr_ind);
-         
-    end 
- 
-
+    for (i=find( sim_types(2,:) == 1 ) )
+        fig_number = fig_number + 1;
+        figure( fig_number );
+        
+        plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IE_vnd(:,snr_ind), 'k-' );
+        hold on;
+        plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IA_cnd(:,snr_ind), 'r--' );
+        hold off;
+        
+        xlabel('I_{A,VND}, I_{E,CND}');
+        ylabel('I_{E,VND}, I_{E,CND}');
+        legend('VND', 'CND');
+        
+        
+        annotate_exit_params( sim_param(i), snr_ind );
+        
+    end
+    
+    
 end
+
+
 
 
 
@@ -187,9 +186,9 @@ if ( sum( sum( sim_types(3:4,:) ) ) )
         end
         
         figure( fig_number );
-        semilogy( sim_param(i).SNR, sim_state(i).BER, sim_param(i).linetype );      
+        semilogy( sim_param(i).SNR, sim_state(i).BER, sim_param(i).linetype );
         hold on;
-    end   
+    end
     
     % BER of coded modulation
     for (i=find( sim_types(4,:) == 1 ) )
@@ -202,7 +201,7 @@ if ( sum( sum( sim_types(3:4,:) ) ) )
             EbNo = EsNo./sim_param(i).rate;
             EbNodB = 10*log10(EbNo);
         else
-            EbNodB = sim_param(i).SNR;            
+            EbNodB = sim_param(i).SNR;
         end
         % only plot the last iteration
         if ( length( sim_param(i).max_iterations ) )
@@ -211,13 +210,13 @@ if ( sum( sum( sim_types(3:4,:) ) ) )
             max_iter = 1;
         end
         
-        semilogy( EbNodB, sim_state(i).BER( max_iter, : ), sim_param(i).linetype );      
+        semilogy( EbNodB, sim_state(i).BER( max_iter, : ), sim_param(i).linetype );
         hold on;
-    end       
+    end
     
-    legend( sim_param( find( sim_types(3,:) == 1 ) ).legend, sim_param( find( sim_types(4,:) == 1 ) ).legend, 0 ); 
+    legend( sim_param( find( sim_types(3,:) == 1 ) ).legend, sim_param( find( sim_types(4,:) == 1 ) ).legend, 0 );
     xlabel( 'Eb/No in dB' );
-    ylabel( 'BER' );    
+    ylabel( 'BER' );
     
     for (i=find( sim_types(4,:) == 1 ) )
         if ( length( sim_param(i).plot_iterations ) )
@@ -230,28 +229,28 @@ if ( sum( sum( sim_types(3:4,:) ) ) )
                 EbNo = EsNo./sim_param(i).rate;
                 EbNodB = 10*log10(EbNo);
             else
-                EbNodB = sim_param(i).SNR;            
+                EbNodB = sim_param(i).SNR;
             end
             % plot the other iterations
             semilogy( EbNodB, sim_state(i).BER(sim_param(i).plot_iterations,:), sim_param(i).linetype );
-        end     
+        end
     end
     
-    hold off;   
-
+    hold off;
+    
     
     
     
     % plot uncoded
     
     % Now plot against Es/No, if uncoded
-    if sum( sim_types(4,:) )    
+    if sum( sim_types(4,:) )
         fig_number = fig_number + 1;
-        figure( fig_number ); 
-
-        for (i=find( sim_types(4,:) == 1 ) )      
+        figure( fig_number );
+        
+        for (i=find( sim_types(4,:) == 1 ) )
             
-            % see if Es/No is defind, otherwise derive       
+            % see if Es/No is defind, otherwise derive
             if ( sim_param(i).SNR_type(2) == 'b' )
                 % This is Eb/No
                 EbNodB = sim_param(i).SNR;
@@ -269,22 +268,22 @@ if ( sum( sum( sim_types(3:4,:) ) ) )
                 max_iter = sim_param(i).max_iterations;
             else
                 max_iter = 1;
-            end            
+            end
             
             % Plot FER versus Es/No in dB
             figure( fig_number );
-            semilogy( EsNodB, sim_state(i).BER( max_iter, : ), sim_param(i).linetype );             
-            hold on;           
-        end       
+            semilogy( EsNodB, sim_state(i).BER( max_iter, : ), sim_param(i).linetype );
+            hold on;
+        end
         
         figure( fig_number );
-        legend( sim_param( find( sim_types(4,:) == 1 ) ).legend, 0 ); 
+        legend( sim_param( find( sim_types(4,:) == 1 ) ).legend, 0 );
         xlabel( 'Es/No in dB' );
-        ylabel( 'BER' );    
+        ylabel( 'BER' );
         
         for (i=find( sim_types(4,:) == 1 ) )
             if ( length( sim_param(i).plot_iterations ) )
-                % see if Es/No is defind, otherwise derive          
+                % see if Es/No is defind, otherwise derive
                 if ( sim_param(i).SNR_type(2) == 'b' )
                     % This is Eb/No
                     EbNodB = sim_param(i).SNR;
@@ -303,8 +302,8 @@ if ( sum( sum( sim_types(3:4,:) ) ) )
                 
                 % plot the other iterations
                 figure( fig_number );
-                semilogy( EsNodB, sim_state(i).BER(sim_param(i).plot_iterations,:), sim_param(i).linetype );          
-            end     
+                semilogy( EsNodB, sim_state(i).BER(sim_param(i).plot_iterations,:), sim_param(i).linetype );
+            end
         end
         
         figure( fig_number );
@@ -325,15 +324,15 @@ if ( sum( sum( sim_types(3,:) ) ) )
         if ( sim_param(i).SNR_type(2) ~= 'b' )
             error( 'The SNR should be stored as Eb/No' );
         end
-        semilogy( sim_param(i).SNR, sim_state(i).SER, sim_param(i).linetype );      
+        semilogy( sim_param(i).SNR, sim_state(i).SER, sim_param(i).linetype );
         hold on;
-    end       
+    end
     
-    legend( sim_param( find( sim_types(3,:) == 1 ) ).legend, 0 ); 
+    legend( sim_param( find( sim_types(3,:) == 1 ) ).legend, 0 );
     xlabel( 'Eb/No in dB' );
-    ylabel( 'SER' );        
+    ylabel( 'SER' );
     
-    hold off;   
+    hold off;
 end
 
 
@@ -347,7 +346,7 @@ if ( sum( sum( sim_types(4:5,:) ) ) )
     
     % Outage Probability
     for (i=find( sim_types(5,:) == 1 ) )
-        % If stored as Es/No, convert to Eb/No       
+        % If stored as Es/No, convert to Eb/No
         if ( sim_param(i).SNR_type(2) == 'b' )
             % This is Eb/No
             EbNodB = sim_param(i).SNR;
@@ -358,17 +357,17 @@ if ( sum( sum( sim_types(4:5,:) ) ) )
             EsNo = 10.^(EsNodB/10);
             EbNo = EsNo./sim_param(i).rate;
             EbNodB = 10*log10(EbNo);
-        end            
+        end
         
         % Plot FER versus Eb/No in dB
         figure( fig_number );
-        semilogy( EbNodB, sim_state(i).FER, sim_param(i).linetype );             
+        semilogy( EbNodB, sim_state(i).FER, sim_param(i).linetype );
         hold on;
-    end   
+    end
     
     % FER of coded modulation
     for (i=find( sim_types(4,:) == 1 ) )
-        % If stored as Es/No, convert to Eb/No       
+        % If stored as Es/No, convert to Eb/No
         if ( sim_param(i).SNR_type(2) == 'b' )
             % This is Eb/No
             EbNodB = sim_param(i).SNR;
@@ -386,23 +385,23 @@ if ( sum( sum( sim_types(4:5,:) ) ) )
             max_iter = sim_param(i).max_iterations;
         else
             max_iter = 1;
-        end        
+        end
         
         % Plot FER versus Eb/No in dB
         figure( fig_number );
-        semilogy( EbNodB, sim_state(i).FER( max_iter, : ), sim_param(i).linetype );             
+        semilogy( EbNodB, sim_state(i).FER( max_iter, : ), sim_param(i).linetype );
         hold on;
-    end           
-
+    end
+    
     figure( fig_number );
-    legend( sim_param( find( sim_types(5,:) == 1 ) ).legend, sim_param( find( sim_types(4,:) == 1 ) ).legend, 0 ); 
+    legend( sim_param( find( sim_types(5,:) == 1 ) ).legend, sim_param( find( sim_types(4,:) == 1 ) ).legend, 0 );
     xlabel( 'Eb/No in dB' );
-    ylabel( 'FER' ); 
+    ylabel( 'FER' );
     
     % Now plot the other iterations
     for (i=find( sim_types(4,:) == 1 ) )
         if ( length( sim_param(i).plot_iterations ) )
-            % make sure that we get both Es/No and Eb/No        
+            % make sure that we get both Es/No and Eb/No
             if ( sim_param(i).SNR_type(2) == 'b' )
                 % This is Eb/No
                 EbNodB = sim_param(i).SNR;
@@ -415,22 +414,22 @@ if ( sum( sum( sim_types(4:5,:) ) ) )
                 EbNodB = 10*log10(EbNo);
             end
             
-            % plot the other iterations            
+            % plot the other iterations
             figure( fig_number );
-            semilogy( EbNodB, sim_state(i).FER(sim_param(i).plot_iterations,:), sim_param(i).linetype );            
-        end     
-    end   
-  
-    figure( fig_number );
-    hold off;    
+            semilogy( EbNodB, sim_state(i).FER(sim_param(i).plot_iterations,:), sim_param(i).linetype );
+        end
+    end
     
-    % plot FER vs. Es/No        
+    figure( fig_number );
+    hold off;
+    
+    % plot FER vs. Es/No
     fig_number = fig_number + 1;
     figure( fig_number );
     
     % Outage Probability
     for (i=find( sim_types(5,:) == 1 ) )
-        % If stored as Eb/No, convert to Es/No      
+        % If stored as Eb/No, convert to Es/No
         if ( sim_param(i).SNR_type(2) == 'b' )
             % This is Eb/No
             EbNodB = sim_param(i).SNR;
@@ -444,13 +443,13 @@ if ( sum( sum( sim_types(4:5,:) ) ) )
         end
         % Plot FER versus Es/No in dB
         figure( fig_number );
-        semilogy( EsNodB, sim_state(i).FER, sim_param(i).linetype );             
+        semilogy( EsNodB, sim_state(i).FER, sim_param(i).linetype );
         hold on;
-    end   
+    end
     
     % FER of coded modulation
     for (i=find( sim_types(4,:) == 1 ) )
-        % If stored as Eb/No, convert to Es/No      
+        % If stored as Eb/No, convert to Es/No
         if ( sim_param(i).SNR_type(2) == 'b' )
             % This is Eb/No
             EbNodB = sim_param(i).SNR;
@@ -468,23 +467,23 @@ if ( sum( sum( sim_types(4:5,:) ) ) )
             max_iter = sim_param(i).max_iterations;
         else
             max_iter = 1;
-        end        
+        end
         
         % Plot FER versus Es/No in dB
         figure( fig_number );
-        semilogy( EsNodB, sim_state(i).FER( max_iter, : ), sim_param(i).linetype );             
+        semilogy( EsNodB, sim_state(i).FER( max_iter, : ), sim_param(i).linetype );
         hold on;
-    end           
-
+    end
+    
     figure( fig_number );
-    legend( sim_param( find( sim_types(5,:) == 1 ) ).legend, sim_param( find( sim_types(4,:) == 1 ) ).legend, 0 ); 
+    legend( sim_param( find( sim_types(5,:) == 1 ) ).legend, sim_param( find( sim_types(4,:) == 1 ) ).legend, 0 );
     xlabel( 'Es/No in dB' );
-    ylabel( 'FER' ); 
+    ylabel( 'FER' );
     
     % Now plot the other iterations
     for (i=find( sim_types(4,:) == 1 ) )
         if ( length( sim_param(i).plot_iterations ) )
-            % If stored as Eb/No, convert to Es/No      
+            % If stored as Eb/No, convert to Es/No
             if ( sim_param(i).SNR_type(2) == 'b' )
                 % This is Eb/No
                 EbNodB = sim_param(i).SNR;
@@ -496,35 +495,35 @@ if ( sum( sum( sim_types(4:5,:) ) ) )
                 % This is Es/No
                 EsNodB = sim_param(i).SNR;
             end
-            % plot the other iterations            
+            % plot the other iterations
             figure( fig_number );
-            semilogy( EsNodB, sim_state(i).FER(sim_param(i).plot_iterations,:), sim_param(i).linetype );            
-        end     
-    end   
-  
+            semilogy( EsNodB, sim_state(i).FER(sim_param(i).plot_iterations,:), sim_param(i).linetype );
+        end
+    end
+    
     figure( fig_number );
-    hold off;    
+    hold off;
     
 end
-        
+
 
 % throughput
 
 % plot throughput vs. Es/No, if there are any throughput curves requested
 if ( sum( sim_types(6,:) ) )
     fig_number = fig_number + 1;
-    figure( fig_number );    
-
+    figure( fig_number );
+    
     % plot throughput vs. Es/No
     for (i=find( sim_types(6,:) == 1 ) )
-        plot( sim_param(i).SNR, sim_state(i).throughput, sim_param(i).linetype );      
+        plot( sim_param(i).SNR, sim_state(i).throughput, sim_param(i).linetype );
         hold on;
-    end     
+    end
     
-    legend( sim_param( find( sim_types(6,:) == 1 ) ).legend, 2 ); 
+    legend( sim_param( find( sim_types(6,:) == 1 ) ).legend, 2 );
     xlabel( 'Es/No in dB' );
     ylabel( 'Normalized throughput' );
-    hold off;  
+    hold off;
 end
 
 
@@ -532,101 +531,101 @@ end
 % plot min Eb/No vs. h for nonorthogonal FSK under BW constraints.
 if ( sum( sim_types(7,:) ) )
     fig_number = fig_number + 1;
-    figure( fig_number );    
-
+    figure( fig_number );
+    
     % plot min Eb/No vs. h
     for (i=find( sim_types(7,:) == 1 ) )
         [Y,I] = sort( sim_param(i).h );
-        plot( sim_param(i).h(I), sim_state(i).min_EbNodB(I), sim_param(i).linetype );   
+        plot( sim_param(i).h(I), sim_state(i).min_EbNodB(I), sim_param(i).linetype );
         hold on;
-    end     
+    end
     
-    legend( sim_param( find( sim_types(7,:) == 1 ) ).legend, 2 ); 
+    legend( sim_param( find( sim_types(7,:) == 1 ) ).legend, 2 );
     xlabel( 'h' );
     ylabel( 'min Eb/No (in dB)' );
-    hold off;  
-
+    hold off;
+    
     fig_number = fig_number + 1;
-    figure( fig_number );    
-
+    figure( fig_number );
+    
     % plot min Eb/No vs. rate
     for (i=find( sim_types(7,:) == 1 ) )
         [Y,I] = sort( sim_state(i).best_rate );
-        plot( sim_state(i).best_rate(I), sim_state(i).min_EbNodB(I), sim_param(i).linetype );   
+        plot( sim_state(i).best_rate(I), sim_state(i).min_EbNodB(I), sim_param(i).linetype );
         hold on;
-    end     
+    end
     
-    legend( sim_param( find( sim_types(7,:) == 1 ) ).legend, 2 ); 
+    legend( sim_param( find( sim_types(7,:) == 1 ) ).legend, 2 );
     xlabel( 'code rate r' );
     ylabel( 'min Eb/No (in dB)' );
-    hold off;  
-
+    hold off;
+    
 end
 
 % plot min Eb/No vs. B for nonorthogonal FSK under BW constraint B.
 if ( sum( sim_types(8,:) ) )
     fig_number = fig_number + 1;
-    figure( fig_number );    
-
+    figure( fig_number );
+    
     % plot min Eb/No vs. B
     for (i=find( sim_types(8,:) == 1 ) )
         [Y,I] = sort( sim_param(i).bwconstraint );
-        plot( sim_param(i).bwconstraint(I), sim_state(i).min_EbNodB(I), sim_param(i).linetype );   
+        plot( sim_param(i).bwconstraint(I), sim_state(i).min_EbNodB(I), sim_param(i).linetype );
         hold on;
-    end     
+    end
     
-    legend( sim_param( find( sim_types(8,:) == 1 ) ).legend, 2 ); 
+    legend( sim_param( find( sim_types(8,:) == 1 ) ).legend, 2 );
     xlabel( 'Bandwidth B' );
     ylabel( 'min Eb/No (in dB)' );
-    hold off; 
+    hold off;
     
     fig_number = fig_number + 1;
-    figure( fig_number );    
-
+    figure( fig_number );
+    
     % plot eta vs. min Eb/No
     for (i=find( sim_types(8,:) == 1 ) )
         [Y,I] = sort( sim_param(i).bwconstraint );
-        % plot( sim_state(i).min_EbNodB(I), 1./sim_param(i).bwconstraint(I), sim_param(i).linetype );   
-        plot( 1./sim_param(i).bwconstraint(I), sim_state(i).min_EbNodB(I), sim_param(i).linetype ); 
+        % plot( sim_state(i).min_EbNodB(I), 1./sim_param(i).bwconstraint(I), sim_param(i).linetype );
+        plot( 1./sim_param(i).bwconstraint(I), sim_state(i).min_EbNodB(I), sim_param(i).linetype );
         hold on;
-    end     
+    end
     
-    legend( sim_param( find( sim_types(8,:) == 1 ) ).legend, 2 ); 
+    legend( sim_param( find( sim_types(8,:) == 1 ) ).legend, 2 );
     % ylabel( '\eta' );
     % xlabel( 'minimum Eb/No in dB' );
     xlabel( '\eta in bps/Hz' );
     ylabel( 'Minimum Eb/No in dB' );
-    hold off; 
+    hold off;
     
     fig_number = fig_number + 1;
-    figure( fig_number );    
-
+    figure( fig_number );
+    
     % plot optimal h vs. B
     for (i=find( sim_types(8,:) == 1 ) )
         [Y,I] = sort( sim_param(i).bwconstraint );
-        plot( sim_param(i).bwconstraint(I), sim_param(i).h(I), sim_param(i).linetype );   
+        plot( sim_param(i).bwconstraint(I), sim_param(i).h(I), sim_param(i).linetype );
         hold on;
-    end   
+    end
     
-    legend( sim_param( find( sim_types(8,:) == 1 ) ).legend, 2 ); 
+    legend( sim_param( find( sim_types(8,:) == 1 ) ).legend, 2 );
     xlabel( 'Bandwidth B' );
     ylabel( 'optimal h' );
-    hold off;  
-
+    hold off;
+    
     fig_number = fig_number + 1;
-    figure( fig_number );    
-
+    figure( fig_number );
+    
     % plot optimal rate vs. B
     for (i=find( sim_types(8,:) == 1 ) )
         [Y,I] = sort( sim_param(i).bwconstraint );
-        plot( sim_param(i).bwconstraint(I), sim_state(i).best_rate(I), sim_param(i).linetype );   
+        plot( sim_param(i).bwconstraint(I), sim_state(i).best_rate(I), sim_param(i).linetype );
         hold on;
-    end   
+    end
     
-    legend( sim_param( find( sim_types(8,:) == 1 ) ).legend, 2 ); 
+    legend( sim_param( find( sim_types(8,:) == 1 ) ).legend, 2 );
     xlabel( 'Bandwidth B' );
     ylabel( 'optimal rate' );
-    hold off;  
+    hold off;
     
 end
 
@@ -635,59 +634,59 @@ end
 end
 
 
-    function annotate_exit_params(sim_param, snr_ind)
-       
-       snr_str = ['E_b/N_0 = ' int2str(sim_param.SNR(snr_ind)) ' dB'];   
-       dv_st = ['d_v = ' int2str(sim_param.exit_param.dv)];   
-       dc_st = ['d_c = ' int2str(sim_param.exit_param.dc)];   
-       rate_st = ['r = ' num2str(sim_param.exit_param.rate)];   
-       
-       cell_str = {snr_str, dv_st, dc_st, rate_st};
-       
-       a = annotation('textbox',[0.70 0.2 0.2 0.2])
-       set(a, 'String', cell_str)
-       set(a, 'FontSize', 10)
-       set(a, 'LineStyle', 'none')
-       
-    end
+function annotate_exit_params(sim_param, snr_ind)
 
-    
-    
-    function [snrpoint snr_ind] = get_snr_point( varargin, sim_param )
-    snrpoint = varargin{3};
-    snr_ind = find(sim_param.SNR == snrpoint );
-    end
-    
-    function error_check_exit_input(varargin, sim_param, number_cases),
-    if length(varargin) < 3,
-        error('Please specify an SNR point to plot.');
-    end
-    
-    snrpoint = varargin{3};
-    if length(snrpoint) > 1,
-        error('Please supply a single SNR point.');
-    end
-    
-    if number_cases > 1,
-        error('Please specify a single EXIT record.');
-    end
-    
-    snr_ind = find(sim_param.SNR == snrpoint );
-    
-    if isempty( snr_ind ),
-        error(['SNR point ' int2str(snrpoint) ' dB' ' not found.']);        
-    end
-    end
-    
-    
+snr_str = ['E_b/N_0 = ' int2str(sim_param.SNR(snr_ind)) ' dB'];
+dv_st = ['d_v = ' int2str(sim_param.exit_param.dv)];
+dc_st = ['d_c = ' int2str(sim_param.exit_param.dc)];
+rate_st = ['r = ' num2str(sim_param.exit_param.rate)];
+
+cell_str = {snr_str, dv_st, dc_st, rate_st};
+
+a = annotation('textbox',[0.70 0.2 0.2 0.2])
+set(a, 'String', cell_str)
+set(a, 'FontSize', 10)
+set(a, 'LineStyle', 'none')
+
+end
+
+
+
+function [snrpoint snr_ind] = get_snr_point( varargin, sim_param )
+snrpoint = varargin{3};
+snr_ind = find(sim_param.SNR == snrpoint );
+end
+
+function error_check_exit_input(varargin, sim_param, number_cases),
+if length(varargin) < 3,
+    error('Please specify an SNR point to plot.');
+end
+
+snrpoint = varargin{3};
+if length(snrpoint) > 1,
+    error('Please supply a single SNR point.');
+end
+
+if number_cases > 1,
+    error('Please specify a single EXIT record.');
+end
+
+snr_ind = find(sim_param.SNR == snrpoint );
+
+if isempty( snr_ind ),
+    error(['SNR point ' int2str(snrpoint) ' dB' ' not found.']);
+end
+end
+
+
 
 %     Function CmlPlot is part of the Iterative Solutions Coded Modulation
-%     Library (ISCML).  
+%     Library (ISCML).
 %
 %     The Iterative Solutions Coded Modulation Library is free software;
-%     you can redistribute it and/or modify it under the terms of 
-%     the GNU Lesser General Public License as published by the 
-%     Free Software Foundation; either version 2.1 of the License, 
+%     you can redistribute it and/or modify it under the terms of
+%     the GNU Lesser General Public License as published by the
+%     Free Software Foundation; either version 2.1 of the License,
 %     or (at your option) any later version.
 %
 %     This library is distributed in the hope that it will be useful,
