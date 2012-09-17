@@ -13,8 +13,7 @@
 
 function CmlClusterConsume( )
 
-[project_root] = ReadCmlCfg();
-project_root = project_root(1:end-1);
+   [project_root] = ReadCmlCfg();
 
 running_queue = [project_root '/JobRunning'];
   listing = get_directory_listing( running_queue );
@@ -22,7 +21,7 @@ consume_running_queue( running_queue, listing );
 
 output_queue = [project_root '/JobOut'];
 
-  listing = get_directory_listing( output_queue );
+listing = get_directory_listing( output_queue );
 consume_output_queue( output_queue, listing );
 
 end
