@@ -401,6 +401,8 @@ switch sim_param_in.exit_param.exit_type,
         sim_state.trials = zeros( 1, number_new_SNR_points );
         sim_state.exit_state.IA_det_sum = zeros( N, number_new_SNR_points );
         sim_state.exit_state.IE_det_sum = zeros( N, number_new_SNR_points );
+        sim_state.exit_state.I_A_det = zeros( N, number_new_SNR_points );
+        sim_state.exit_state.I_E_det = zeros( N, number_new_SNR_points );
         sim_state.exit_state.IE_vnd = zeros( N, number_new_SNR_points );
         sim_state.exit_state.IE_cnd = zeros( N, number_new_SNR_points );
         sim_state.exit_state.IA_cnd = zeros( N, number_new_SNR_points );
