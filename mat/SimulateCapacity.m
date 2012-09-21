@@ -42,7 +42,7 @@ EsNo = compute_capacity_snr_vector( sim_param );
 
 tic;
 
-
+snrpoint = 1;
 elapsed_time = toc;
 continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
 while( continue_simulation )
