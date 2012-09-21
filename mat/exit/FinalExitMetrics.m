@@ -18,6 +18,7 @@ function sim_state = FinalExitMetrics( sim_param, sim_state, trials,snrpoint )
 
 switch sim_param.exit_param.exit_type,
     case 'ldpc',
+
                
         % detector transfer curve
         P = polyfit(sim_state.exit_state.IA_det_sum(:,snrpoint)/trials, sim_state.exit_state.IE_det_sum(:,snrpoint)/trials, 3);
@@ -31,7 +32,7 @@ switch sim_param.exit_param.exit_type,
         
         
         b = dv.*dv_dist/( (1-rate) * dc);
-        
+
         
         for m = 1:n,            
             for k = 1:length( sim_param.exit_param.requested_IA )

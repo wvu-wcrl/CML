@@ -33,17 +33,25 @@ function sim_state = SimulateCapacity( sim_param, sim_state, code_param )
 %     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 % make sure that SNR is in terms of Es/No
-
+				   
 
 EsNo = compute_capacity_snr_vector( sim_param );
 [ verbosity ] = determine_verbosity( sim_param );
 
 [tempfile] = name_tempfile();
 
-for snrpoint = 1:length(EsNo)
+tic;
+
+
+elapsed_time = toc;
+continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
+while( continue_simulation )
     print_current_snr( sim_param, snrpoint );
-    
-    while ( sim_state.trials( snrpoint ) < sim_param.max_trials( snrpoint )  )
+   
+ 
+execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, elapsed_time );
+while ( execute_this_snr )
+
         [sim_state] = increment_trials_counter_capacity( sim_state, snrpoint );
         
         %%% source operations
@@ -65,13 +73,57 @@ for snrpoint = 1:length(EsNo)
         end
                 
         save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
+
+elapsed_time = toc;
+execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, elapsed_time );
+
     end
         
     % compute cnd at beginning
 % compute final exit stats
 [sim_state] = FinalExitMetrics( sim_param, sim_state, sim_state.trials(snrpoint), snrpoint);
 save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );    
+
+
+snrpoint = snrpoint + 1;
+elapsed_time = toc;
+continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
 end
+end
+
+
+
+
+
+
+
+function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time )
+  c1 = snrpoint <= length(EsNo);
+
+if( sim_param.MaxRunTime == 0 || strcmp( sim_param.SimLocation, 'local') ),
+  c2 = 1;
+ else
+   c2 = elapsed_time < sim_param.MaxRunTime;
+end
+if c2 == 0,
+  if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+  CmlPrint('\nSimulation time expired.\n', [], verbosity);
+end
+continue_simulation = c1&c2;
+end
+
+
+
+function execute_this_snr = evaluate_snr_point_stopping_conditions(sim_param, sim_state, code_param, snrpoint, elapsed_time)
+
+c1 = sim_state.trials( snrpoint ) < sim_param.max_trials( snrpoint );
+
+if( sim_param.MaxRunTime == 0 || strcmp( sim_param.SimLocation, 'local') ),
+  c2 = 1;
+ else
+   c2 = elapsed_time < sim_param.MaxRunTime;
+end
+execute_this_snr = c1&c2;
 end
 
 
