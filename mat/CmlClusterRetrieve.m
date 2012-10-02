@@ -1,17 +1,19 @@
-% CmlClusterConsume.m
-% Submit CML scenarios for simulation using the WCRL cluster.
+% CmlClusterRetrieve.m
+% Retrieve CML scenarios completed by PCS.
 %
 % Inputs
+%  No arguments      Retrieve all completed jobs
+%
 %  scenario          CML scenario name
 %  records            record list
 %
 %
-%     Last updated on 7/9/2012
+%     Last updated on 10/1/2012
 %
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
 
-function CmlClusterConsume( )
+function CmlClusterRetrieve( )
 
    [project_root] = ReadCmlCfg();
 
