@@ -336,4 +336,3 @@ sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-5; 
 sim_param(record).max_frame_errors = 30*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
-

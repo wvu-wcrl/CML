@@ -42,10 +42,10 @@ sim_param(record).minBER = 1e-6;
 sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
 sim_param(record).MaxRunTime = 3*60; 
+sim_param(record).timing_sample_rate = 30;
 
 
-
-record = 1;
+record = 2;
 sim_param(record).comment = 'moderate length test for timing test';
 sim_param(record).sim_type = 'uncoded';
 sim_param(record).SNR = [0:0.5:7];
@@ -66,6 +66,7 @@ sim_param(record).minBER = 1e-6;
 sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
 sim_param(record).MaxRunTime = 3*60; 
+sim_param(record).timing_sample_rate = 30; 
 
 
 record = 3;
@@ -102,3 +103,4 @@ sim_param(record).nsc_flag2 = 0;
 sim_param(record).code_interleaver = ...
   strcat( 'CreateUmtsInterleaver(', int2str(sim_param(record).framesize ), ')' );
 sim_param(record).MaxRunTime = 3*60; 
+sim_param(record).timing_sample_rate = 30;
