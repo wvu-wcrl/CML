@@ -44,7 +44,31 @@ sim_param(record).save_rate = 100;
 sim_param(record).MaxRunTime = 3*60; 
 
 
-record = 2;
+
+record = 1;
+sim_param(record).comment = 'moderate length test for timing test';
+sim_param(record).sim_type = 'uncoded';
+sim_param(record).SNR = [0:0.5:7];
+sim_param(record).SNR_type = 'Eb/No in dB';
+sim_param(record).framesize = 10000;
+sim_param(record).modulation = 'FSK';
+sim_param(record).mod_order = 8;
+sim_param(record).csi_flag = 1; % w/ CSI
+sim_param(record).channel = 'AWGN';
+sim_param(record).bicm = 1;
+sim_param(record).demod_type = 1;  % max-log-map appropriate for uncoded
+sim_param(record).linetype = 'm:';
+sim_param(record).legend = sim_param(record).comment;
+sim_param(record).filename = strcat( data_directory, 't_bersim_2.mat');
+sim_param(record).reset = 0;
+sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
+sim_param(record).minBER = 1e-6; 
+sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
+sim_param(record).save_rate = 100;
+sim_param(record).MaxRunTime = 3*60; 
+
+
+record = 3;
 sim_param(record).comment = 'UMTS-TC, BPSK, AWGN, rate 2048/3840';
 sim_param(record).SNR = 0:0.25:25;
 sim_param(record).framesize = 2048;
@@ -63,8 +87,7 @@ sim_param(record).mod_order = 2;
 sim_param(record).bicm = 1;
 sim_param(record).demod_type = 0;
 sim_param(record).legend = sim_param(record).comment;
-sim_param(record).filename = strcat( data_directory, ...
-				     strcat( 'umts', int2str(sim_param(record).framesize ), sim_param(record).channel, int2str( sim_param(record).decoder_type ), 'rate8by15.mat') );
+sim_param(record).filename = 't_BerSim_3.mat';
 sim_param(record).reset = 0;
 sim_param(record).max_trials = 1e10*ones(size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-5;

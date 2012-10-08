@@ -13,12 +13,14 @@ load( 'CmlHome.mat' );
 % determine where to store your files
 base_name = 'capacity';
 if ispc
-    data_directory = strcat( cml_home, '\output\', base_name, '\' );
+    data_directory = strcat( '\output\', base_name, '\' );
 else
-    data_directory = strcat( cml_home, '/output/', base_name, '/' );
+    data_directory = strcat( '/output/', base_name, '/' );
 end
-if ~exist( data_directory, 'dir' )
-    mkdir(data_directory);
+
+full_directory = strcat( cml_home, data_directory );
+if ~exist( full_directory, 'dir' )
+    mkdir( full_directory );
 end
 
 trials=10;
@@ -48,6 +50,7 @@ sim_param(record).exit_param.dv = [2 4 19];
 sim_param(record).exit_param.dv_dist = [ 0.4 0.52 0.08 ];
 sim_param(record).exit_param.dc = 11;
 sim_param(record).exit_param.requested_IA = 0.1:0.1:0.9;
+sim_param(record).MaxRunTime = 3*60;
 
 
 record = 2;
@@ -74,7 +77,7 @@ sim_param(record).exit_param.dv = [2 4 19];
 sim_param(record).exit_param.dv_dist = [ 0.4 0.52 0.08 ];
 sim_param(record).exit_param.dc = 11;
 sim_param(record).exit_param.requested_IA = 0.999*(0:01/(101-1):1)+0.0001;
-
+sim_param(record).MaxRunTime = 3*60;
 
 
 record = 3;
@@ -101,4 +104,4 @@ sim_param(record).exit_param.dv = [10 ];
 sim_param(record).exit_param.dv_dist = [ 1 ];
 sim_param(record).exit_param.dc = 20;
 sim_param(record).exit_param.requested_IA = 0.999*(0:01/(101-1):1)+0.0001;
-
+sim_param(record).MaxRunTime = 3*60;
