@@ -485,6 +485,11 @@ sim_state.symbol_errors = zeros( 1, number_new_SNR_points );
 sim_state.bit_errors = zeros( 1, number_new_SNR_points );
 sim_state.BER = sim_state.trials;
 sim_state.SER = sim_state.trials;
+
+sim_state.timing_data.trial_samples = 0;
+sim_state.timing_data.time_samples = 0;
+sim_state.timing_data.elapsed_time = 0;
+
 end
 
 
@@ -495,6 +500,12 @@ sim_state.frame_errors = zeros( sim_param_out.max_iterations, number_new_SNR_poi
 sim_state.bit_errors = zeros( sim_param_out.max_iterations, number_new_SNR_points );
 sim_state.BER = sim_state.trials;
 sim_state.FER = sim_state.trials;
+
+sim_state.timing_data.trial_samples = 0;
+sim_state.timing_data.time_samples = 0;
+sim_state.timing_data.elapsed_time = 0;
+
+
 end
 
 

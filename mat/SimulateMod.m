@@ -27,16 +27,16 @@ tic;              % for timing simulation execution
 
 
 %%% enter primary simulation loop
-elapsed_time = toc;
+session_time = toc;
 snrpoint = 1;
-continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
+continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, session_time );
 while ( continue_simulation )
     print_current_snr( sim_param, snrpoint );
     print_current_time( clock, sim_param, verbosity );
     
     
     %%% enter individual snr simulation loop
-    execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, elapsed_time );
+    execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, session_time );
     while ( execute_this_snr )
         [sim_state] =               increment_trials_counter( sim_state, code_param, snrpoint );
         
@@ -67,6 +67,8 @@ while ( continue_simulation )
                         [ sim_state ] =             update_symbol_error_rate( sim_param, sim_state, code_param, snrpoint, data, detected_data );
                     end
                     
+                    sim_state = record_trial_time( sim_param, sim_state, code_param, snrpoint);
+                    
                 else % capacity simulation
                     if ( sim_param.bicm )             % bicm cap
                         cap = compute_bicm_capacity( sim_param, code_param, symbol_likelihood, bit_likelihood );
@@ -82,10 +84,14 @@ while ( continue_simulation )
         
         
         %%% save and determine whether to continue simulating this snr
-        save_simulation_state( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
         
-        elapsed_time = toc;
-        execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, elapsed_time );
+        session_time_dt = toc - session_time;
+        session_time = toc;        
+        sim_state.timing_data.elapsed_time = update_global_sim_time( sim_state, session_time_dt );
+                
+        save_simulation_state( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
+                
+        execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, session_time );
     end
     
     
@@ -95,8 +101,8 @@ while ( continue_simulation )
        
     %%% determine whether to continue the simulation
     snrpoint = snrpoint + 1;  % next snr point
-    elapsed_time = toc;
-    continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
+    session_time = toc;
+    continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, session_time );
 end
 
 
@@ -108,7 +114,9 @@ end
 
 
 
-
+function elapsed_time = update_global_sim_time( sim_state, session_time_dt)
+elapsed_time = sim_state.timing_data.elapsed_time + session_time_dt;  % update global simulation timer
+end
 
 
 function code_param = create_bicm_interleaver(sim_param, code_param)
@@ -230,8 +238,8 @@ condition2 = ( sim_state.trials( code_param.max_iterations, snrpoint ) == sim_pa
 condition3 = ~mod( sim_state.trials(code_param.max_iterations, snrpoint),sim_param.save_rate );
 if ( condition1|condition2|condition3 )
     
-    CmlPrint('.',[], verbosity);
-    
+    CmlPrint('.\n',[], verbosity);
+    CmlPrint('Elapsed simulation time: %.2f s\n', sim_state.timing_data.elapsed_time, 'verbose');
     save_struct.tempfile = tempfile;
     save_struct.save_state = sim_state;
     save_struct.save_param = sim_param;
@@ -270,13 +278,13 @@ end
 
 
 
-function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time )
+function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, session_time )
 c1 = snrpoint <= length(EsNo);
 
 if( sim_param.MaxRunTime == 0 || strcmp( sim_param.SimLocation, 'local') ),
     c2 = 1;
 else
-    c2 = elapsed_time < sim_param.MaxRunTime;
+    c2 = session_time < sim_param.MaxRunTime;
 end
 if c2 == 0,
     if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
@@ -286,16 +294,40 @@ continue_simulation = c1&c2;
 end
 
 
-function execute_this_snr = evaluate_snr_point_stopping_conditions(sim_param, sim_state, code_param, snrpoint, elapsed_time)
+function execute_this_snr = evaluate_snr_point_stopping_conditions(sim_param, sim_state, code_param, snrpoint, session_time)
 c1 =  sim_state.trials( code_param.max_iterations, snrpoint ) < sim_param.max_trials( snrpoint ) ;
 c2 =  sim_state.frame_errors(code_param.max_iterations, snrpoint) < sim_param.max_frame_errors(snrpoint);
 if( sim_param.MaxRunTime == 0 || strcmp( sim_param.SimLocation, 'local') ),
     c3 = 1;
 else
-    c3 = elapsed_time < sim_param.MaxRunTime;
+    c3 = session_time < sim_param.MaxRunTime;
 end
 execute_this_snr = c1&c2&c3;
 end
+
+
+function sim_state = record_trial_time( sim_param, sim_state, code_param, snrpoint )
+
+if sim_param.timing_sample_rate ~= 0,
+    
+    t = sim_state.timing_data.elapsed_time;    % total elapsed simulation time
+    
+    tsr = sim_param.timing_sample_rate;   % trials sampling rate
+    
+    bin = floor( t / tsr ) + 1;   % integer index of current time bin
+    
+    bin_st = (bin-1)*tsr;         % start time of current bin
+    
+    total_trials = sum( sim_state.trials( code_param.max_iterations, 1:snrpoint) );     % current trial total
+    
+    sim_state.timing_data.trial_samples( bin ) = total_trials;                      % sample trial total
+    
+    sim_state.timing_data.time_samples = [ 0 : tsr : bin_st ];                        % adjust time axis
+    
+end
+
+end
+
 
 %     Function SimulateMod is part of the Iterative Solutions Coded Modulation
 %     Library (ISCML).
