@@ -11,7 +11,7 @@
 load( 'CmlHome.mat' );
 
 % determine where to store your files
-base_name = 'capacity';
+base_name = 'exit';
 if ispc
     data_directory = strcat( '\output\', base_name, '\' );
 else
@@ -30,7 +30,7 @@ trials=10;
 record = 1;
 sim_param(record).comment = 'EXIT analysis of QPSK in AWGN';
 sim_param(record).sim_type = 'exit';
-sim_param(record).SNR = [0 5 8 10];
+sim_param(record).SNR = [0:0.5:10];
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).framesize = 64800;
 sim_param(record).modulation = 'PSK';
@@ -40,8 +40,8 @@ sim_param(record).bicm = 0;
 sim_param(record).demod_type = 4; % does not matter if not BICM
 sim_param(record).linetype = 'r-';
 sim_param(record).legend = sim_param(record).comment;
-sim_param(record).filename = strcat( data_directory, 'QPSK.mat');
-sim_param(record).reset = 0;
+sim_param(record).filename = strcat( data_directory, 'exit_1.mat');
+sim_param(record).reset = 1;
 sim_param(record).max_trials = trials*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 20;
 sim_param(record).exit_param.exit_type = 'ldpc';
@@ -66,7 +66,7 @@ sim_param(record).bicm = 0;
 sim_param(record).demod_type = 4; % does not matter if not BICM
 sim_param(record).linetype = 'r-';
 sim_param(record).legend = sim_param(record).comment;
-sim_param(record).filename = strcat( data_directory, 'QAM16_irr.mat');
+sim_param(record).filename = strcat( data_directory, 'exit_2.mat');
 sim_param(record).reset = 0;
 sim_param(record).max_trials = trials*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 20;
@@ -93,7 +93,7 @@ sim_param(record).bicm = 0;
 sim_param(record).demod_type = 4; % does not matter if not BICM
 sim_param(record).linetype = 'r-';
 sim_param(record).legend = sim_param(record).comment;
-sim_param(record).filename = strcat( data_directory, 'QAM16_irr.mat');
+sim_param(record).filename = strcat( data_directory, 'exit_3.mat');
 sim_param(record).reset = 0;
 sim_param(record).max_trials = trials*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 20;
