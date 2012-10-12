@@ -203,10 +203,6 @@ end
 end
 
 
-
-
-
-
 function [ save_param save_state sim_param_out ] = load_previous_simulation_state( load_struct )
 
 fid = load_struct.fid;
@@ -215,9 +211,6 @@ cml_home = load_struct.cml_home;
 spuf = load_struct.spuf;
 spu = load_struct.spu;
 sim_param_in = load_struct.sim_param_in;
-
-
-
 
 
 % load the saved file
@@ -230,8 +223,6 @@ check_struct.sim_param_in = sim_param_in;
 check_struct.sim_param_out = sim_param_out;
 
 sim_param_out = check_unchangeable_fieldnames( check_struct );
-
-
 
 end
 
@@ -263,19 +254,27 @@ for i=1:length( spuf )
                 if save_param.exit_param.rate ~= sim_param_in.exit_param.rate,
                     error('saved exit_param.rate does not match scenario file');
                 end
-                if save_param.exit_param.dv ~= sim_param_in.exit_param.dv,
-                    error('saved exit_param.dv does not match scenario file');
-                end
-                if save_param.exit_param.dc ~= sim_param_in.exit_param.dc,
-                    error('saved exit_param.dc does not match scenario file');
-                end
-                if ~strcmp(save_param.exit_param.exit_type, sim_param_in.exit_param.exit_type),
-                    error('saved exit_param.exit_type does not match scenario file');
-                end
+                
                 if ~isequal(save_param.exit_param.requested_IA, sim_param_in.exit_param.requested_IA),
                     error('saved exit_param.requested_IA does not match scenario file');
                 end
                 
+                switch save_param.exit_param.exit_phase,
+                    case 'detector',
+                    case 'decoder',
+                        
+                        if save_param.exit_param.dv ~= sim_param_in.exit_param.dv,
+                            error('saved exit_param.dv does not match scenario file');
+                        end
+                        if save_param.exit_param.dc ~= sim_param_in.exit_param.dc,
+                            error('saved exit_param.dc does not match scenario file');
+                        end
+                        if ~strcmp(save_param.exit_param.exit_type, sim_param_in.exit_param.exit_type),
+                            error('saved exit_param.exit_type does not match scenario file');
+                        end
+                        
+                        
+                end
                 
                 sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );
                 
@@ -305,15 +304,6 @@ for i=1:length( spuf )
 end
 
 end
-
-
-
-
-
-
-
-
-
 
 
 
@@ -390,22 +380,29 @@ end
 
 
 function sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points);
+
+
 switch sim_param_in.exit_param.exit_type,
     case 'ldpc',
         
-        
         error_check_ldpc_exit( sim_param_in );
         
-        N = length(sim_param_in.exit_param.requested_IA);
-        
-        sim_state.trials = zeros( 1, number_new_SNR_points );
-        sim_state.exit_state.IA_det_sum = zeros( N, number_new_SNR_points );
-        sim_state.exit_state.IE_det_sum = zeros( N, number_new_SNR_points );
-        sim_state.exit_state.I_A_det = zeros( N, number_new_SNR_points );
-        sim_state.exit_state.I_E_det = zeros( N, number_new_SNR_points );
-        sim_state.exit_state.IE_vnd = zeros( N, number_new_SNR_points );
-        sim_state.exit_state.IE_cnd = zeros( N, number_new_SNR_points );
-        sim_state.exit_state.IA_cnd = zeros( N, number_new_SNR_points );
+        switch sim_param_in.exit_param.exit_phase,
+            case {'decoder'},
+                sim_state = init_exit_state_metrics( sim_param_in, number_new_SNR_points );
+                [ sim_param_det sim_state_det ] = CmlPlot( sim_param_in.exit_param.det_scenario,...
+                    sim_param_in.exit_param.det_record );
+                
+                sim_state.exit_state.IA_det_sum = sim_state_det.exit_state.IA_det_sum;
+                sim_state.exit_state.IE_det_sum = sim_state_det.exit_state.IE_det_sum;
+                sim_state.exit_state.I_A_det = sim_state_det.exit_state.I_A_det;
+                sim_state.exit_state.I_E_det = sim_state_det.exit_state.I_E_det;
+                sim_state.trials = sim_state_det.trials;
+                
+            case {'detector'},
+                sim_state = init_exit_state_metrics( sim_param_in, number_new_SNR_points );
+                sim_state.exit_state.det_complete = 0;
+        end
     case 'turboproc',
         error('Turbo EXIT is still in the oven.');
 end
@@ -426,32 +423,56 @@ if ~isfield(ep, 'exit_type');
 end
 
 if ~isfield(ep, 'rate')
-     error('Rate not specified in scenario file. Please define sim_param.exit_param.rate.');
+    error('Rate not specified in scenario file. Please define sim_param.exit_param.rate.');
 end
 
-if ~isfield(ep, 'dv')
-     error('Variable node degree not specified in scenario file. Please define sim_param.exit_param.dv.');
+if ~isfield(ep, 'exit_phase')
+    error('EXIT analysis phase not defined. Please define sim_param.exit_param.exit_phase {detector, decoder}.');
 end
 
-if ~isfield(ep, 'dv_dist')
-     error('Variable node degrees not specified in scenario file. Please define sim_param.exit_param.dv_dist.');
+switch ep.exit_phase,
+    case {'detector'}
+        
+    case {'decoder'}
+        if ~isfield(ep, 'dv')
+            error('Variable node degree not specified in scenario file. Please define sim_param.exit_param.dv.');
+        end
+        
+        if ~isfield(ep, 'dv_dist')
+            error('Variable node degrees not specified in scenario file. Please define sim_param.exit_param.dv_dist.');
+        end
+        
+        if ~isfield(ep, 'dc')
+            error('Check node degree not specified in scenario file. Please define sim_param.exit_param.dc.');
+        end
+        
+        if ~isfield(ep, 'requested_IA')
+            error('Apriori mutual information not specified in scenario file. Please define sim_param.exit_param.requested_IA.');
+        end
+        
+        if length(ep.dv) ~= length(ep.dv_dist),
+            error('Number of specified variable node degrees and number of specified degree distributions must match. length(dv) ~= length(dv_dist).');
+        end
+        
+        check_valid_dv_dist(sim_param_in);
+        
+        if ~isfield(ep, 'det_scenario')
+            error('Detector scenario not specified. Please define sim_param.exit_param.det_scenario');
+        end
+        
+        if ~isfield(ep, 'det_record')
+            error('Detector record not specified.  Please define sim_param.exit_param.det_record');
+        end
+        
+        check_for_completed_det_record( ep.det_scenario, ep.det_record )
+        
+        
+    otherwise,
+        error('exit_phase must be one of { ''detector'', ''decoder'' }');
+        
+end
 end
 
-if ~isfield(ep, 'dc')
-     error('Check node degree not specified in scenario file. Please define sim_param.exit_param.dc.');
-end
-
-if ~isfield(ep, 'requested_IA')
-     error('Apriori mutual information not specified in scenario file. Please define sim_param.exit_param.requested_IA.');
-end
-
-if length(ep.dv) ~= length(ep.dv_dist),
-    error('Number of specified variable node degrees and number of specified degree distributions must match. length(dv) ~= length(dv_dist).');
-end
-
-% error check dv_dist
-check_valid_dv_dist(sim_param_in);
-end
 
 function check_valid_dv_dist(sim_param_in)
 %given
@@ -589,11 +610,32 @@ for i=1:length( sim_state_fieldnames )
     end
 end
 
-
-
 % alphabetize fields
 sim_param_out = orderfields( sim_param_out );
 sim_state = orderfields( sim_state );
+end
+
+
+function sim_state = init_exit_state_metrics( sim_param_in, number_new_SNR_points )
+N = length(sim_param_in.exit_param.requested_IA);
+sim_state.trials = zeros( 1, number_new_SNR_points );
+sim_state.exit_state.IA_det_sum = zeros( N, number_new_SNR_points );
+sim_state.exit_state.IE_det_sum = zeros( N, number_new_SNR_points );
+sim_state.exit_state.I_A_det = zeros( N, number_new_SNR_points );
+sim_state.exit_state.I_E_det = zeros( N, number_new_SNR_points );
+sim_state.exit_state.IE_vnd = zeros( N, number_new_SNR_points );
+sim_state.exit_state.IE_cnd = zeros( N, number_new_SNR_points );
+sim_state.exit_state.IA_cnd = zeros( N, number_new_SNR_points );
+end
+
+
+
+function check_for_completed_det_record (scenario, record )
+[sim_param sim_state] = CmlPlot(scenario, record);
+
+if sim_state.exit_state.det_complete ~= 1,
+    error('Please specify a completed detector scenario and record.');
+end
 
 
 end

@@ -33,7 +33,7 @@ function sim_state = SimulateCapacity( sim_param, sim_state, code_param )
 %     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 % make sure that SNR is in terms of Es/No
-				   
+
 
 EsNo = compute_capacity_snr_vector( sim_param );
 [ verbosity ] = determine_verbosity( sim_param );
@@ -47,67 +47,90 @@ elapsed_time = toc;
 continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
 while( continue_simulation )
     print_current_snr( sim_param, snrpoint );
-   
- 
-execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, elapsed_time );
-while ( execute_this_snr )
-
-        [sim_state] = increment_trials_counter_capacity( sim_state, snrpoint );
-        
-        %%% source operations
-        [data] = gen_random_data( code_param );
-        [s] = CmlEncode( data, sim_param, code_param );
-        
-        %%% channel operations
-        [symbol_likelihood] = CmlChannel( s, sim_param, code_param, EsNo(snrpoint) );
+    
+    % simulation is only required for capacity sims and
+    %  the first phase of exit simulation
+    sim_required = is_simulation_required(sim_param);
+    
+    switch sim_required,
+        case 'yes',
+            
+            execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, elapsed_time );
+            while ( execute_this_snr )
                 
-        %%% receiver operations
-        switch sim_param.sim_type,
-            case 'capacity',
-                cap = compute_frame_capacity( sim_param, code_param, symbol_likelihood, data );
-                [sim_state] = update_capacity_statistics( sim_state, cap, snrpoint );
+                [sim_state] = increment_trials_counter_capacity( sim_state, snrpoint );
                 
-            case 'exit',
-                [exit_state_diff] = SimExit( sim_param.exit_param, symbol_likelihood, data );                
-                [sim_state.exit_state] = UpdateExitMetrics( sim_param.exit_param, sim_state.exit_state, exit_state_diff, snrpoint );
-        end
+                %%% source operations
+                [data] = gen_random_data( code_param );
+                [s] = CmlEncode( data, sim_param, code_param );
                 
-        save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
-
-elapsed_time = toc;
-execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, elapsed_time );
-
+                %%% channel operations
+                [symbol_likelihood] = CmlChannel( s, sim_param, code_param, EsNo(snrpoint) );
+                
+                %%% receiver operations
+                switch sim_param.sim_type,
+                    case 'capacity',
+                        cap = compute_frame_capacity( sim_param, code_param, symbol_likelihood, data );
+                        [sim_state] = update_capacity_statistics( sim_state, cap, snrpoint );
+                        
+                    case 'exit',
+                        [exit_state_diff] = SimExit( sim_param.exit_param, symbol_likelihood, data );
+                        [sim_state.exit_state] = UpdateExitMetrics( sim_param.exit_param, sim_state.exit_state, exit_state_diff, snrpoint );
+                end
+                
+                save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
+                
+                elapsed_time = toc;
+                execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, elapsed_time );
+                
+            end
+            
+        case 'no',  % computing final metrics for
+            [sim_state] = FinalExitMetrics( sim_param, sim_state, sim_state.trials(snrpoint), snrpoint);
+            
     end
-        
-    % compute cnd at beginning
-% compute final exit stats
-[sim_state] = FinalExitMetrics( sim_param, sim_state, sim_state.trials(snrpoint), snrpoint);
-save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );    
+    
 
-
-snrpoint = snrpoint + 1;
-elapsed_time = toc;
-continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
+     
+    sim_state = set_det_sim_to_complete( sim_param, sim_state, snrpoint );
+    save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
+      
+    
+    snrpoint = snrpoint + 1;
+    elapsed_time = toc;
+    continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
 end
+
 end
 
 
+function sim_required = is_simulation_required( sim_param )
+if strcmp( sim_param.sim_type, 'exit' )
+    if strcmp( sim_param.exit_param.exit_phase, 'detector' )
+        sim_required = 'yes';
+    elseif strcmp( sim_param.exit_param.exit_phase, 'decoder' )
+        sim_required = 'no'
+    end
+elseif strcmp( sim_param.sim_type, 'capacity' )
+    sim_required = 'yes';
+end
 
+end
 
 
 
 
 function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time )
-  c1 = snrpoint <= length(EsNo);
+c1 = snrpoint <= length(EsNo);
 
 if( sim_param.MaxRunTime == 0 || strcmp( sim_param.SimLocation, 'local') ),
-  c2 = 1;
- else
-   c2 = elapsed_time < sim_param.MaxRunTime;
+    c2 = 1;
+else
+    c2 = elapsed_time < sim_param.MaxRunTime;
 end
 if c2 == 0,
-  if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
-  CmlPrint('\nSimulation time expired.\n', [], verbosity);
+    if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+    CmlPrint('\nSimulation time expired.\n', [], verbosity);
 end
 continue_simulation = c1&c2;
 end
@@ -116,21 +139,16 @@ end
 
 function execute_this_snr = evaluate_snr_point_stopping_conditions(sim_param, sim_state, code_param, snrpoint, elapsed_time)
 
+
 c1 = sim_state.trials( snrpoint ) < sim_param.max_trials( snrpoint );
 
 if( sim_param.MaxRunTime == 0 || strcmp( sim_param.SimLocation, 'local') ),
-  c2 = 1;
- else
-   c2 = elapsed_time < sim_param.MaxRunTime;
+    c2 = 1;
+else
+    c2 = elapsed_time < sim_param.MaxRunTime;
 end
 execute_this_snr = c1&c2;
 end
-
-
-
-
-
-
 
 
 
@@ -210,12 +228,10 @@ end
 end
 
 
-
 function [sim_state] = update_capacity_statistics( sim_state, cap, snrpoint )
 sim_state.capacity_sum( snrpoint ) = sim_state.capacity_sum( snrpoint ) + cap;
 sim_state.capacity_avg( snrpoint ) = sim_state.capacity_sum( snrpoint )/sim_state.trials(snrpoint);
 end
-
 
 
 function save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile )
@@ -236,6 +252,14 @@ if ( time_to_save )
     
     CmlSave( save_struct, sim_param.SimLocation );
 end
+end
 
 
+function sim_state = set_det_sim_to_complete( sim_param, sim_state, snrpoint )
+c1 = ( snrpoint == length( sim_param.SNR ) );
+c2 = ( sim_state.trials(snrpoint ) >= sim_param.max_trials( snrpoint ) );
+
+if c1 && c2,
+sim_state.exit_state.det_complete = 1;
+end
 end

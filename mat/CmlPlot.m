@@ -135,27 +135,30 @@ end
 if ( sum( sim_types(2,:) ) )
     
     % get snr point
-    error_check_exit_input(varargin, sim_param, number_cases);
-    [snrpoint snr_ind] = get_snr_point( varargin, sim_param );
+    [ return_data_or_plot ] = process_exit_input(varargin, sim_param, number_cases);
     
     
-    
-    
-    for (i=find( sim_types(2,:) == 1 ) )
-        fig_number = fig_number + 1;
-        figure( fig_number );
+    if strcmp( return_data_or_plot, 'plot')
         
-        plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IE_vnd(:,snr_ind), 'k-' );
-        hold on;
-        plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IA_cnd(:,snr_ind), 'r--' );
-        hold off;
-        
-        xlabel('I_{A,VND}, I_{E,CND}');
-        ylabel('I_{E,VND}, I_{E,CND}');
-        legend('VND', 'CND');
+        [snrpoint snr_ind] = get_snr_point( varargin, sim_param );
         
         
-        annotate_exit_params( sim_param(i), snr_ind );
+        for (i=find( sim_types(2,:) == 1 ) )
+            fig_number = fig_number + 1;
+            figure( fig_number );
+            
+            plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IE_vnd(:,snr_ind), 'k-' );
+            hold on;
+            plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IA_cnd(:,snr_ind), 'r--' );
+            hold off;
+            
+            xlabel('I_{A,VND}, I_{E,CND}');
+            ylabel('I_{E,VND}, I_{E,CND}');
+            legend('VND', 'CND');
+            
+            annotate_exit_params( sim_param(i), snr_ind );
+            
+        end
         
     end
     
@@ -657,18 +660,21 @@ snrpoint = varargin{3};
 snr_ind = find(sim_param.SNR == snrpoint );
 end
 
-function error_check_exit_input(varargin, sim_param, number_cases),
-if length(varargin) < 3,
-    error('Please specify an SNR point to plot.');
+function [return_data_or_plot] = process_exit_input(varargin, sim_param, number_cases),
+
+if length(varargin) > 3,
+    error('Too many input arguments');
 end
 
+
+if length(varargin) == 3,
+    
+    return_data_or_plot = 'plot';
+    
 snrpoint = varargin{3};
+
 if length(snrpoint) > 1,
     error('Please supply a single SNR point.');
-end
-
-if number_cases > 1,
-    error('Please specify a single EXIT record.');
 end
 
 snr_ind = find(sim_param.SNR == snrpoint );
@@ -676,6 +682,18 @@ snr_ind = find(sim_param.SNR == snrpoint );
 if isempty( snr_ind ),
     error(['SNR point ' int2str(snrpoint) ' dB' ' not found.']);
 end
+
+end
+
+if length(varargin) == 2,
+    return_data_or_plot = 'return_data';
+end
+
+if number_cases > 1,
+    error('Please specify a single EXIT record.');
+end
+
+
 end
 
 
