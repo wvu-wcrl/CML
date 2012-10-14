@@ -78,7 +78,7 @@ switch sim_param_in.sim_type,
     case 'capacity',
         sim_state = init_capacity( sim_param_out, number_new_SNR_points);
     case 'exit',
-        sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points);
+      sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points);
     case 'uncoded',
         sim_state = init_uncoded(sim_param_in, sim_param_out, number_new_SNR_points, sim_state);
     case 'coded',
@@ -118,9 +118,11 @@ if ( (fid > 0)&( sim_param_out.reset < 1 ) )
     restore_struct.save_state = save_state;
     restore_struct.sim_state = sim_state;
     restore_struct.number_new_SNR_points = number_new_SNR_points;
-    restore_struct.epsilon = epsilon;
-    
+    restore_struct.epsilon = epsilon;    
     sim_state = restore_saved_state( restore_struct );
+    
+    
+
 end
 
 if (fid>0)
@@ -385,7 +387,7 @@ function sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_point
 switch sim_param_in.exit_param.exit_type,
     case 'ldpc',
         
-        error_check_ldpc_exit( sim_param_in );
+  error_check_ldpc_exit( sim_param_in );
         
         switch sim_param_in.exit_param.exit_phase,
             case {'decoder'},
@@ -398,10 +400,10 @@ switch sim_param_in.exit_param.exit_type,
                 sim_state.exit_state.I_A_det = sim_state_det.exit_state.I_A_det;
                 sim_state.exit_state.I_E_det = sim_state_det.exit_state.I_E_det;
                 sim_state.trials = sim_state_det.trials;
+                sim_state.exit_state.dec_complete = 0;
                 
             case {'detector'},
-                sim_state = init_exit_state_metrics( sim_param_in, number_new_SNR_points );
-                sim_state.exit_state.det_complete = 0;
+                sim_state = init_exit_state_metrics( sim_param_in, number_new_SNR_points );                
         end
     case 'turboproc',
         error('Turbo EXIT is still in the oven.');
@@ -464,8 +466,8 @@ switch ep.exit_phase,
             error('Detector record not specified.  Please define sim_param.exit_param.det_record');
         end
         
-        check_for_completed_det_record( ep.det_scenario, ep.det_record )
-        
+        check_for_completed_det_record( ep.det_scenario, ep.det_record );
+                
         
     otherwise,
         error('exit_phase must be one of { ''detector'', ''decoder'' }');
@@ -636,6 +638,5 @@ function check_for_completed_det_record (scenario, record )
 if sim_state.exit_state.det_complete ~= 1,
     error('Please specify a completed detector scenario and record.');
 end
-
-
 end
+

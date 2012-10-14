@@ -47,7 +47,7 @@ sim_param(record).save_rate = 20;
 sim_param(record).exit_param.exit_type = 'ldpc';
 sim_param(record).exit_param.exit_phase = 'detector';  % detector characteristic
 sim_param(record).exit_param.rate = 0.6;
-sim_param(record).exit_param.requested_IA = 0:0.1:0.9;
+sim_param(record).exit_param.requested_IA = 0.1:0.1:0.9;
 sim_param(record).MaxRunTime = 3*60;
 
 
@@ -75,7 +75,7 @@ sim_param(record).exit_param.rate = 0.6;
 sim_param(record).exit_param.dv = [2 4 19];
 sim_param(record).exit_param.dv_dist = [ 0.4 0.52 0.08 ];
 sim_param(record).exit_param.dc = 11;
-sim_param(record).exit_param.requested_IA = 0:0.1:0.9;
+sim_param(record).exit_param.requested_IA = 0.1:0.1:0.9;
 sim_param(record).exit_param.det_scenario = 'ExitP2P';
 sim_param(record).exit_param.det_record = 1;
 sim_param(record).MaxRunTime = 3*60;

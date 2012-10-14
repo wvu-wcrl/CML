@@ -44,7 +44,8 @@ tic;
 
 snrpoint = 1;
 elapsed_time = toc;
-continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
+check_for_redundant_exit_state_sims( sim_param, sim_state );
+continue_simulation = evaluate_simulation_stopping_conditions( sim_param, sim_state, EsNo, snrpoint, elapsed_time );
 while( continue_simulation )
     print_current_snr( sim_param, snrpoint );
     
@@ -93,12 +94,13 @@ while( continue_simulation )
 
      
     sim_state = set_det_sim_to_complete( sim_param, sim_state, snrpoint );
+    sim_state = set_dec_sim_to_complete( sim_param, sim_state, snrpoint );
     save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
       
     
     snrpoint = snrpoint + 1;
     elapsed_time = toc;
-    continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time );
+    continue_simulation = evaluate_simulation_stopping_conditions( sim_param, sim_state, EsNo, snrpoint, elapsed_time );
 end
 
 end
@@ -120,7 +122,8 @@ end
 
 
 
-function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, elapsed_time )
+function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, sim_state, EsNo, snrpoint, elapsed_time )
+
 c1 = snrpoint <= length(EsNo);
 
 if( sim_param.MaxRunTime == 0 || strcmp( sim_param.SimLocation, 'local') ),
@@ -138,7 +141,6 @@ end
 
 
 function execute_this_snr = evaluate_snr_point_stopping_conditions(sim_param, sim_state, code_param, snrpoint, elapsed_time)
-
 
 c1 = sim_state.trials( snrpoint ) < sim_param.max_trials( snrpoint );
 
@@ -261,5 +263,30 @@ c2 = ( sim_state.trials(snrpoint ) >= sim_param.max_trials( snrpoint ) );
 
 if c1 && c2,
 sim_state.exit_state.det_complete = 1;
+end
+end
+
+function sim_state = set_dec_sim_to_complete( sim_param, sim_state, snrpoint )
+c1 = ( snrpoint == length( sim_param.SNR ) );
+c2 = strcmp(sim_param.exit_param.exit_phase, 'decoder');
+
+c2 = ( sim_state.trials(snrpoint ) >= sim_param.max_trials( snrpoint ) );
+
+if c1 && c2,
+sim_state.exit_state.dec_complete = 1;
+end
+end
+
+
+
+
+function check_for_redundant_exit_state_sims ( sim_param, sim_state )
+if strcmp( sim_param.sim_type, 'exit')
+    if strcmp(sim_param.exit_param.exit_phase, 'decoder')
+        if sim_state.exit_state.dec_complete == 1,
+            error('Decoder metrics already computed.  Please reset record to recompute.');
+        end
+        
+    end
 end
 end
