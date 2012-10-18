@@ -111,7 +111,7 @@ if strcmp( sim_param.sim_type, 'exit' )
     if strcmp( sim_param.exit_param.exit_phase, 'detector' )
         sim_required = 'yes';
     elseif strcmp( sim_param.exit_param.exit_phase, 'decoder' )
-        sim_required = 'no'
+        sim_required = 'no';
     end
 elseif strcmp( sim_param.sim_type, 'capacity' )
     sim_required = 'yes';

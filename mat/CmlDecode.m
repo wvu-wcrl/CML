@@ -1,4 +1,4 @@
-function [detected_data, errors] = CmlDecode( symbol_likelihood, data, sim_param, code_param )
+function [detected_data, errors, output_decoder_c] = CmlDecode( symbol_likelihood, data, sim_param, code_param )
 % CmlDecode demaps and decodes a single received codeword
 %
 % The calling syntax is:

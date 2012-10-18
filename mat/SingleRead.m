@@ -285,6 +285,9 @@ for i=1:length( spuf )
             end
         end
         
+    elseif strcmp( spuf{i}, 'twrc_param')        
+        % fill this out - Terry 10/17
+        sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );
     else
         if isfield( save_param, spuf{i} )
             if isfield( sim_param_in, spuf{i} )
