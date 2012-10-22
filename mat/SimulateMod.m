@@ -32,7 +32,7 @@ snrpoint = 1;
 continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, session_time );
 while ( continue_simulation )
     print_current_snr( sim_param, snrpoint );
-    print_current_time( clock, sim_param, verbosity );
+ %   print_current_time( clock, sim_param, verbosity );
     
     
     %%% enter individual snr simulation loop
