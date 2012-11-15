@@ -42,7 +42,7 @@ while ( continue_simulation )
         [sim_state] =               increment_trials_counter( sim_state, code_param, snrpoint );
         
         
-        %%% source operations
+        %%% source 
         [data_1] =                       gen_random_data( code_param );
         [s_1]=                           CmlEncode( data_1, sim_param, code_param );
         
@@ -52,12 +52,12 @@ while ( continue_simulation )
         [ nc_data ] = compute_nc_data( data_1, data_2 );
         
         
-        %%% relay channel operations
-        [ r a_1 a_2 ] = CmlTwrcRelay( s_1, s_2, code_param, EsNo(snrpoint) );
+        %%% relay channel
+        [ r a_1 a_2 ] = CmlTwrcRelayChannel( s_1, s_2, code_param, EsNo(snrpoint) );
         
         
-        %%% relay receiver operations
-        [ sym_lh ] = CmlTwrcRelaySymbolMap( r, a_1, a_2, EsNo(snrpoint), sim_param );
+        %%% relay receiver
+        [ sym_lh ] = CmlTwrcRelayComputeSymbolLh( r, a_1, a_2, EsNo(snrpoint), sim_param );
         
   
         
@@ -388,7 +388,7 @@ end
 
 
 
-function sym_lh = CmlTwrcRelaySymbolMap( r, a_1, a_2, EsNo, sim_param )
+function sym_lh = CmlTwrcRelayComputeSymbolLh( r, a_1, a_2, EsNo, sim_param )
 
 switch sim_param.twrc_param.protocol
     case 'dnc'

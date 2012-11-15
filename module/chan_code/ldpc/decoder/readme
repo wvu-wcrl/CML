@@ -1,0 +1,66 @@
+MATLAB implementation of a soft-input, soft-output iterative LDPC decoder 
+capable of operating under BICM or BICM-ID decoding frameworks.
+
+For a discussion of the theory of LDPC decoding, see *Ryan text*
+
+
+== Usage Example ==
+
+Within MATLAB,
+
+1. Add src/ and src/mex to the path.
+
+2. Instantiate an LDPC Decoder object.
+    >> ldpc_decoder = LdpcDecoder();
+   
+3. Create the Tanner Graph.
+    >> ldpc_decoder = ldpc_decoder.CreateTannerGraph(row_one, col_one, CodeLength);
+
+       where
+         row_one
+         col_one
+         CodeLength    Length of a received codeword
+         
+4. Perform modulation, channel, and soft-mapping simulation which results
+    in a vector of log-likelihood ratios of the codeword bits at the
+    receiver: input_decoder_c.    
+    
+5. Initialize the decoder.
+   >> ldpc_decoder = ldpc_decoder.InitState(input_decoder_c);
+   
+6. Perform a decoding iteration.
+   >> iter = 1;
+   >> [ldpc_decoder output_decoder_c detected_data] =
+        ldpc_decoder.iterate(input_decoder_c, iter);
+        
+        where
+          output_decoder_c       log-likelihood ratios of decoded bits
+          detected_data          data detected for this iteration
+          iter                   decoding iteration                  
+    
+          
+          
+== Description of Files ==
+
+src/                               LDPC decoder source code
+     @LdpcDecoder/    
+                   LdpcDecoder.m   MATLAB class implementation of 
+                                   LPDC decoder
+     
+     mex/                          C-mex components of decoder
+         InitState_mx.c            Initialize decoder state.
+         Iterate_mx.c              Perform decoding iteration.
+         PostProcessH.m            Utility to convert CML H_rows and H_cols
+                                   to data structures compatible with decoder.
+         
+          lib/                     Supporting C-files.
+              ldpc-util.c          Utility functions for LDPC decoder.
+              ldpc-util.h          ldpc-util.c header.
+              math-supp.c          Mathematical functions for LDPC decoder.
+              math-supp.h          math-supp.c header.
+                                    
+tst/                               LDPC decoder tests
+    class/                         Decoder class test.
+          test_input.mat           Test inputs - LDPC decoder parameters.
+          test_ldpc_decoder.m      Script to test all decoder components.  
+    

@@ -14,13 +14,13 @@ function sim_state = SimulateMod( sim_param, sim_state, code_param )
 %     Last updated on Dec. 23, 2007
 %
 
-
-
 %%% initialize global simulation parameters
-[code_param] = create_bicm_interleaver(sim_param, code_param);
-[EsNo EbNo] = compute_snr_vectors(sim_param, code_param);
-[tempfile] = name_tempfile();
+[ code_param ] = create_bicm_interleaver(sim_param, code_param);
+[ EsNo EbNo ] = compute_snr_vectors(sim_param, code_param);
+[ tempfile ] = name_tempfile();
 [ verbosity ] = determine_verbosity( sim_param );
+[ ldpc_decoder ] = CreateLdpcDecoder( sim_param, code_param );
+
 
 t0 = clock;  % for profiling runtime
 tic;              % for timing simulation execution
@@ -32,7 +32,7 @@ snrpoint = 1;
 continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, session_time );
 while ( continue_simulation )
     print_current_snr( sim_param, snrpoint );
- %   print_current_time( clock, sim_param, verbosity );
+    %   print_current_time( clock, sim_param, verbosity );
     
     
     %%% enter individual snr simulation loop
@@ -44,22 +44,22 @@ while ( continue_simulation )
         [data] =                       gen_random_data( code_param );
         [s] =                            CmlEncode( data, sim_param, code_param );
         % break CmlEncode down or return codeword
-        
-        
+                
         
         %%% channel operations
         [symbol_likelihood] = CmlChannel( s, sim_param, code_param, EsNo(snrpoint) );
         
         
         %%% receiver operations
-        
         switch sim_param.sim_type,
             case 'exit'
                 
-                        
+                
             otherwise
                 if (code_param.outage == 0) % error rate simulation
-                    [detected_data, errors] = CmlDecode( symbol_likelihood, data, sim_param, code_param );
+                    [detected_data, errors] = CmlDecode( symbol_likelihood, data, sim_param, code_param, ldpc_decoder );
+                    init_tanner_graph = 0;   %%% create tanner graph once per simulation
+                    
                     echo_x_on_error( errors, code_param, verbosity );
                     [ sim_state ] =                 update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors );
                     
@@ -79,18 +79,18 @@ while ( continue_simulation )
                 end
                 
                 
-        end       
+        end
         
         
         
         %%% save and determine whether to continue simulating this snr
         
         session_time_dt = toc - session_time;
-        session_time = toc;        
+        session_time = toc;
         sim_state.timing_data.elapsed_time = update_global_sim_time( sim_state, session_time_dt );
-                
+        
         save_simulation_state( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
-                
+        
         execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, session_time );
     end
     
@@ -98,7 +98,7 @@ while ( continue_simulation )
     breaksim = break_simulation(code_param, sim_param, sim_state, snrpoint, verbosity ); % halt if BER or FER is low enough
     if breaksim == 1,  break;  end
     
-       
+    
     %%% determine whether to continue the simulation
     snrpoint = snrpoint + 1;  % next snr point
     session_time = toc;
@@ -224,8 +224,8 @@ if ( cap < code_param.rate )
     sim_state.frame_errors( 1, snrpoint ) = sim_state.frame_errors( 1, snrpoint ) + 1;
     sim_state.FER(1, snrpoint) = sim_state.frame_errors(1, snrpoint)./sim_state.trials(1, snrpoint);
     % Echo an x if there was an error
-        
-    CmlPrint('x',[], verbosity);    
+    
+    CmlPrint('x',[], verbosity);
 end
 end
 
@@ -238,8 +238,8 @@ condition2 = ( sim_state.trials( code_param.max_iterations, snrpoint ) == sim_pa
 condition3 = ~mod( sim_state.trials(code_param.max_iterations, snrpoint),sim_param.save_rate );
 if ( condition1|condition2|condition3 )
     
-    CmlPrint('.\n',[], verbosity);
-    CmlPrint('Elapsed simulation time: %.2f s\n', sim_state.timing_data.elapsed_time, 'verbose');
+    CmlPrint('.',[], verbosity);
+    %CmlPrint('Elapsed simulation time: %.2f s\n', sim_state.timing_data.elapsed_time, 'verbose');
     save_struct.tempfile = tempfile;
     save_struct.save_state = sim_state;
     save_struct.save_param = sim_param;
@@ -327,6 +327,23 @@ if sim_param.timing_sample_rate ~= 0,
 end
 
 end
+
+
+function [ldpc_decoder] = CreateLdpcDecoder( sim_param, code_param )
+if strcmp(sim_param.ldpc_impl, 'new')
+
+    ldpc_decoder = LdpcDecoder();
+        
+    [row_one col_one] = PostProcessH( code_param.H_rows, code_param.H_cols );
+        
+    ldpc_decoder = ldpc_decoder.CreateTannerGraph( row_one, col_one,...
+        code_param.code_bits_per_frame );
+     
+else
+ldpc_decoder = [];
+end
+end
+
 
 
 %     Function SimulateMod is part of the Iterative Solutions Coded Modulation
