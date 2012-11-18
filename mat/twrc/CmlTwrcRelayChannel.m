@@ -20,7 +20,10 @@ switch code_param.channel_type
         
     otherwise 
         
-        % r = CmlTwrcAwgn( s_1, s_2, EsNo, code_param );
+        r = CmlTwrcAwgn( s_1, s_2, EsNo, code_param );
+        a_1 = ones(1, length(s_1));
+        a_2 = ones(1, length(s_2));
+        
         
 end
         
@@ -32,10 +35,22 @@ function [ r a_1 a_2 ] = CmlTwrcRayleigh( s_1, s_2, EsNo, code_param )
 [ M_1 N_1 ] = get_symbol_vector_dimensions(s_1);
 
 [ n ]   = generate_noise_samples( M_1, N_1, EsNo, code_param );
-[ a_1 ] = generate_fading_coefficients( M_1, N_1 );
-[ a_2 ] = generate_fading_coefficients( M_1, N_1 );
 
-[ r ] = transmit_symbols_through_channel( s_1, s_2, a_1, a_2, n );
+[a_1] = generate_fading_coefficients( M_1, N_1 );
+[a_2] = generate_fading_coefficients( M_1, N_1 );
+
+[ r ] = transmit_symbols_through_fading_channel( s_1, s_2, a_1, a_2, n );
+
+end
+
+
+function r = CmlTwrcAwgn( s_1, s_2, EsNo, code_param )
+
+[ M_1 N_1 ] = get_symbol_vector_dimensions(s_1);
+
+[ n ]   = generate_noise_samples( M_1, N_1, EsNo, code_param );
+
+[ r ] = transmit_symbols_through_awgn_channel( s_1, s_2, n );
 
 end
 
@@ -68,12 +83,17 @@ function [ M_1 N_1 ] = get_symbol_vector_dimensions(s)
 end
 
 
-function r = transmit_symbols_through_channel( s_1, s_2, a_1, a_2, n )
+function r = transmit_symbols_through_fading_channel( s_1, s_2, a_1, a_2, n )
 
 r = a_1.*s_1 + a_2.*s_2 + n;
 
 end
 
+function r = transmit_symbols_through_awgn_channel( s_1, s_2, n )
+
+r = s_1 + s_2 + n;
+
+end
 
 
 

@@ -91,6 +91,8 @@ switch sim_param.topology
         switch sim_param.sim_type,
             case {'uncoded', 'coded', 'bloutage'}
                 sim_state = SimulateTwrc( sim_param, sim_state, code_param );
+            case {'capacity', 'exit'}
+                sim_state = SimulateCapacityTwrc( sim_param, sim_state, code_param );
         end
 end
 

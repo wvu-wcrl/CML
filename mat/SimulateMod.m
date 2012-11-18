@@ -58,7 +58,7 @@ while ( continue_simulation )
             otherwise
                 if (code_param.outage == 0) % error rate simulation
                     [detected_data, errors] = CmlDecode( symbol_likelihood, data, sim_param, code_param, ldpc_decoder );
-                    init_tanner_graph = 0;   %%% create tanner graph once per simulation
+                    
                     
                     echo_x_on_error( errors, code_param, verbosity );
                     [ sim_state ] =                 update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors );

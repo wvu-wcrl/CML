@@ -1,4 +1,4 @@
-function sim_state = SimulateCapacity( sim_param, sim_state, code_param )
+function sim_state = SimulateCapacityTwrc( sim_param, sim_state, code_param )
 % SimulateCapacity runs a single of capacity simulation.
 %
 % The calling syntax is:
@@ -61,23 +61,35 @@ while( continue_simulation )
                 
                 [sim_state] = increment_trials_counter_capacity( sim_state, snrpoint );
                 
-                %%% source operations
-                [data] = gen_random_data( code_param );
-                [s] = CmlEncode( data, sim_param, code_param );
+                %%% source operations                
+                [data_1] =                       gen_random_data( code_param );
+                [s_1]=                           CmlEncode( data_1, sim_param, code_param );
                 
-                %%% channel operations
-                [symbol_likelihood] = CmlChannel( s, sim_param, code_param, EsNo(snrpoint) );
+                [data_2] =                       gen_random_data( code_param );
+                [s_2]=                           CmlEncode( data_2, sim_param, code_param );
+                
+                [ nc_data ] = compute_nc_data( data_1, data_2 );
+                
+                
+                %%% relay channel
+                [ r a_1 a_2 ] = CmlTwrcRelayChannel( s_1, s_2, code_param, EsNo(snrpoint) );
+        
+                %%% relay receiver
+                [ sym_lh ] = CmlTwrcRelayComputeSymbolLh( r, a_1, a_2, EsNo(snrpoint), sim_param );
+        
+                
                 
                 %%% receiver operations
                 switch sim_param.sim_type,
                     case 'capacity',
-                        cap = compute_frame_capacity( sim_param, code_param, symbol_likelihood, data );
+                        cap = compute_frame_capacity( sim_param, code_param, symbol_likelihood, nc_data );
                         [sim_state] = update_capacity_statistics( sim_state, cap, snrpoint );
                         
                     case 'exit',
                         [exit_state_diff] = SimExit( sim_param.topology, sim_param.exit_param,...
-                            symbol_likelihood, data, sim_param );
-                        [sim_state.exit_state] = UpdateExitMetrics( sim_param.exit_param, sim_state.exit_state, exit_state_diff, snrpoint );
+                            sym_lh, nc_data, sim_param );
+                        [sim_state.exit_state] = UpdateExitMetrics( sim_param.exit_param,...
+                            sim_state.exit_state, exit_state_diff, snrpoint );
                 end
                 
                 save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
@@ -290,4 +302,30 @@ if strcmp( sim_param.sim_type, 'exit')
         
     end
 end
+end
+
+
+function nc_data = compute_nc_data( data_1, data_2 )
+nc_data = double( xor( data_1, data_2 ) );
+end
+
+
+function sym_lh = CmlTwrcRelayComputeSymbolLh( r, a_1, a_2, EsNo, sim_param )
+
+switch sim_param.twrc_param.protocol
+    case 'dnc'
+        
+        a_1_v = a_1(1,:);
+        a_2_v = a_2(1,:);
+        
+        sqE1 = 1;   % temporary
+        sqE2 = 1;
+        sym_lh = Demod_PNC_FSK( r, EsNo, sim_param.csi_flag, a_1_v, a_2_v,...
+            sqE1, sqE2, sim_param.twrc_param.csi1switch);
+        
+    case 'lnc'
+        
+        
+end
+
 end

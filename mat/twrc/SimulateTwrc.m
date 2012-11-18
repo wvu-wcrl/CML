@@ -22,6 +22,7 @@ function sim_state = SimulateTwrc( sim_param, sim_state, code_param )
 [EsNo EbNo] = compute_snr_vectors(sim_param, code_param);
 [tempfile] = name_tempfile();
 [ verbosity ] = determine_verbosity( sim_param );
+[ ldpc_decoder ] = CreateLdpcDecoder( sim_param, code_param );
 
 t0 = clock;  % for profiling runtime
 tic;              % for timing simulation execution
@@ -42,7 +43,7 @@ while ( continue_simulation )
         [sim_state] =               increment_trials_counter( sim_state, code_param, snrpoint );
         
         
-        %%% source 
+        %%% source
         [data_1] =                       gen_random_data( code_param );
         [s_1]=                           CmlEncode( data_1, sim_param, code_param );
         
@@ -59,36 +60,44 @@ while ( continue_simulation )
         %%% relay receiver
         [ sym_lh ] = CmlTwrcRelayComputeSymbolLh( r, a_1, a_2, EsNo(snrpoint), sim_param );
         
-  
         
         switch sim_param.sim_type,
             
             case 'coded',
                 
-                bicm_iterations = init_bicm( sim_param, code_param );
+                [bicmid_iterations decoder_iterations] = init_iterations( sim_param, code_param );
                 
                 ap_llr = CmlInitSomap(sim_param, code_param);
                 
-                errors = 0;
-                
-                for iter = 1:bicm_iterations,
+                                
+                if sim_param.bicm == 2,       
+                    errors = zeros(bicmid_iterations,1);
+                    for bicmid_iter = 1:bicmid_iterations,
+                        
+                        [ ex_llr ] = CmlTwrcRelaySomap( sym_lh, ap_llr, sim_param );
+                        
+                        ex_llr = Deinterleave_relay( ex_llr, sim_param, code_param );
+                        
+                        [ detected_data, errors, ap_llr] = ...
+                            CmlTwrcRelayDecode( ex_llr, nc_data, sim_param,...
+                            code_param, errors, decoder_iterations, bicmid_iter, ldpc_decoder);
+                    echo_x_on_error( errors, code_param, verbosity );
+                        
+                        ap_llr = Interleave_relay( ap_llr, sim_param, code_param);
+                        
+                        if errors(bicmid_iter) == 0, break; end
+                    end
                     
+                elseif sim_param.bicm == 1,
+                    errors = zeros(decoder_iterations,1);
+                    bicmid_iter = 1;
                     [ ex_llr ] = CmlTwrcRelaySomap( sym_lh, ap_llr, sim_param );
-                    
-                    
                     ex_llr = Deinterleave_relay( ex_llr, sim_param, code_param );
-                    
-                    
                     [ detected_data, errors, ap_llr] = ...
-                        CmlTwrcRelayDecode( ex_llr, nc_data, sim_param, code_param, errors, iter);
-                    
-                    
-                    ap_llr = Interleave_relay( ap_llr, sim_param, code_param);
-                    
-                    
-                    if errors(iter) == 0, break; end
-                    
-                end
+                        CmlTwrcRelayDecode( ex_llr, nc_data, sim_param,...
+                        code_param, errors, decoder_iterations, bicmid_iter, ldpc_decoder);                    
+                    echo_x_on_error( errors, code_param, verbosity );
+                end               
                 
                 [ sim_state ] =     update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors );
                 
@@ -184,12 +193,12 @@ end
 
 
 function [EsNo EbNo] = compute_snr_vectors(sim_param, code_param)
-if ( sim_param.SNR_type(2) == 'b' )  % in terms of energy per bit    
+if ( sim_param.SNR_type(2) == 'b' )  % in terms of energy per bit
     E_1 = 1;
     E_2 = E_1*sim_param.twrc_param.energy_ratio;
     N_0 = (E_1 + E_2)/2 ./ 10.^(sim_param.SNR/10);
     EsNo = code_param.rate*1./N_0;
-    EbNo = EsNo;  
+    EbNo = EsNo;
 else % Es/No
     EsNo = 10.^(sim_param.SNR/10); % in terms of energy per symbol
     EbNo = 0;
@@ -241,7 +250,7 @@ end
 end
 
 
-function sim_state = update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors);
+function sim_state = update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors)
 % update frame error and bit error counters
 sim_state.bit_errors( 1:code_param.max_iterations, snrpoint ) = sim_state.bit_errors( 1:code_param.max_iterations, snrpoint ) + errors;
 sim_state.frame_errors( 1:code_param.max_iterations, snrpoint ) = sim_state.frame_errors( 1:code_param.max_iterations, snrpoint ) + (errors>0);
@@ -296,7 +305,7 @@ condition2 = ( sim_state.trials( code_param.max_iterations, snrpoint ) == sim_pa
 condition3 = ~mod( sim_state.trials(code_param.max_iterations, snrpoint),sim_param.save_rate );
 if ( condition1|condition2|condition3 )
     
-    CmlPrint('.\n',[], verbosity);
+    CmlPrint('.',[], verbosity);
     %CmlPrint('Elapsed simulation time: %.2f s\n', sim_state.timing_data.elapsed_time, 'verbose');
     save_struct.tempfile = tempfile;
     save_struct.save_state = sim_state;
@@ -415,12 +424,14 @@ end
 
 
 
-function bicm_iterations = init_bicm( sim_param, code_param )
+function [bicmid_iterations decoder_iterations] = init_iterations( sim_param, code_param )
 
 if ( sim_param.bicm == 2 ) % bicm-id
-    bicm_iterations = code_param.max_iterations;
+    bicmid_iterations = code_param.max_iterations;
+    decoder_iterations = 1;
 else
-    bicm_iterations = 1;
+    bicmid_iterations = 1;
+    decoder_iterations = code_param.max_iterations;
 end
 
 end
@@ -441,6 +452,24 @@ if sim_param.bicm
 end
 
 end
+
+
+function [ldpc_decoder] = CreateLdpcDecoder( sim_param, code_param )
+if strcmp(sim_param.ldpc_impl, 'new')
+
+    ldpc_decoder = LdpcDecoder();
+        
+    [row_one col_one] = PostProcessH( code_param.H_rows, code_param.H_cols );
+        
+    ldpc_decoder = ldpc_decoder.CreateTannerGraph( row_one, col_one,...
+        code_param.code_bits_per_frame );
+     
+else
+ldpc_decoder = [];
+end
+end
+
+
 
 
 %     Function SimulateTWRC is part of the Iterative Solutions Coded Modulation

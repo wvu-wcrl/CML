@@ -157,10 +157,11 @@ if (code_param.coded)
                 
             case {2} % LDPC                
                 
+                
                 if strcmp(sim_param.ldpc_impl, 'new')
                     if( sim_param.bicm == 1 )
-                        [ldpc_decoder detected_data errors] = LdpcDecode_bicm(ldpc_decoder, bicm_iterations, input_decoder_c, ...
-                            data, errors);
+                        [ldpc_decoder detected_data errors] = LdpcDecode_bicm(ldpc_decoder,...
+                            code_param.max_iterations, input_decoder_c,  data, errors);
                         return;
                     elseif(sim_param.bicm == 2)
                         [ldpc_decoder output_decoder_c detected_data errors] =...
@@ -229,10 +230,10 @@ end
 
 
 
-function [ldpc_decoder detected_data errors] = LdpcDecode_bicm( ldpc_decoder, bicm_iterations,...
-    input_decoder_c, data, errors )
+function [ldpc_decoder detected_data errors] = LdpcDecode_bicm( ldpc_decoder,...
+    max_iterations, input_decoder_c, data, errors )
 
-for bicm_iter = 1:bicm_iterations
+for bicm_iter = 1:max_iterations,
     
     [ldpc_decoder output_decoder_c detected_data] = ...
         ldpc_decoder.Iterate( input_decoder_c, bicm_iter );

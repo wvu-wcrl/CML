@@ -1,4 +1,6 @@
-function [ detected_data, errors, ex_llr ] = CmlTwrcRelayDecode( input_decoder_c, nc_data, sim_param, code_param, errors, iter )
+function [ detected_data, errors, ex_llr ] = CmlTwrcRelayDecode( input_decoder_c,...
+    nc_data, sim_param, code_param, errors, decoder_iterations,...
+    bicmid_iter, ldpc_decoder )
 % CmlTwrcRelayDecode performs a single iteration of iterative decoding at
 % the relay.
 %
@@ -21,12 +23,11 @@ function [ detected_data, errors, ex_llr ] = CmlTwrcRelayDecode( input_decoder_c
 %     Copyright (C) 2005-2012, Matthew C. Valenti and Terry Ferrett
 %
 %     Last updated on Oct 18, 2012
-
 persistent N1 K1 N2 K2 bicm_iterations turbo_iterations;
 persistent input_decoder_u;
 
 
-if( iter == 1 )
+if( bicmid_iter == 1 )
 switch sim_param.code_configuration
     
     case {0} % convolutional
@@ -35,16 +36,16 @@ switch sim_param.code_configuration
     
     case {1,4} % PCCC
         
-        
         [ N1 K1 N2 K2 bicm_iterations turbo_iterations input_decoder_u ] = init_pccc( sim_param, code_param );
         
+                
     case {3} % HSDPA
 
         [ bicm_iteration turbo_iterations M_arq ] = init_hsdpa( sim_param, code_param );
         
 end
 
-errors = zeros(turbo_iterations*bicm_iterations,1);
+%errors = zeros(turbo_iterations*bicm_iterations,1);
 
 end
 
@@ -68,15 +69,36 @@ end
                 sim_param.nsc_flag2,...
                 input_decoder_u );
             
-            errors( (iter-1)*turbo_iterations+1:iter*turbo_iterations ) = turbo_errors;
+            errors( (bicmid_iter-1)*turbo_iterations+1:bicmid_iter*turbo_iterations ) = turbo_errors;
             
     
                 input_decoder_u = output_decoder_u;
     
         case {2} % LDPC
-            [x_hat errors] = MpDecode( -input_decoder_c, code_param.H_rows, code_param.H_cols, code_param.max_iterations, sim_param.decoder_type, 1, 1, data );
-            detected_data = x_hat(code_param.max_iterations,:);
-            return; % BICM-ID is not supported for LDPC codes.
+            
+            
+                if strcmp(sim_param.ldpc_impl, 'new')
+                    if( sim_param.bicm == 1 )
+                        [ldpc_decoder detected_data errors] = LdpcDecode_bicm(ldpc_decoder, decoder_iterations,input_decoder_c, ...
+                            nc_data, errors);
+                        ex_llr = 0;
+                        return;
+                    elseif(sim_param.bicm == 2)
+                        [ldpc_decoder output_decoder_c detected_data errors] =...
+                            LdpcDecode_bicmid(ldpc_decoder, bicmid_iter, input_decoder_c,...
+                             nc_data, errors);
+                    end
+                end
+                
+                
+                if strcmp( sim_param.ldpc_impl, 'old' )
+                    [x_hat errors] = MpDecode( -input_decoder_c, code_param.H_rows, code_param.H_cols, ...
+                        code_param.max_iterations, sim_param.decoder_type, 1, 1, data );
+                    detected_data = x_hat(code_param.max_iterations,:);
+                    return; % BICM-ID is not supported for LDPC codes under the MpDecode implementation.
+                end              
+            
+            
         case {3} % HSDPA
          
         case {5,6} % CTC code from WiMAX (5) or DVB-RCS (6)
@@ -142,6 +164,29 @@ end
 
 
 
+function [ldpc_decoder detected_data errors] = LdpcDecode_bicm( ldpc_decoder, ...
+    decoder_iterations, input_decoder_c, data, errors )
+
+for bicm_iter = 1:decoder_iterations,
+    
+    [ldpc_decoder output_decoder_c detected_data] = ...
+        ldpc_decoder.Iterate( input_decoder_c, bicm_iter );
+    errors(bicm_iter) = sum(xor(detected_data(1:length(data)),  data));
+    
+end
+
+end
+
+
+function [ldpc_decoder output_decoder_c detected_data errors] = ...
+    LdpcDecode_bicmid(ldpc_decoder, bicmid_iter, input_decoder_c,...
+    data, errors)
+
+[ldpc_decoder output_decoder_c detected_data] = ...
+    ldpc_decoder.Iterate( input_decoder_c, bicmid_iter );
+
+errors(bicmid_iter) = sum(xor(detected_data(1:length(data)), data));
+end
 
 
 

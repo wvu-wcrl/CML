@@ -1,4 +1,4 @@
-function exit_state_diff = SimExit(  exit_param, symbol_likelihood, codeword )
+function exit_state_diff = SimExit(  topology, exit_param, symbol_likelihood, codeword, sim_param )
 % SimExit simulates detector mutual information metrics
 %
 % The calling syntax is:
@@ -20,7 +20,12 @@ function exit_state_diff = SimExit(  exit_param, symbol_likelihood, codeword )
 switch exit_param.exit_type,
     
     case 'ldpc',
-        [IA_det IE_det] = compute_detector_mi( codeword, symbol_likelihood, exit_param.requested_IA );
+        if strcmp(topology, 'p2p')
+        [IA_det IE_det] = compute_detector_mi_p2p( codeword, symbol_likelihood, exit_param.requested_IA );
+        elseif strcmp(topology, 'twrc')
+            [IA_det IE_det] = compute_detector_mi_twrc( codeword, symbol_likelihood, ...
+                exit_param.requested_IA, sim_param );
+        end
         exit_state_diff.IA_det = IA_det;
         exit_state_diff.IE_det = IE_det;
         
@@ -34,9 +39,12 @@ end
 
 
 
-function [IA_det IE_det] = compute_detector_mi( codeword, symbol_likelihood, requested_IA)
+function [IA_det IE_det] = compute_detector_mi_p2p( codeword, symbol_likelihood, requested_IA)
 len_IA = length( requested_IA );
 
+
+IA_det = zeros(1, len_IA);
+IE_det = zeros(1, len_IA);
 for IA_index = 1:len_IA
     sigma = invJ1(requested_IA(IA_index));
     
@@ -45,6 +53,29 @@ for IA_index = 1:len_IA
     
     %%%% perform soft demapping using normally distributed llrs
     bit_likelihood = Somap( symbol_likelihood, 0, llrs);
+    
+    %%%% compute mutual information before and after soft-mapping stage
+    IA_det(IA_index) = Capacity( llrs, codeword);
+    IE_det(IA_index) = Capacity( bit_likelihood, codeword);
+    
+end
+end
+
+
+function [IA_det IE_det] = compute_detector_mi_twrc( codeword, symbol_likelihood, requested_IA, sim_param)
+len_IA = length( requested_IA );
+
+IA_det = zeros(1, len_IA);
+IE_det = zeros(1, len_IA);
+
+for IA_index = 1:len_IA
+    sigma = invJ1(requested_IA(IA_index));
+    
+    %%% generate normally distributed aprior inputs
+    llrs = randn(1,length(codeword))*sigma + (codeword-0.5)*sigma^2;    % test + or -
+    
+    %%%% perform soft demapping using normally distributed llrs
+    [ bit_likelihood ] = CmlTwrcRelaySomap( symbol_likelihood, llrs, sim_param );
     
     %%%% compute mutual information before and after soft-mapping stage
     IA_det(IA_index) = Capacity( llrs, codeword);
