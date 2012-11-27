@@ -46,6 +46,7 @@ sim_param(record).topology = 'twrc';
 sim_param(record).twrc_param.energy_ratio = 1;
 sim_param(record).twrc_param.csi1switch = 1;
 sim_param(record).twrc_param.protocol = 'dnc';
+sim_param(record).MaxRunTime = 60;
 
 
 
@@ -82,6 +83,7 @@ sim_param(record).topology = 'twrc';
 sim_param(record).twrc_param.energy_ratio = 1;
 sim_param(record).twrc_param.csi1switch = 1;
 sim_param(record).twrc_param.protocol = 'dnc';
+sim_param(record).MaxRunTime = 60;
 
 
 
@@ -118,7 +120,7 @@ sim_param(record).topology = 'twrc';
 sim_param(record).twrc_param.energy_ratio = 1;
 sim_param(record).twrc_param.csi1switch = 1;
 sim_param(record).twrc_param.protocol = 'dnc';
-
+sim_param(record).MaxRunTime = 60;
 
 
 
@@ -157,7 +159,7 @@ sim_param(record).topology = 'twrc';
 sim_param(record).twrc_param.energy_ratio = 1;
 sim_param(record).twrc_param.csi1switch = 1;
 sim_param(record).twrc_param.protocol = 'dnc';
-
+sim_param(record).MaxRunTime = 60;
 
 
 
@@ -195,7 +197,7 @@ sim_param(record).topology = 'twrc';
 sim_param(record).twrc_param.energy_ratio = 1;
 sim_param(record).twrc_param.csi1switch = 1;
 sim_param(record).twrc_param.protocol = 'dnc';
-
+sim_param(record).MaxRunTime = 60;
 
 
 

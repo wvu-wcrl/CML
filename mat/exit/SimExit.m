@@ -76,7 +76,7 @@ for IA_index = 1:len_IA
     
     %%%% perform soft demapping using normally distributed llrs
     [ bit_likelihood ] = CmlTwrcRelaySomap( symbol_likelihood, llrs, sim_param );
-    
+        
     %%%% compute mutual information before and after soft-mapping stage
     IA_det(IA_index) = Capacity( llrs, codeword);
     IE_det(IA_index) = Capacity( bit_likelihood, codeword);

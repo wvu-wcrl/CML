@@ -15,12 +15,36 @@
 
 function CmlClusterSubmit( scenario, records )
 
-[ project_root ] = CmlReadProjectRoot();        % read user's .cml_cfg to locate project directory
+run_loc = DetermineRunLocation();  % check if local or cluster
 
-CreateJobs( scenario, records, project_root );  % create job file for this scenario and record
-                                                                                  % and move to user's job input queue
+switch run_loc,
+    
+    case 'cluster'
+        
+        [ project_root ] = CmlReadProjectRoot();        % read user's .cml_cfg to locate project directory
+        
+        CreateJobs( scenario, records, project_root );  % create job file for this scenario and record
+        % and move to user's job input queue
+        
+    case 'local'
+        %platform
+        cml_home = CmlLoadCmlHome('local');
+        
+        [user remote_cmlroot remote_projroot] = ...
+            CmlReadClusterCfg(cml_home);
+
+        N_h = length(cml_home);
+        SyncScenario(scenario, user, remote_cmlroot, N_h);
+        
+        ExecuteRemoteSims(user, remote_cmlroot, scenario, records);        
+        
+        %ssh wcrlcluster.csee.wvu.edu matlab -r "cd\(\'/home/tferrett/cml\'\)\;CmlStartup\;CmlClusterSubmit\(\'ExitP2P\',1\)"
+        % execute cmlclustersubmit on scenarios and records
+        
 end
 
+
+end
 
 
 
@@ -38,7 +62,7 @@ N = length(records);   % number of simulation records
 for k = 1:N,
     JobParam = sim_param(k);   % convert data structures to naming convention used by job manager
     JobState = sim_state(k);
-   
+    
     CreateJob( k, scenario, records(k), JobParam, JobState,  job_input_queue );
 end
 
@@ -77,6 +101,48 @@ save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job i
 end
 
 
+
+
+
+function SyncScenario(scenario, user, remote_cmlroot, N_h)
+fullpath_localscen = which(scenario);
+partialpath_localscen = fullpath_localscen(N_h + 1:end);
+fullpath_remotescen = [remote_cmlroot partialpath_localscen];
+
+cmd = ['scp' ' ' fullpath_localscen ' ' user '@wcrlcluster.csee.wvu.edu' ':' fullpath_remotescen];
+system(cmd);
+end
+
+
+
+% construct command line for submitting sims on cluster
+function ExecuteRemoteSims(user, remote_cmlroot, scenario, records)
+c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
+c2 = ['matlab -r' ' '];
+c3 = ['"cd\(\'''];
+c4 = [remote_cmlroot];
+c5 = ['\''\)'];
+c6 = ['\;CmlStartup\;'];
+c7 = ['CmlClusterSubmit\('];
+c8 = ['\''' scenario '\'','];
+c9 = ConstructRecords(records);
+c10 = ['\)\;'];
+c11 = ['exit"'];
+cmd = [c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11];
+system(cmd);
+end
+
+function recstr = ConstructRecords(records)
+recstr = '\[';
+N = length(records);
+for k = 1:N,
+    recstr(2+ (k-1)*3 + 1) = int2str(records(k));
+    recstr(2+ (k-1)*3 + 2) = '\';
+    recstr(2+ (k-1)*3 + 3) = ' ';
+end
+recstr(end) = '\';
+recstr(end) = ']';
+end
 
 %     This library is free software;
 %     you can redistribute it and/or modify it under the terms of

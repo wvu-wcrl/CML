@@ -15,16 +15,79 @@
 
 function CmlClusterRetrieve( )
 
-   [project_root] = ReadCmlCfg();
+run_loc = DetermineRunLocation();  % check if local or cluster
 
-running_queue = [project_root '/JobRunning'];
-  listing = get_directory_listing( running_queue );
-consume_running_queue( running_queue, listing ); 
 
-output_queue = [project_root '/JobOut'];
+switch run_loc,
+    
+    case 'cluster'
+        [project_root] = ReadCmlCfg();
+        
+        running_queue = [project_root '/JobRunning'];
+        listing = GetDirectoryListing( running_queue );
+        consume_running_queue( running_queue, listing );
+        
+        output_queue = [project_root '/JobOut'];
+        
+        listing = GetDirectoryListing( output_queue );
+        consume_output_queue( output_queue, listing );
+        
+    case 'local'
+          
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        cml_home = CmlLoadCmlHome('local');
+         [user remote_cmlroot remote_projroot] = ...
+            CmlReadClusterCfg(cml_home);
+        
+        remote_running_dir = [remote_projroot '/' 'JobRunning'];
+        [running_dirlist] = GetClusterDirList(remote_running_dir); % Running
+        
+        function GetClusterDirList(remote_dir)
 
-listing = get_directory_listing( output_queue );
-consume_output_queue( output_queue, listing );
+        
+        
+        cmdspc = [' '];
+        cmd1 = ['ssh' cmdspc user '@wcrlcluster.csee.wvu.edu'];
+        cmd2 = [cmdspc 'ls' cmdspc remote_dir];
+        system(cmd)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        end
+        
+        
+        ReportRunningJobs();
+        GetClusterDirList(); % Output
+        ReportFinishedJobs();
+        ConsumeRemoteJobs();
+        
+        % connect to cluster
+        % perform directory listing on JobRunning
+        % report running
+        %perform directory listing on JobOut
+        % report completed
+        % call cmlclusterretrieve
+        % copy output directory to local
+        
+end
 
 end
 
@@ -112,9 +175,6 @@ function save_param = SetSimLocationLocal( save_param )
 end
 
 
-function listing = get_directory_listing( directory )
-listing = dir( [ directory '/*.mat' ] );
-end
 
 
 

@@ -283,9 +283,9 @@ function sim_state = set_dec_sim_to_complete( sim_param, sim_state, snrpoint )
 c1 = ( snrpoint == length( sim_param.SNR ) );
 c2 = strcmp(sim_param.exit_param.exit_phase, 'decoder');
 
-c2 = ( sim_state.trials(snrpoint ) >= sim_param.max_trials( snrpoint ) );
+c3 = ( sim_state.trials(snrpoint ) >= sim_param.max_trials( snrpoint ) );
 
-if c1 && c2,
+if c1 && c2 && c3,
 sim_state.exit_state.dec_complete = 1;
 end
 end

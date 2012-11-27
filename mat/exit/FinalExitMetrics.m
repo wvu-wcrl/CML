@@ -23,7 +23,7 @@ switch sim_param.exit_param.exit_type,
         % detector transfer curve
         P = polyfit(sim_state.exit_state.IA_det_sum(:,snrpoint)/trials, sim_state.exit_state.IE_det_sum(:,snrpoint)/trials, 3);
                 
-        % VND transfer curve
+        % edVND transfer curve
         dv_dist = sim_param.exit_param.dv_dist;
         n = length( dv_dist );
         dv = sim_param.exit_param.dv;
