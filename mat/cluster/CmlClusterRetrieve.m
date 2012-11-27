@@ -33,59 +33,15 @@ switch run_loc,
         consume_output_queue( output_queue, listing );
         
     case 'local'
-          
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         cml_home = CmlLoadCmlHome('local');
-         [user remote_cmlroot remote_projroot] = ...
+        [user remote_cmlroot remote_projroot] = ...
             CmlReadClusterCfg(cml_home);
         
-        remote_running_dir = [remote_projroot '/' 'JobRunning'];
-        [running_dirlist] = GetClusterDirList(remote_running_dir); % Running
-        
-        function GetClusterDirList(remote_dir)
-
-        
-        
-        cmdspc = [' '];
-        cmd1 = ['ssh' cmdspc user '@wcrlcluster.csee.wvu.edu'];
-        cmd2 = [cmdspc 'ls' cmdspc remote_dir];
-        system(cmd)
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        end
-        
-        
-        ReportRunningJobs();
-        GetClusterDirList(); % Output
-        ReportFinishedJobs();
-        ConsumeRemoteJobs();
-        
-        % connect to cluster
-        % perform directory listing on JobRunning
-        % report running
-        %perform directory listing on JobOut
-        % report completed
-        % call cmlclusterretrieve
-        % copy output directory to local
+        ReportJobStatus(user, remote_projroot);
+               
+        ConsumeRemoteJobs(user, remote_cmlroot, remote_projroot);        
         
 end
 
@@ -93,16 +49,63 @@ end
 
 
 
+function ReportJobStatus( user, remote_projroot )
 
+fprintf('Running Jobs:\n');
+c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
+c2 = ['ls ' remote_projroot '/JobRunning/ | grep -i .mat'];
+cmd = [c1 c2];
+[dc running_jobs] = system(cmd);
+fprintf(running_jobs);
+
+fprintf('\n');
+
+fprintf('Completed Jobs:\n');
+c2 = ['ls ' remote_projroot '/JobOut/ | grep -i .mat'];
+cmd = [c1 c2];
+[dc completed_jobs] = system(cmd);
+fprintf(completed_jobs);
+
+
+%c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
+%c2 = ['matlab -r' ' '];
+%c3 = ['"cd\(\'''];
+%c4 = [remote_cmlroot];
+%c5 = ['\''\)'];
+%c6 = ['\;CmlStartup\;'];
+%c7 = ['PrintRunningScenarios\('];
+%c8 = ['\''' queue '\'''];
+%c9 = ['\)\;'];
+%c10 = ['exit"'];
+%cmd = [c1 c2 c3 c4 c5 c6 c7 c8 c9 c10];
+%system(cmd);
+end
+
+
+function ConsumeRemoteJobs( user, remote_cmlroot, remote_projroot )
+
+c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
+c2 = ['matlab -r' ' '];
+c3 = ['"cd\(\'''];
+c4 = [remote_cmlroot];
+c5 = ['\''\)'];
+c6 = ['\;CmlStartup\;'];
+c7 = ['CmlClusterRetrieve'];
+c8 = ['\;'];
+c9 = ['exit"'];
+
+cmd = [c1 c2 c3 c4 c5 c6 c7 c8 c9];
+system(cmd);
+end
 
 
 
 function consume_running_queue( running_queue, listing )
 N = size( listing );
 for k = 1:N,
-        [scenario_name record] = read_scenario_name_and_record( listing(k).name );
-        full_path_to_output_file = [ running_queue '/' listing(k).name ];        
-        copy_job_out_to_cml_out( full_path_to_output_file, scenario_name, record);
+    [scenario_name record] = read_scenario_name_and_record( listing(k).name );
+    full_path_to_output_file = [ running_queue '/' listing(k).name ];
+    copy_job_out_to_cml_out( full_path_to_output_file, scenario_name, record);
 end
 end
 
@@ -111,9 +114,9 @@ end
 function consume_output_queue( output_queue, listing )
 N = size( listing );
 for k = 1:N,
-	  [scenario_name record] = read_scenario_name_and_record( listing(k).name );
-        full_path_to_output_file = [ output_queue '/' listing(k).name ];        
-        move_job_out_to_cml_out( full_path_to_output_file, scenario_name, record);
+    [scenario_name record] = read_scenario_name_and_record( listing(k).name );
+    full_path_to_output_file = [ output_queue '/' listing(k).name ];
+    move_job_out_to_cml_out( full_path_to_output_file, scenario_name, record);
 end
 end
 
@@ -171,7 +174,7 @@ end
 
 
 function save_param = SetSimLocationLocal( save_param )
-  save_param.SimLocation = 'local';
+save_param.SimLocation = 'local';
 end
 
 
