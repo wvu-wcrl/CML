@@ -1,0 +1,21 @@
+#!/bin/bash
+# get output from cluster cml
+
+# path to remote output
+PRO=wcrlcluster.csee.wvu.edu:/home/tferrett/cml/output
+
+# path to local output
+PLO=/home/tferrett/cmlmerge/cmlnew/
+
+# get
+scp -r $PRO $PLO
+
+
+# path to remote output
+PRLO=wcrlcluster.csee.wvu.edu:/home/tferrett/cml/localscenarios
+
+# path to local output
+PLLO=/home/tferrett/cmlmerge/cmlnew
+
+# get
+scp -r $PRLO $PLLO
