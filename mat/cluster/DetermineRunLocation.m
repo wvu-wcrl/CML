@@ -1,6 +1,8 @@
 function run_loc = DetermineRunLocation()
 
-[dc hostname] = system('hostname');
+  [dc hostname] = system('hostname');
+  hostname = hostname(1:end-1);
+
 if strcmp(hostname, 'wcrlCluster')
     run_loc = 'cluster';
 else

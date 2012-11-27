@@ -15,7 +15,7 @@
 
 function CmlClusterRetrieve( )
 
-run_loc = DetermineRunLocation();  % check if local or cluster
+run_loc = DetermineRunLocation()  % check if local or cluster
 
 
 switch run_loc,
