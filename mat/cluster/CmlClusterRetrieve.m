@@ -41,7 +41,7 @@ switch run_loc,
         
         ReportJobStatus(user, remote_projroot);
                
-        ConsumeRemoteJobs(user, remote_cmlroot, remote_projroot);        
+        ConsumeRemoteJobs(user, remote_cmlroot);        
         
 end
 
@@ -66,23 +66,10 @@ cmd = [c1 c2];
 [dc completed_jobs] = system(cmd);
 fprintf(completed_jobs);
 
-
-%c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
-%c2 = ['matlab -r' ' '];
-%c3 = ['"cd\(\'''];
-%c4 = [remote_cmlroot];
-%c5 = ['\''\)'];
-%c6 = ['\;CmlStartup\;'];
-%c7 = ['PrintRunningScenarios\('];
-%c8 = ['\''' queue '\'''];
-%c9 = ['\)\;'];
-%c10 = ['exit"'];
-%cmd = [c1 c2 c3 c4 c5 c6 c7 c8 c9 c10];
-%system(cmd);
 end
 
 
-function ConsumeRemoteJobs( user, remote_cmlroot, remote_projroot )
+function ConsumeRemoteJobs( user, remote_cmlroot )
 
 c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
 c2 = ['matlab -r' ' '];
@@ -96,6 +83,16 @@ c9 = ['exit"'];
 
 cmd = [c1 c2 c3 c4 c5 c6 c7 c8 c9];
 system(cmd);
+
+
+% copy remote jobout to local jobout
+cmd1 = ['scp -r ' user '@wcrlcluster.csee.wvu.edu:'];
+cmd2 = [remote_cmlroot '/output/*' ' ' ];
+cmd3 = ['output'];
+cmd = [cmd1 cmd2 cmd3];
+
+system(cmd);
+
 end
 
 
