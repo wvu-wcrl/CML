@@ -60,9 +60,10 @@ PrintMatFilesInProjDir(user, remote_projroot, 'JobRunning');
 
 fprintf('\n');
 
-fprintf('Completed Jobs:\n\n');
+fprintf('Completed Jobs:\n');
 PrintMatFilesInProjDir(user, remote_projroot, 'JobOut');
 
+fprintf('\n');
 end
 
 
@@ -106,11 +107,13 @@ end
 
 
 function RetrieveRemoteOutput(user, remote_cmlroot)
+
+cml_home = CmlLoadCmlHome('local');
 % copy remote output to local output
 fprintf('Consuming remote CML output.\n');
 cmd1 = ['scp -r ' user '@wcrlcluster.csee.wvu.edu:'];
 cmd2 = [remote_cmlroot '/output/*' ' ' ];
-cmd3 = ['output > /dev/null'];
+cmd3 = [ cml_home '/output > /dev/null'];
 cmd = [cmd1 cmd2 cmd3];
 
 system(cmd);

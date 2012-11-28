@@ -34,6 +34,9 @@ switch run_loc,
         N_h = length(cml_home);
         SyncScenario(scenario, user, remote_cmlroot, N_h);
         
+        fprintf(['Submitting ' scenario ' ' 'records ' ...
+            '[' int2str(records) ']']);
+        fprintf(' for cluster execution.\n');
         ExecuteRemoteSims(user, remote_cmlroot, scenario, records);                
         
 end
@@ -95,7 +98,8 @@ fullpath_localscen = which(scenario);
 partialpath_localscen = fullpath_localscen(N_h + 1:end);
 fullpath_remotescen = [remote_cmlroot partialpath_localscen];
 
-cmd = ['scp' ' ' fullpath_localscen ' ' user '@wcrlcluster.csee.wvu.edu' ':' fullpath_remotescen];
+cmd = ['scp' ' ' fullpath_localscen ' ' user...
+    '@wcrlcluster.csee.wvu.edu' ':' fullpath_remotescen ' > /dev/null'];
 system(cmd);
 end
 
@@ -112,7 +116,7 @@ c7 = ['CmlClusterSubmit\('];
 c8 = ['\''' scenario '\'','];
 c9 = ConstructRecords(records);
 c10 = ['\)\;'];
-c11 = ['exit"'];
+c11 = ['exit" > /dev/null'];
 cmd = [c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11];
 system(cmd);
 end
