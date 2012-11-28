@@ -11,8 +11,6 @@
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
 
-
-
 function CmlClusterSubmit( scenario, records )
 
 run_loc = DetermineRunLocation();  % check if local or cluster
@@ -24,10 +22,10 @@ switch run_loc,
         [ project_root ] = CmlReadProjectRoot();        % read user's .cml_cfg to locate project directory
         
         CreateJobs( scenario, records, project_root );  % create job file for this scenario and record
-        % and move to user's job input queue
+                                                        % and move to user's job input queue
         
     case 'local'
-        %platform
+        
         cml_home = CmlLoadCmlHome('local');
         
         [user remote_cmlroot remote_projroot] = ...
@@ -36,20 +34,12 @@ switch run_loc,
         N_h = length(cml_home);
         SyncScenario(scenario, user, remote_cmlroot, N_h);
         
-        ExecuteRemoteSims(user, remote_cmlroot, scenario, records);        
-        
-        %ssh wcrlcluster.csee.wvu.edu matlab -r "cd\(\'/home/tferrett/cml\'\)\;CmlStartup\;CmlClusterSubmit\(\'ExitP2P\',1\)"
-        % execute cmlclustersubmit on scenarios and records
+        ExecuteRemoteSims(user, remote_cmlroot, scenario, records);                
         
 end
 
 
 end
-
-
-
-
-
 
 
 function CreateJobs( scenario, records, project_root )
@@ -90,17 +80,13 @@ function CreateJob( k, scenario, record, JobParam, JobState, job_input_queue )
 %JobParam.scenario = scenario;  % this might get chopped off in job manager processing
 %JobParam.record = record;
 
-
 job_name = [scenario '_' int2str( record ) '.mat'];  % create job filename
 JobParam.code_param_long_filename = job_name;
-
 
 full_path_job_file = [job_input_queue '/' job_name];
 save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job input queue
 
 end
-
-
 
 
 
@@ -115,7 +101,6 @@ end
 
 
 
-% construct command line for submitting sims on cluster
 function ExecuteRemoteSims(user, remote_cmlroot, scenario, records)
 c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
 c2 = ['matlab -r' ' '];
@@ -132,6 +117,8 @@ cmd = [c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11];
 system(cmd);
 end
 
+
+% construct string of records for cluster exec ssh command
 function recstr = ConstructRecords(records)
 recstr = '\[';
 N = length(records);

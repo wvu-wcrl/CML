@@ -1,18 +1,21 @@
 % determine where your root directory is
 load( 'CmlHome.mat' );
+
+
 % determine where to store your files
-base_name = 'localscenarios';
-experiment_name ='DncTwrcTest';
+base_name = 'DncTwrcTest';
+
+
 if ispc
-data_directory = strcat('\', base_name, '\', experiment_name, '\', 'output' );
+    data_directory = strcat( '\output\', base_name, '\' );
 else
-data_directory = strcat( '/', base_name, '/', experiment_name, '/', 'output/' );
-end
-full_directory = strcat( cml_home, data_directory );
-if ~exist( full_directory, 'dir' )
-mkdir( full_directory);
+    data_directory = strcat( '/output/', base_name, '/' );
 end
 
+full_directory = strcat( cml_home, data_directory );
+if ~exist( full_directory, 'dir' )
+    mkdir( full_directory);
+end
 
 
 record = 1;

@@ -1,0 +1,48 @@
+== Cluster Interface ==
+
+These functions implement a user interface for executing CML
+simulations on the cluster.
+
+These functions support executing simulations on the cluster or
+locally.
+
+
+
+The public functions are
+
+CmlClusterSubmit(scenario, record)         Submit scenario and record for
+                                           execution as jobs.
+
+CmlClusterRetrieve(scenario, record)       Retrieve results from cluster
+                                           execution.
+                                           
+CmlClusterStop(scenario, record)           Stop jobs from execution.
+
+
+
+== Usage Example ==
+
+Consider a user who wishes to execute 
+
+scenario   'FskScenarios'
+record      1
+
+using the cluster, while on their local machine.
+    
+1. Submit job for execution.
+>> CmlClusterSubmit('FskScenarios', 1)
+
+2. Retrieve results
+>> CmlClusterRetrieve
+
+3. Plot results.
+>> CmlPlot('FskScenarios', 1)
+
+
+
+
+== Index of Terms ==
+
+job - CML scenario and record submitted to PCS for execution.
+
+local execution - executing CmlClusterSubmit directly on a user's computer
