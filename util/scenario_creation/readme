@@ -1,0 +1,50 @@
+= scenario_creation =
+
+Library to convert spreadsheets to CML scenario files.
+
+The parameters specifying a CML simulation are entered into a spreadsheet,
+saved as a .csv file, and converted to a CML scenario file.
+
+
+
+== Motivation ==
+
+Manual creation of CML scenario files requires tedious copying of redundant information within a scenario file.
+
+Within a given scenario file, certain parameters are unchanging for all records, while other parameters change.
+
+Using a spreadsheet allows separation of unchanging and changing parameters, requiring specification of unchanging parameters only once, reducing redundancy.
+
+
+
+
+== Usage ==
+
+Create a spreadsheet containing simulation parameters.
+See test/example.ods for syntax.
+
+Save the spreadsheet into the directory csv/ as a .csv file using a semicolon ';' as the delimiter.
+
+Within MATLAB, start CML and execute the function 'CmlCsv2Scen' to convert
+from .csv to .m scenario file.
+
+All scenario files are stored in <CMLROOT>/localscenarios
+
+
+
+
+== Example ==
+
+- Open the spreadsheet test/example.ods using OpenOffice calc.
+
+- Save the sheet as 'fsk_uncoded.csv' in the directory csv/ using a semicolon ';' as the delimiter.
+
+- Start CML within MATLAB and execute
+  >> CmlCsv2Scen('fsk_uncoded.csv');
+
+- Execute a simulation to test.
+  >> CmlSimulate('fsk_uncoded', 1);
+
+
+(c) Terry Ferrett
+12/2012
