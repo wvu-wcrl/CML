@@ -491,12 +491,12 @@ if sum(dv_dist) ~= 1,
 end
 
 % compute number of vnd edges
-vnd_edges = sum( n * dv_dist .* dv );
-cnd_edges = (n-k) * dc;
+%vnd_edges = sum( n * dv_dist .* dv );
+%cnd_edges = (n-k) * dc;
 
-if vnd_edges ~= cnd_edges,
-    error( 'vnd_dist not consistent with specified codeword length and check node degree.');
-end
+%if vnd_edges ~= cnd_edges,
+%    error( 'vnd_dist not consistent with specified codeword length and check node degree.');
+%end
 
 end
 

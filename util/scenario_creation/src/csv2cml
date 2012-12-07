@@ -24,11 +24,12 @@ def read_fixed_parameters(reader):
 
 
 # write scenario file header information
-def write_header_info(header_info):
+def write_header_info(header_info, output_path):
 
     base_name = header_info[0][1]
-    scenario_file_name = base_name + '.m'
-    writer = open(scenario_file_name,'w')
+    file_name = header_info[0][1] + '.m'
+    full_path_to_file = os.path.join(output_path, file_name)
+    writer = open(full_path_to_file,'w')
 
     ### header info##
     writer.write('% Determine CML root directory\n')
@@ -229,5 +230,5 @@ for count in range(1,4):
 
 
 # Data has been read. Write to CML record file.
-write_header_info(header_info)
+write_header_info(header_info, output_path)
 write_cml_records(header_info, fixed_parameters, varying_parameters, output_path)

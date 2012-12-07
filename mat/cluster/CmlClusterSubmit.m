@@ -127,9 +127,7 @@ function recstr = ConstructRecords(records)
 recstr = '\[';
 N = length(records);
 for k = 1:N,
-    recstr(2+ (k-1)*3 + 1) = int2str(records(k));
-    recstr(2+ (k-1)*3 + 2) = '\';
-    recstr(2+ (k-1)*3 + 3) = ' ';
+    recstr = [recstr int2str(records(k)) '\' ' '];    
 end
 recstr(end) = '\';
 recstr(end) = ']';
