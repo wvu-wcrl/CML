@@ -246,25 +246,24 @@ sim_param_out = check_struct.sim_param_out;
 
 for i=1:length( spuf )
     
+    
+    
+    
     if strcmp( spuf{i}, 'exit_param') & strcmp(save_param.sim_type, 'exit'),
         % handle exit_param as a special case
         % assume all params defined
         % error if params do not match
         if isfield( save_param, 'exit_param' )
-            if isfield( sim_param_in, 'exit_param')
-                
+            if isfield( sim_param_in, 'exit_param')                
                 if save_param.exit_param.rate ~= sim_param_in.exit_param.rate,
                     error('saved exit_param.rate does not match scenario file');
-                end
-                
+                end                
                 if ~isequal(save_param.exit_param.requested_IA, sim_param_in.exit_param.requested_IA),
                     error('saved exit_param.requested_IA does not match scenario file');
-                end
-                
+                end                
                 switch save_param.exit_param.exit_phase,
                     case 'detector',
-                    case 'decoder',
-                        
+                    case 'decoder',                        
                         if save_param.exit_param.dv ~= sim_param_in.exit_param.dv,
                             error('saved exit_param.dv does not match scenario file');
                         end
@@ -273,20 +272,20 @@ for i=1:length( spuf )
                         end
                         if ~strcmp(save_param.exit_param.exit_type, sim_param_in.exit_param.exit_type),
                             error('saved exit_param.exit_type does not match scenario file');
-                        end
-                        
-                        
-                end
-                
-                sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );
-                
+                        end                       
+                end                
+                sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );                
             else
                 error
             end
         end
         
+        
+        
     elseif strcmp( spuf{i}, 'twrc_param') & isfield(save_param, 'twrc_param' ),               
         sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );
+    elseif strcmp( spuf{i}, 'ldpc_param') & isfield(save_param, 'ldpc_param' ), 
+        sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );        
     else
         if isfield( save_param, spuf{i} )
             if isfield( sim_param_in, spuf{i} )
@@ -486,9 +485,11 @@ dc  = sim_param_in.exit_param.dc;
 dv = sim_param_in.exit_param.dv;
 dv_dist = sim_param_in.exit_param.dv_dist;
 
-if sum(dv_dist) ~= 1,
+dv_dist_sum = sum(dv_dist);
+if abs(1 - dv_dist_sum) > 10^(-3),
     error('vnd degree distribution, sim_param_in.exit_param.dv_dist, must sum to 1.');
 end
+
 
 % compute number of vnd edges
 %vnd_edges = sum( n * dv_dist .* dv );

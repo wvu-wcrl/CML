@@ -93,7 +93,7 @@ end
                 
                 if strcmp( sim_param.ldpc_impl, 'old' )
                     [x_hat errors] = MpDecode( -input_decoder_c, code_param.H_rows, code_param.H_cols, ...
-                        code_param.max_iterations, sim_param.decoder_type, 1, 1, data );
+                        code_param.max_iterations, sim_param.decoder_type, 1, 1, nc_data );
                     detected_data = x_hat(code_param.max_iterations,:);
                     return; % BICM-ID is not supported for LDPC codes under the MpDecode implementation.
                 end              

@@ -24,9 +24,14 @@
 
 function EsNo = FindExitThreshold(  scenario, record )
 
-[ sim_param sim_state ] = read_exit_results( scenario, record );
+n = length(record);
 
-EsNo = find_exit_threshold( sim_param, sim_state );
+for k = 1:n,
+[ sim_param sim_state ] = read_exit_results( scenario, record(k) );
+
+EsNo(k) = find_exit_threshold( sim_param, sim_state );
+end
+
 
 end
 
