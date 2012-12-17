@@ -35,7 +35,6 @@ load( 'CmlHome.mat' );
 
 for ( case_number=1:number_cases )
     fprintf( '\n\nRecord %d\n', case_number );
-    % Initialize code_param
     [sim_param(case_number), code_param] = InitializeCodeParam( sim_param(case_number), cml_home );
 
     if ( ( strcmp( sim_param(case_number).sim_type, 'throughput' ) ) )

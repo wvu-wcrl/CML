@@ -40,11 +40,16 @@ end
 
 function [sim_param sim_state cml_rhome RandSeed wid] = ReadParams(InputParam)
 
-sim_param = InputParam.JobParam;
+sim_param = InputParam.JobParam;      % cml data structures
 sim_state = InputParam.JobState;
-RandSeed = InputParam.RandSeed;
-cml_rhome = sim_param.cml_rhome;
 
+RandSeed = InputParam.RandSeed;       % parameters general to any task
+MaxRunTime = InputParam.MaxRunTime;
+
+sim_param.MaxRunTime = MaxRunTime;    % SimulateMod expects MaxRuntime
+                                      % to reside in sim_param
+
+cml_rhome = sim_param.cml_rhome;      % derived parameters
 wid = InputParam.wid;
 
 end
