@@ -314,7 +314,8 @@ error_check_input(sim_param);
 [N K C dv1 dv2 dv3 a1 a2 a3 constraint] = ...
     shorten_var_names(sim_param);
 
-[cml_home] = CmlLoadCmlHome('local');
+run_loc = DetermineRunLocation; % cluster or local
+[cml_home] = CmlLoadCmlHome(run_loc);
 
 if strcmp(constraint, 'eira')
     

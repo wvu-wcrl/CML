@@ -22,7 +22,8 @@ end
 
 H_cols_dual(rows,1) = rows;
 
-H_cols(cols+1:16200,:)=H_cols_dual;
+%H_cols(cols+1:16200,:)=H_cols_dual;
+H_cols((cols+1):(cols+rows),:)=H_cols_dual;
 
 H_rows1=H_rows;
 for j=2:rows
