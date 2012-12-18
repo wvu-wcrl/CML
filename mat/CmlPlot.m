@@ -145,6 +145,7 @@ if ( sum( sim_types(2,:) ) )
         
         for (i=find( sim_types(2,:) == 1 ) )
             fig_number = fig_number + 1;
+            clf;  %%% added 12/15/2012
             figure( fig_number );
             
             plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IE_vnd(:,snr_ind), 'k-' );
@@ -646,7 +647,7 @@ rate_st = ['r = ' num2str(sim_param.exit_param.rate)];
 
 cell_str = {snr_str, dv_st, dc_st, rate_st};
 
-a = annotation('textbox',[0.70 0.2 0.2 0.2])
+a = annotation('textbox',[0.70 0.2 0.2 0.2]);
 set(a, 'String', cell_str)
 set(a, 'FontSize', 10)
 set(a, 'LineStyle', 'none')

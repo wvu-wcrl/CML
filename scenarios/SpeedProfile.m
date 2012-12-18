@@ -22,6 +22,7 @@ if ~exist( full_directory, 'dir' )
     mkdir( full_directory);
 end
 
+% short running test for functionality
 record = 1;
 sim_param(record).comment = 'short running test for functionality';
 sim_param(record).sim_type = 'uncoded';
@@ -46,6 +47,7 @@ sim_param(record).MaxRunTime = 3*60;
 sim_param(record).timing_sample_rate = 30;
 
 
+% moderate length for timing test
 record = 2;
 sim_param(record).comment = 'moderate length test for timing test';
 sim_param(record).sim_type = 'uncoded';
@@ -70,6 +72,7 @@ sim_param(record).MaxRunTime = 3*60;
 sim_param(record).timing_sample_rate = 60; 
 
 
+% long length for timing test
 record = 3;
 sim_param(record).comment = 'UMTS-TC, BPSK, Rayleigh, rate 2048/3840';
 sim_param(record).SNR = 0:0.25:50;
@@ -89,7 +92,7 @@ sim_param(record).mod_order = 2;
 sim_param(record).bicm = 1;
 sim_param(record).demod_type = 0;
 sim_param(record).legend = sim_param(record).comment;
-sim_param(record).filename = 't_BerSim_3.mat';
+sim_param(record).filename = 't_bersim_3.mat';
 sim_param(record).reset = 0;
 sim_param(record).max_trials = 1e10*ones(size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-6;
@@ -105,3 +108,34 @@ sim_param(record).code_interleaver = ...
   strcat( 'CreateUmtsInterleaver(', int2str(sim_param(record).framesize ), ')' );
 sim_param(record).MaxRunTime = 3*60; 
 sim_param(record).timing_sample_rate = 60;
+
+
+
+% convolutional code
+record = 4;
+sim_param(record).comment = 'Rate 1/2 K=7 NSC convolutional code w/ BPSK in AWGN';
+sim_param(record).sim_type = 'coded';
+sim_param(record).code_configuration = 0;
+sim_param(record).SNR = [0:0.5:8];
+sim_param(record).SNR_type = 'Eb/No in dB';
+sim_param(record).framesize = 5114; 
+sim_param(record).modulation = 'BPSK';
+sim_param(record).mod_order = 2;
+sim_param(record).mapping = [];
+sim_param(record).channel = 'AWGN';
+sim_param(record).bicm = 1;
+sim_param(record).demod_type = 0; 
+sim_param(record).linetype = 'k:';
+sim_param(record).legend = sim_param(record).comment;
+sim_param(record).g1 = [1 0 1 1 0 1 1
+   1 1 1 1 0 0 1];
+sim_param(record).nsc_flag1 = 1;
+sim_param(record).pun_pattern1 = [];
+sim_param(record).tail_pattern1 = [];
+sim_param(record).decoder_type = 0;
+sim_param(record).filename = strcat( data_directory, 't_bersim_4.mat');
+sim_param(record).reset = 0;
+sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
+sim_param(record).minBER = 1e-6; 
+sim_param(record).max_frame_errors = 30*ones( size(sim_param(record).SNR) );
+sim_param(record).save_rate = 50;
