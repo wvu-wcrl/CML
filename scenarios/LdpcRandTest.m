@@ -56,7 +56,7 @@ sim_param(record).topology = 'twrc';
 sim_param(record).twrc_param.energy_ratio = 1;
 sim_param(record).twrc_param.csi1switch = 1;
 sim_param(record).twrc_param.protocol = 'dnc';
-
+sim_param(record).MaxRunTime = 3*60;
 
 
 
@@ -97,7 +97,7 @@ sim_param(record).topology = 'twrc';
 sim_param(record).twrc_param.energy_ratio = 1;
 sim_param(record).twrc_param.csi1switch = 1;
 sim_param(record).twrc_param.protocol = 'dnc';
-
+sim_param(record).MaxRunTime = 3*60;
 
 
 %%% reproduce results from xingyu 2012 tcom
@@ -135,6 +135,7 @@ sim_param(record).save_rate = 20;
 sim_param(record).sameData = 0;
 sim_param(record).mapping = 'natural';
 sim_param(record).topology = 'p2p';
+sim_param(record).MaxRunTime = 3*60;
 %sim_param(record).twrc_param.energy_ratio = 1;
 %sim_param(record).twrc_param.csi1switch = 1;
 %sim_param(record).twrc_param.protocol = 'dnc';
@@ -176,3 +177,4 @@ sim_param(record).save_rate = 20;
 sim_param(record).sameData = 0;
 sim_param(record).mapping = 'natural';
 sim_param(record).topology = 'p2p';
+sim_param(record).MaxRunTime = 3*60;

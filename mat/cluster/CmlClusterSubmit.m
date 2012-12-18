@@ -53,8 +53,13 @@ job_input_queue = [project_root '/' 'JobIn'];
 
 N = length(records);   % number of simulation records
 for k = 1:N,
+
+
+
     JobParam = sim_param(k);   % convert data structures to naming convention used by job manager
     JobState = sim_state(k);
+
+
     
     CreateJob( k, scenario, records(k), JobParam, JobState,  job_input_queue );
 end

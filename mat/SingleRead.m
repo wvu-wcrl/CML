@@ -49,7 +49,7 @@ check_for_consistent_snr_trial_vector_lengths(sim_param_in);
 
 sim_param_out = update_changeable_parameters( sim_param_in, spcf, spc, sim_param_out );
 
-cml_home = CmlLoadCmlHome( spc.SimLocation );
+cml_home = CmlLoadCmlHome( 'local' );  % verify logic 12/14/2012
 
 sim_param_out.filename = modify_filename_relative_absolute(sim_param_in.filename, cml_home);
 

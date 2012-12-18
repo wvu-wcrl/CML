@@ -37,6 +37,8 @@ for ( case_number=1:number_cases )
     fprintf( '\n\nRecord %d\n', case_number );
     [sim_param(case_number), code_param] = InitializeCodeParam( sim_param(case_number), cml_home );
 
+    sim_param(case_number).SimLocation = 'local';    % using CmlSimulate so assume running locally
+
     if ( ( strcmp( sim_param(case_number).sim_type, 'throughput' ) ) )
         % calculate the throughput
         [sim_param(case_number), sim_state(case_number)] = CalculateThroughput( sim_param(case_number), sim_state(case_number), code_param );
