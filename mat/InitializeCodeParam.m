@@ -314,8 +314,8 @@ error_check_input(sim_param);
 [N K C dv1 dv2 dv3 a1 a2 a3 constraint] = ...
     shorten_var_names(sim_param);
 
-run_loc = DetermineRunLocation; % cluster or local
-[cml_home] = CmlLoadCmlHome(run_loc);
+%run_loc = DetermineRunLocation; % cluster or local
+[cml_home] = CmlLoadCmlHome('local');
 
 if strcmp(constraint, 'eira')
     
@@ -385,41 +385,23 @@ function [H_rows H_cols] = translate_alist_to_hrows_hcols(tmp_path)
 
 alistfile = [tmp_path 'tmpfile.alist'];
 fid = fopen(alistfile, 'r');
+
 dim = fscanf(fid, '%d', [1,2]);
 cols=dim(2); rows = dim(1);
+
 max_weight= fscanf(fid, '%d', [1,2]);
 max_col_weight=max_weight(2); max_row_weight=max_weight(1);
+
 row_weight = fscanf(fid, '%d', [1,rows]);
 col_weight = fscanf(fid, '%d', [1,cols]);
+
 
 H_rows = fscanf(fid, '%d', [max_row_weight, rows])';
 H_cols = fscanf(fid, '%d', [max_col_weight, cols])';
 
 
-
-%%%%%%%%%%%%%%%%% dual diagonal matrix%%%%%%%%%
-temp = cols;
-H_cols_dual = zeros(rows, max_col_weight);
-for i=1:rows-1
-    H_cols_dual(i,1) = i;
-    H_cols_dual(i,2) = i+1;
-end
-
-H_cols_dual(rows,1) = rows;
-H_cols((cols+1):(cols+rows),:)=H_cols_dual;
-
-H_rows1=H_rows;
-for j=2:rows
-    H_rows(j, row_weight(j)+1) = temp + j-1;
-    H_rows(j, row_weight(j)+2) = temp + j;
-end
-
-H_rows(1,row_weight(1)+1)=temp + 1;
-
-H_rows = H_rows - 1;
-H_cols = H_cols - 1;
-
 fclose(fid);
+
 end
 
 

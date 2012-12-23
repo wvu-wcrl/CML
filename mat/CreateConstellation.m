@@ -193,7 +193,7 @@ elseif ( strcmpi(mod_type, 'APSK' )  )% APSK modulation
         mapping = [3 11 9 1 6 2 10 14 15 13 12 8 0 4 5 7];  %fixed 7-10-10
     elseif (M==32)
         rho1 = 2.84;  % these could be varied
-        rho2 = 5.27
+        rho2 = 5.27;
         % middle and outer rings
         temps(5:16) = rho1*exp( j*2*pi*[0:11]'/12);
         temps(17:32) = rho2*exp( j*2*pi*[0:15]'/16 );
