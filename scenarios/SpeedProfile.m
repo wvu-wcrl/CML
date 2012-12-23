@@ -45,6 +45,7 @@ sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
 sim_param(record).MaxRunTime = 3*60; 
 sim_param(record).timing_sample_rate = 30;
+sim_param(record).ProfileSpeed = 1;
 
 
 % moderate length for timing test
@@ -70,7 +71,7 @@ sim_param(record).max_frame_errors = 200*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 100;
 sim_param(record).MaxRunTime = 3*60; 
 sim_param(record).timing_sample_rate = 60; 
-
+sim_param(record).ProfileSpeed = 1;
 
 % long length for timing test
 record = 3;
@@ -108,7 +109,7 @@ sim_param(record).code_interleaver = ...
   strcat( 'CreateUmtsInterleaver(', int2str(sim_param(record).framesize ), ')' );
 sim_param(record).MaxRunTime = 3*60; 
 sim_param(record).timing_sample_rate = 60;
-
+sim_param(record).ProfileSpeed = 1;
 
 
 % convolutional code
@@ -139,3 +140,5 @@ sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-6; 
 sim_param(record).max_frame_errors = 30*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 50;
+sim_param(record).MaxRunTime = 3*60; 
+sim_param(record).ProfileSpeed = 1;

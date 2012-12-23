@@ -56,13 +56,13 @@ offset = 0;
 for file=1:number_of_files
     scenario_filename = varargin{file*2-1};
     cases = varargin{file*2};
-
+    
     % clear, then initialize sim_param and sim_state structures
     clear sim_param sim_state
-
+    
     % load the scenario file
     eval( scenario_filename );
-
+    
     % set cases to 'all' to read all parameters
     if ischar(cases)
         sim_param = sim_param;
@@ -70,27 +70,46 @@ for file=1:number_of_files
     else
         sim_param = sim_param( cases );
     end
-
+    
     % load/initialize each scenario
     num_cases = length( cases );
-
+    
     for case_number=1:num_cases
         fprintf( strcat( 'Initializing case (%d):\t', sim_param(case_number).comment, '\n'  ), cases( case_number ) );
-
+        
+        sim_param(case_number) = check_for_undefined_MaxRunTime(sim_param(case_number));
+        
+        
         if ( ( strcmpi( sim_param(case_number).sim_type, 'throughput' ) )||...
                 ( strcmpi( sim_param(case_number).sim_type, 'bwcapacity' ) ) || ...
                 ( strcmpi( sim_param(case_number).sim_type, 'minSNRvsB' ) ) )
             sim_param(case_number).reset = 1;
         end
-
+        
         if dont_reset
             sim_param(case_number).reset = 0;
         end
-
+        
         [sim_param_out(case_number), sim_state(case_number)] = SingleRead( sim_param(case_number) );
-
+        
     end
     sim_param_output(offset+1:offset+num_cases) = sim_param_out(1:num_cases);
     sim_state_output(offset+1:offset+num_cases) = sim_state(1:num_cases);
     offset = offset + num_cases;
+end
+end
+
+
+function sim_param_out = check_for_undefined_MaxRunTime(sim_param_in)
+if isfield( sim_param_in, 'MaxRunTime' )
+    if isempty(sim_param_in.MaxRunTime)
+        error('Please define MaxRunTime in all scenario records.');
+    else
+        sim_param_out = sim_param_in;
+    end
+    
+else
+    sim_param_out = sim_param_in;
+end
+
 end

@@ -439,7 +439,7 @@ h_matrix_path = [cml_home filesep 'output' filesep scen_name filesep...
 id = 'MATLAB:MKDIR:DirectoryExists';
 
 warning('off', id);
-
+h_matrix_path
 mkdir(h_matrix_path); % create directory if it doesn't exist
 
 end
