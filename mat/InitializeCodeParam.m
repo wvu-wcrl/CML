@@ -149,7 +149,7 @@ if strcmp( sim_param.sim_type, 'coded' )
                     end
                     
                     [H_rows, H_cols, data_bits_per_frame ] =...
-                        generate_random_H_matrix( sim_param );
+		     generate_random_H_matrix( sim_param, cml_home );
                     code_param.H_rows = H_rows;
                     code_param.H_cols = H_cols;
                     code_param.data_bits_per_frame = data_bits_per_frame;
@@ -307,15 +307,15 @@ end
 
 
 
-function [H_rows, H_cols, K] = generate_random_H_matrix( sim_param )
+function [H_rows, H_cols, K] = generate_random_H_matrix( sim_param, cml_home )
 
 error_check_input(sim_param);
 
 [N K C dv1 dv2 dv3 a1 a2 a3 constraint] = ...
     shorten_var_names(sim_param);
 
-%run_loc = DetermineRunLocation; % cluster or local
-[cml_home] = CmlLoadCmlHome('local');
+
+%[cml_home] = CmlLoadCmlHome('local');
 
 if strcmp(constraint, 'eira')
     
