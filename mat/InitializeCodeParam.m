@@ -486,7 +486,7 @@ end
 
 function loc = determine_location()
 [a hostname] = system('hostname');
-if strcmp( (hostname ), 'wcrlCluster')
+if strcmp( hostname(1:end-1) , 'wcrlCluster')
     loc = 'cluster';
 else
     loc = 'local';
@@ -522,9 +522,15 @@ function [ldpc_code_gen_path tmp_path] = create_path_to_tmp_gen_directory(cml_ho
 ldpc_code_gen_path = [cml_home filesep 'module' filesep 'chan_code'...
     filesep 'ldpc' filesep 'code_gen' filesep];
 
-tmp_path = [ldpc_code_gen_path 'tmp' filesep];
+loc = determine_location;
+if strcmp(loc, 'cluster')
+    tmp_path = [filesep 'home' filesep 'pcs' filesep 'tmp'];    
+elseif strcmp(loc, 'local')
+    tmp_path = [ldpc_code_gen_path 'tmp' filesep];
+end
 
 end
+
 
 
 function create_ldpc_pchk_file( C, K, dv2, dv3, a2new, a3new,...
