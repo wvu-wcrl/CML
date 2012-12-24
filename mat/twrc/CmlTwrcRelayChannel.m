@@ -61,7 +61,9 @@ var = 1/(2*EsNo);
 
 n = sqrt(var) * ( randn( M, N ) + j*randn( M, N ) );
 
+if(code_param.fsk)
 n = code_param.fil_noise * n;
+end
 
 end
 

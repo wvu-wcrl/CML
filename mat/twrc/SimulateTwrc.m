@@ -346,29 +346,37 @@ end
 
 
 function continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, session_time )
+
+% conditions
 c1 = snrpoint <= length(EsNo);
 
-if( sim_param.MaxRunTime == 0 || strcmp( sim_param.SimLocation, 'local') ),
-    c2 = 1;
-else
-    c2 = session_time < sim_param.MaxRunTime;
+if strcmp(sim_param.SimLocation, 'local' )
+c2 = 1;
+elseif strcmp(sim_param.SimLocation, 'cluster' )
+c2 = session_time < sim_param.MaxRunTime;
 end
+
+
 if c2 == 0,
     if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
     CmlPrint('\nSimulation time expired.\n', [], verbosity);
 end
+
 continue_simulation = c1&c2;
+
 end
 
 
 function execute_this_snr = evaluate_snr_point_stopping_conditions(sim_param, sim_state, code_param, snrpoint, session_time)
 c1 =  sim_state.trials( code_param.max_iterations, snrpoint ) < sim_param.max_trials( snrpoint ) ;
 c2 =  sim_state.frame_errors(code_param.max_iterations, snrpoint) < sim_param.max_frame_errors(snrpoint);
-if( sim_param.MaxRunTime == 0 || strcmp( sim_param.SimLocation, 'local') ),
-    c3 = 1;
-else
-    c3 = session_time < sim_param.MaxRunTime;
+
+if strcmp( sim_param.SimLocation, 'local' ),
+  c3 = 1;
+elseif strcmp(sim_param.SimLocation, 'cluster' )
+  c3 = session_time < sim_param.MaxRunTime;
 end
+
 execute_this_snr = c1&c2&c3;
 end
 
