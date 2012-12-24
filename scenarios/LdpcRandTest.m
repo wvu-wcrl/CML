@@ -100,18 +100,56 @@ sim_param(record).twrc_param.protocol = 'dnc';
 sim_param(record).MaxRunTime = 3*60;
 
 
+
+
+
+
 %%% reproduce results from xingyu 2012 tcom
 record = 3;
 effective_rate = '3/5'; % since a short code, this is not the actual rate!
-sim_param(record).SNR = [0:1:30];
+sim_param(record).SNR = [5:0.05:6];
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).blocks_per_frame = 1024;
 sim_param(record).csi_flag = 1;
 sim_param(record).mod_order = 32;
 sim_param(record).framesize = 64800;
 sim_param(record).bicm = 1;
-sim_param(record).max_iterations = 3;
+sim_param(record).max_iterations = 100;
 sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_3.mat');
+sim_param(record).sim_type = 'coded';
+sim_param(record).modulation = 'APSK';
+sim_param(record).ldpc_impl = 'new';
+sim_param(record).parity_check_matrix =  strcat( 'InitializeDVBS2(', effective_rate , ',', int2str( sim_param(record).framesize ), ')' );
+sim_param(record).channel = 'AWGN';
+sim_param(record).comment = 'DVB-S2 LDPC test: R = 3/5 N = 68400 K = 38800 dv = [2 4 19]';
+sim_param(record).legend = sim_param(record).comment;
+sim_param(record).linetype = 'b';
+sim_param(record).demod_type = 0;
+sim_param(record).decoder_type = 0;
+sim_param(record).code_configuration = 2;
+sim_param(record).reset = 0;
+sim_param(record).max_trials = 1e10*ones( size(sim_param(record).SNR) );
+sim_param(record).minBER = 1e-5;
+sim_param(record).max_frame_errors = 300*ones( size(sim_param(record).SNR) );
+sim_param(record).save_rate = 20;
+sim_param(record).sameData = 0;
+sim_param(record).mapping = 'natural';
+sim_param(record).topology = 'p2p';
+sim_param(record).MaxRunTime = 60;
+
+
+%%% reproduce results from xingyu 2012 tcom
+record = 4;
+effective_rate = '3/5'; % since a short code, this is not the actual rate!
+sim_param(record).SNR = [5:0.05:6];
+sim_param(record).SNR_type = 'Eb/No in dB';
+sim_param(record).blocks_per_frame = 1024;
+sim_param(record).csi_flag = 1;
+sim_param(record).mod_order = 32;
+sim_param(record).framesize = 64800;
+sim_param(record).bicm = 1;
+sim_param(record).max_iterations = 100;
+sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_4.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).modulation = 'APSK';
 sim_param(record).ldpc_impl = 'new';
@@ -128,53 +166,51 @@ sim_param(record).demod_type = 0;
 sim_param(record).decoder_type = 0;
 sim_param(record).code_configuration = 2;
 sim_param(record).reset = 0;
-sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
+sim_param(record).max_trials = 1e10*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-5;
-sim_param(record).max_frame_errors = 50*ones( size(sim_param(record).SNR) );
+sim_param(record).max_frame_errors = 300*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 20;
 sim_param(record).sameData = 0;
 sim_param(record).mapping = 'natural';
 sim_param(record).topology = 'p2p';
-sim_param(record).MaxRunTime = 3*60;
-%sim_param(record).twrc_param.energy_ratio = 1;
-%sim_param(record).twrc_param.csi1switch = 1;
-%sim_param(record).twrc_param.protocol = 'dnc';
+sim_param(record).MaxRunTime = 60;
+
 
 
 
 %%% reproduce results from xingyu 2012 tcom
-record = 4;
+record = 5;
 effective_rate = '3/5'; % since a short code, this is not the actual rate!
-sim_param(record).SNR = [0:1:30];
+sim_param(record).SNR = [5:0.05:6];
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).blocks_per_frame = 1024;
 sim_param(record).csi_flag = 1;
 sim_param(record).mod_order = 32;
 sim_param(record).framesize = 64800;
-sim_param(record).bicm = 1;
-sim_param(record).max_iterations = 3;
-sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_4.mat');
+sim_param(record).bicm = 2;
+sim_param(record).max_iterations = 100;
+sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_5.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).modulation = 'APSK';
 sim_param(record).ldpc_impl = 'new';
-sim_param(record).parity_check_matrix =  strcat( 'InitializeDVBS2(', effective_rate , ',', int2str( sim_param(record).framesize ), ')' );
-%sim_param(record).ldpc_param.dv = [ 2 4 19 ];
-%sim_param(record).ldpc_param.dv_dist = [ 0.4 0.52 0.08 ];
-%sim_param(record).ldpc_param.constraint = 'eira';  % 'eira' or 'unconstrained'
-%sim_param(record).ldpc_param.rate = str2num(effective_rate);
+sim_param(record).parity_check_matrix = 'random';
+sim_param(record).ldpc_param.dv = [ 2 4 19 ];
+sim_param(record).ldpc_param.dv_dist = [ 0.4 0.52 0.08 ];
+sim_param(record).ldpc_param.constraint = 'eira';  % 'eira' or 'unconstrained'
+sim_param(record).ldpc_param.rate = str2num(effective_rate);
 sim_param(record).channel = 'AWGN';
-sim_param(record).comment = 'DVB-S2 LDPC test: R = 3/5 N = 68400 K = 38800 dv = [2 4 19]';
+sim_param(record).comment = 'Random DVB-S2 LDPC test: R = 3/5 N = 68400 K = 38800 dv = [2 4 19]';
 sim_param(record).legend = sim_param(record).comment;
-sim_param(record).linetype = 'b';
+sim_param(record).linetype = 'r';
 sim_param(record).demod_type = 0;
 sim_param(record).decoder_type = 0;
 sim_param(record).code_configuration = 2;
 sim_param(record).reset = 0;
-sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
+sim_param(record).max_trials = 1e10*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-5;
-sim_param(record).max_frame_errors = 50*ones( size(sim_param(record).SNR) );
+sim_param(record).max_frame_errors = 300*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 20;
 sim_param(record).sameData = 0;
 sim_param(record).mapping = 'natural';
 sim_param(record).topology = 'p2p';
-sim_param(record).MaxRunTime = 3*60;
+sim_param(record).MaxRunTime = 60;

@@ -149,7 +149,7 @@ if strcmp( sim_param.sim_type, 'coded' )
                     end
                     
                     [H_rows, H_cols, data_bits_per_frame ] =...
-		     generate_random_H_matrix( sim_param, cml_home );
+                        generate_random_H_matrix( sim_param, cml_home );
                     code_param.H_rows = H_rows;
                     code_param.H_cols = H_cols;
                     code_param.data_bits_per_frame = data_bits_per_frame;
@@ -376,7 +376,7 @@ a2 = sim_param.ldpc_param.dv_dist(2);
 a3 = sim_param.ldpc_param.dv_dist(3);
 
 constraint = sim_param.ldpc_param.constraint;   % special constraint
-                                                % on ldpc code
+% on ldpc code
 end
 
 
@@ -439,7 +439,7 @@ h_matrix_path = [cml_home filesep 'output' filesep scen_name filesep...
 id = 'MATLAB:MKDIR:DirectoryExists';
 
 warning('off', id);
-h_matrix_path
+
 mkdir(h_matrix_path); % create directory if it doesn't exist
 
 end
@@ -471,8 +471,49 @@ create_ldpc_alist_file(ldpc_code_gen_path, tmp_path);
 
 [H_rows H_cols] = translate_alist_to_hrows_hcols( tmp_path );
 
-save(h_mat_full_path,'H_rows','H_cols');
+% if cluster
+loc = determine_location;
 
+if strcmp(loc, 'cluster')
+    save_hmat_cluster( hmat_full_path );    
+elseif strcmp(loc, 'local')
+    save(h_mat_full_path,'H_rows','H_cols');
+end
+
+end
+
+
+
+function loc = determine_location()
+[a hostname] = system('hostname');
+if strcmp( (hostname ), 'wcrlCluster')
+    loc = 'cluster';
+else
+    loc = 'local';
+end
+end
+
+
+function save_hmat_cluster( hmat_full_path )
+
+% temporary save and move
+tmp_file = '/home/pcs/tmp/tmp_hmat.mat';
+save(tmp_file,'H_rows','H_cols');
+cmd_str = ['sudo mv' ' ' tmp_file ' ' h_mat_full_path];
+system(cmd_str);
+
+% change ownership
+[a b] = strtok(h_mat_full_path,'/');
+[user d] = strtok(b, '/');
+
+spc = ' ';
+c1 = 'sudo';
+c2 = 'chown'
+c3 = [user ':' user];
+c4 = h_mat_full_path;
+
+cmd = [c1 spc c2 spc c3 spc h_mat_full_path];
+system(cmd);
 end
 
 
