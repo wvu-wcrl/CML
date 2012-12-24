@@ -475,7 +475,7 @@ create_ldpc_alist_file(ldpc_code_gen_path, tmp_path);
 loc = determine_location;
 
 if strcmp(loc, 'cluster')
-    save_hmat_cluster( hmat_full_path );    
+    save_hmat_cluster( h_mat_full_path, H_rows, H_cols );    
 elseif strcmp(loc, 'local')
     save(h_mat_full_path,'H_rows','H_cols');
 end
@@ -494,7 +494,7 @@ end
 end
 
 
-function save_hmat_cluster( hmat_full_path )
+function save_hmat_cluster( h_mat_full_path, H_rows, H_cols )
 
 % temporary save and move
 tmp_file = '/home/pcs/tmp/tmp_hmat.mat';
@@ -508,7 +508,7 @@ system(cmd_str);
 
 spc = ' ';
 c1 = 'sudo';
-c2 = 'chown'
+c2 = 'chown';
 c3 = [user ':' user];
 c4 = h_mat_full_path;
 
