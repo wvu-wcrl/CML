@@ -640,7 +640,7 @@ end
 
 function annotate_exit_params(sim_param, snr_ind)
 
-snr_str = ['E_b/N_0 = ' int2str(sim_param.SNR(snr_ind)) ' dB'];
+snr_str = ['E_b/N_0 = ' num2str(sim_param.SNR(snr_ind)) ' dB'];
 dv_st = ['d_v = ' int2str(sim_param.exit_param.dv)];
 dc_st = ['d_c = ' int2str(sim_param.exit_param.dc)];
 rate_st = ['r = ' num2str(sim_param.exit_param.rate)];
@@ -658,7 +658,7 @@ end
 
 function [snrpoint snr_ind] = get_snr_point( varargin, sim_param )
 snrpoint = varargin{3};
-snr_ind = find(sim_param.SNR == snrpoint );
+snr_ind = get_snr_ind( sim_param, snrpoint );
 end
 
 function [return_data_or_plot] = process_exit_input(varargin, sim_param, number_cases),
@@ -678,10 +678,11 @@ if length(snrpoint) > 1,
     error('Please supply a single SNR point.');
 end
 
-snr_ind = find(sim_param.SNR == snrpoint );
+
+snr_ind = get_snr_ind( sim_param, snrpoint);
 
 if isempty( snr_ind ),
-    error(['SNR point ' int2str(snrpoint) ' dB' ' not found.']);
+    error(['SNR point ' num2str(snrpoint) ' dB' ' not found.']);
 end
 
 end
@@ -697,6 +698,11 @@ end
 
 end
 
+
+function snr_ind = get_snr_ind( sim_param, snrpoint )
+snr_diff = abs(sim_param.SNR - snrpoint) < 10^(-3);
+snr_ind = find( snr_diff );
+end
 
 
 %     Function CmlPlot is part of the Iterative Solutions Coded Modulation
@@ -716,4 +722,4 @@ end
 %     You should have received a copy of the GNU Lesser General Public
 %     License along with this library; if not, write to the Free Software
 %     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
-%     USA
+%     US

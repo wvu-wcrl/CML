@@ -239,7 +239,7 @@ end
 
 function save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile )
 % determine if it is time to save (either (1) last frame, or (2) once per save_rate)
-condition1 = ( sim_state.trials(snrpoint ) == sim_param.max_trials( snrpoint ) );
+condition1 = ( sim_state.trials(snrpoint ) >= sim_param.max_trials( snrpoint ) );
 condition2 = ~mod( sim_state.trials(snrpoint), sim_param.save_rate );
 
 time_to_save = condition1|condition2;
