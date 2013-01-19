@@ -485,8 +485,9 @@ end
 
 
 function loc = determine_location()
-[a hostname] = system('hostname');
-if strcmp( hostname(1:end-1) , 'wcrlCluster')
+
+[a whoami] = system('whoami');
+if strcmp( whoami(1:end-1) , 'pcs')
     loc = 'cluster';
 else
     loc = 'local';
