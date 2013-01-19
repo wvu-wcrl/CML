@@ -525,7 +525,7 @@ ldpc_code_gen_path = [cml_home filesep 'module' filesep 'chan_code'...
 
 loc = determine_location;
 if strcmp(loc, 'cluster')
-    tmp_path = [filesep 'home' filesep 'pcs' filesep 'tmp'];    
+    tmp_path = [filesep 'home' filesep 'pcs' filesep 'tmp' filesep];    
 elseif strcmp(loc, 'local')
     tmp_path = [ldpc_code_gen_path 'tmp' filesep];
 end
