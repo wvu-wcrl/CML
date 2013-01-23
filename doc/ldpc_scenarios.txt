@@ -1,0 +1,11 @@
+discuss specifying h-matrix as pchk file
+pchk file must be stored in <cml_home>/data/ldpc
+
+  must specify code rate as sim_param.ldpc_param.rate
+  ^ different than other ldpc scenarios
+
+
+implement usage of alist file
+
+
+see scenario TestLdpcDecod record 6 for example

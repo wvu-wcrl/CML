@@ -140,27 +140,9 @@ if strcmp( sim_param.sim_type, 'coded' )
             end
         case {2} % LDPC
             
-            switch( sim_param.parity_check_matrix )
-                case 'random' % if random, generate based on params and constraints
-                    
-                    % check for constraint, if not set, assume eira
-                    if ~isfield(sim_param.ldpc_param, 'constraint')
-                        sim_param.ldpc_param.constraint = 'eira';
-                    end
-                    
-                    [H_rows, H_cols, data_bits_per_frame ] =...
-                        generate_random_H_matrix( sim_param, cml_home );
-                    code_param.H_rows = H_rows;
-                    code_param.H_cols = H_cols;
-                    code_param.data_bits_per_frame = data_bits_per_frame;
-                    
-                    code_param.P_matrix = [];
-                    
-                otherwise
-                    % if not random, use specified parity check matrix
-                    [code_param.H_rows, code_param.H_cols, code_param.P_matrix ] = eval( sim_param.parity_check_matrix );
-                    code_param.data_bits_per_frame = length(code_param.H_cols) - length( code_param.P_matrix );
-            end
+            [ sim_param code_param ] = ...
+                create_parity_check_matrix(sim_param, code_param, cml_home);
+            
         case {3} % HSDPA
             % derived constants
             K_crc = sim_param.framesize + 24; % add CRC bits
@@ -299,12 +281,7 @@ end
 
 % need to let sim_param know what the rate is (for proper plotting)
 sim_param.rate = code_param.rate;
-
-
 end
-
-
-
 
 
 function [H_rows, H_cols, K] = generate_random_H_matrix( sim_param, cml_home )
@@ -313,9 +290,6 @@ error_check_input(sim_param);
 
 [N K C dv1 dv2 dv3 a1 a2 a3 constraint] = ...
     shorten_var_names(sim_param);
-
-
-%[cml_home] = CmlLoadCmlHome('local');
 
 if strcmp(constraint, 'eira')
     
@@ -339,11 +313,11 @@ if strcmp(constraint, 'eira')
 else
     % non-eira code generation not implemented yet
 end
-
 end
 
 
 function error_check_input(sim_param)
+
 if length(sim_param.ldpc_param.dv)  ~= 3,
     error('Only 3 distinct variable node degrees (D=3) supported');
 end
@@ -375,15 +349,14 @@ a1 = sim_param.ldpc_param.dv_dist(1); % degree distributions
 a2 = sim_param.ldpc_param.dv_dist(2);
 a3 = sim_param.ldpc_param.dv_dist(3);
 
-constraint = sim_param.ldpc_param.constraint;   % special constraint
-% on ldpc code
+constraint = sim_param.ldpc_param.constraint;   % special ldpc code constraint
 end
 
 
 % Xingyu's code
-function [H_rows H_cols] = translate_alist_to_hrows_hcols(tmp_path)
+function [H_rows H_cols] = translate_alist_to_hrows_hcols(tmp_path, pcm_prefix )
 
-alistfile = [tmp_path 'tmpfile.alist'];
+alistfile = [tmp_path filesep pcm_prefix '.alist'];
 fid = fopen(alistfile, 'r');
 
 dim = fscanf(fid, '%d', [1,2]);
@@ -395,20 +368,13 @@ max_col_weight=max_weight(2); max_row_weight=max_weight(1);
 row_weight = fscanf(fid, '%d', [1,rows]);
 col_weight = fscanf(fid, '%d', [1,cols]);
 
-
 H_rows = fscanf(fid, '%d', [max_row_weight, rows])';
 H_cols = fscanf(fid, '%d', [max_col_weight, cols])';
 
-
 fclose(fid);
-
 end
 
 
-
-%%%%%% forming h matrix filename
-
-% get scenario name from sim_param.filename
 function h_mat_full_path = form_h_matrix_full_path( sim_param, cml_home )
 
 scen_name = get_scen_name(sim_param);
@@ -444,6 +410,7 @@ mkdir(h_matrix_path); % create directory if it doesn't exist
 
 end
 
+
 function filename = form_h_matrix_filename(path_filename)
 
 % get output filename sans extension
@@ -453,9 +420,6 @@ function filename = form_h_matrix_filename(path_filename)
 filename = [c '_hmat.mat'];
 
 end
-
-%%%%%%%%%%%%%%%%%%% h matrix filename
-
 
 
 function [H_rows H_cols] = gen_random_ldpc_code(C, K, dv2, dv3, a2new, a3new, ...
@@ -467,15 +431,16 @@ function [H_rows H_cols] = gen_random_ldpc_code(C, K, dv2, dv3, a2new, a3new, ..
 create_ldpc_pchk_file( C, K, dv2, dv3, a2new, a3new,...
     tmp_path, ldpc_code_gen_path);
 
-create_ldpc_alist_file(ldpc_code_gen_path, tmp_path);
+pchk_path = [cml_home filesep 'data' filesep 'ldpc'];
+convert_pchk_alist(ldpc_code_gen_path, tmp_path,...
+                   tmp_path, 'tmpfile.pchk');
 
-[H_rows H_cols] = translate_alist_to_hrows_hcols( tmp_path );
+[H_rows H_cols] = translate_alist_to_hrows_hcols( tmp_path, 'tmpfile' );
 
-% if cluster
 loc = determine_location;
 
 if strcmp(loc, 'cluster')
-    save_hmat_cluster( h_mat_full_path, H_rows, H_cols );    
+    save_hmat_cluster( h_mat_full_path, H_rows, H_cols );
 elseif strcmp(loc, 'local')
     save(h_mat_full_path,'H_rows','H_cols');
 end
@@ -525,9 +490,9 @@ ldpc_code_gen_path = [cml_home filesep 'module' filesep 'chan_code'...
 
 loc = determine_location;
 if strcmp(loc, 'cluster')
-    tmp_path = [filesep 'home' filesep 'pcs' filesep 'tmp' filesep];    
+    tmp_path = [filesep 'home' filesep 'pcs' filesep 'tmp'];
 elseif strcmp(loc, 'local')
-    tmp_path = [ldpc_code_gen_path 'tmp' filesep];
+    tmp_path = [ldpc_code_gen_path 'tmp'];
 end
 
 end
@@ -540,13 +505,13 @@ function create_ldpc_pchk_file( C, K, dv2, dv3, a2new, a3new,...
 % create ldpc creation command string
 sp = [' '];
 p1 = ['make-ldpc'];   % command name
-p2 = [tmp_path 'tmpfile.pchk'];  % temporary filename
+p2 = [tmp_path filesep 'tmpfile.pchk'];  % temporary filename
 p3 = int2str(C);        % number of check nodes
 p4 = int2str(K);        % number information bits
 p5 = ['3'];             % random number generation method
 p6 = ['evenboth'];
 p7 = [num2str(a2new) 'x' int2str(dv2)]; % degree dist 2
-p8 = ['/'];
+p8 = [filesep];
 p9 = [num2str(a3new) 'x' int2str(dv3)]; % degree dist 3
 
 % invoke external command to generate ldpc code
@@ -557,14 +522,89 @@ system(cmd);
 end
 
 
-function create_ldpc_alist_file(ldpc_code_gen_path, tmp_path)
+function convert_pchk_alist(ldpc_code_gen_path, tmp_path,...
+                             pchk_path, pchk_file)
+
 % create alist creation command string
 sp = [' '];
 p1 = ['pchk-to-alist'];   % command name
-p2 = [tmp_path 'tmpfile.pchk'];  % temporary filename
-p3 = [tmp_path 'tmpfile.alist'];
+p2 = [pchk_path filesep pchk_file];  % temporary filename
+p3 = [tmp_path filesep pchk_file(1:end-5) '.alist'];
 
 % invoke external command to generate alist file
 cmd = [ldpc_code_gen_path p1 sp p2 sp p3];
 system(cmd);
+
+end
+
+
+function [code_param H_rows H_cols] = ...
+    create_parity_check_matrix(sim_param, code_param, cml_home)
+
+pcm = sim_param.parity_check_matrix;  % shorten name
+
+if strcmp( pcm, 'random' )    % randomly generate h-matrix
+    
+    % check for constraint, if not set, assume eira
+    if ~isfield(sim_param.ldpc_param, 'constraint')
+        sim_param.ldpc_param.constraint = 'eira';
+    end
+    
+    [H_rows, H_cols, data_bits_per_frame ] =...
+        generate_random_H_matrix( sim_param, cml_home );
+    
+    code_param.H_rows = H_rows;
+    code_param.H_cols = H_cols;
+    code_param.data_bits_per_frame = data_bits_per_frame;
+    
+    code_param.P_matrix = [];
+    
+elseif strcmp( pcm(1:6), 'strcat' )   % generate using 'InitializeDVBS2'
+    % parity check not recognized
+    % if not random, use specified parity check matrix
+    [code_param.H_rows, code_param.H_cols, code_param.P_matrix ] = eval( sim_param.parity_check_matrix );
+    code_param.data_bits_per_frame = length(code_param.H_cols) - length( code_param.P_matrix );
+    
+elseif strcmp( pcm(end-3:end), 'pchk')  % load pchk file
+    
+    loc = determine_location;
+    
+    switch loc
+        case 'local'
+            [ H_rows H_cols ] = convert_local_pchk_hrows_hcols( cml_home, pcm );
+            
+            code_param.H_rows = H_rows;
+            code_param.H_cols = H_cols;
+            code_param.P_matrix = [];
+            code_param.data_bits_per_frame =...
+                sim_param.framesize*sim_param.ldpc_param.rate; 
+        case 'cluster'
+            % form filename
+            error('cluster reading of pchk file not implemented yet');
+            %pcf_fp = [cml_home filesep 'data' filesep 'ldpc' filesep pcm];
+    end
+       
+end
+
+end
+
+
+function [ H_rows H_cols ] = convert_local_pchk_hrows_hcols( cml_home, pcm )
+
+pchk_path = [cml_home filesep 'data' filesep 'ldpc'];
+pchk_path_file = [pchk_path filesep pcm];
+
+pcf_exists = exist(pchk_path_file, 'file');
+if ~pcf_exists
+    error('Parity check file %s does not exist.', pcm);
+end
+
+[ldpc_code_gen_path tmp_path] = create_path_to_tmp_gen_directory(cml_home);
+
+convert_pchk_alist(ldpc_code_gen_path, tmp_path,...
+                    pchk_path, pcm);
+
+pcm_prefix = pcm(1:end-5);
+[H_rows H_cols] = translate_alist_to_hrows_hcols( tmp_path, pcm_prefix );
+
 end

@@ -187,11 +187,37 @@ sim_param(record).legend = strcat('M=', num2str(sim_param(record).mod_order), ',
                                    'BICM=', num2str(sim_param(record).bicm), ',',...
                                     'LDPC Impl=', sim_param(record).ldpc_impl);
 
+
                                 
-plotme=0;
-if (plotme == 1)
-    CmlPlotTextBox({strcat('R=',sim_param(record).effective_rate)},...
-        [0 0 0.1 0.1],...
-         14,...
-         1);
-end
+                                
+record = 6;
+effective_rate = '3/5'; 
+sim_param(record).comment = strcat( 'Rate= ', ' ', effective_rate, ' DVB-S2 LDPC code w/ BFSK in AWGN, new LDPC impl' );
+sim_param(record).sim_type = 'coded';
+sim_param(record).code_configuration = 2; % LDPC
+sim_param(record).ldpc_impl = 'new';   % specify ldpc implementation
+sim_param(record).SNR = [0:0.5:30];
+sim_param(record).SNR_type = 'Eb/No in dB';
+sim_param(record).framesize = 64800; 
+sim_param(record).parity_check_matrix = 'test_ldpc_hmat.pchk';   % support .pchk or .alist h-matrix
+sim_param(record).ldpc_param.rate = str2num( effective_rate );
+sim_param(record).modulation = 'FSK';
+sim_param(record).csi_flag = 2;
+sim_param(record).mod_order = 2;
+sim_param(record).channel = 'AWGN';
+sim_param(record).bicm = 2;
+sim_param(record).demod_type = 0; 
+sim_param(record).linetype = 'm-';
+sim_param(record).max_iterations = 30;
+sim_param(record).decoder_type = 0;
+sim_param(record).filename = strcat( data_directory, 'DVBS2Rate3by5_bfsk_newimpl_pchk_bicmid.mat');
+sim_param(record).reset = 0;
+sim_param(record).max_trials = 1e8*ones( size(sim_param(record).SNR) );
+sim_param(record).minBER = MINBER; 
+sim_param(record).max_frame_errors = 300*ones( size(sim_param(record).SNR) );
+sim_param(record).plot_iterations = sim_param(record).max_iterations;
+sim_param(record).save_rate = 20;
+sim_param(record).legend = strcat('M=', num2str(sim_param(record).mod_order), ',',...
+                                   'BICM=', num2str(sim_param(record).bicm), ',',...
+                                    'LDPC Impl=', sim_param(record).ldpc_impl);
+
