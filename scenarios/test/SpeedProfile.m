@@ -24,7 +24,7 @@ end
 
 % short running test for functionality
 record = 1;
-sim_param(record).comment = 'short running test for functionality';
+sim_param(record).comment = 'short runtime. test for functionality';
 sim_param(record).sim_type = 'uncoded';
 sim_param(record).SNR = [0:0.5:5];
 sim_param(record).SNR_type = 'Eb/No in dB';
@@ -37,7 +37,7 @@ sim_param(record).bicm = 1;
 sim_param(record).demod_type = 1;  % max-log-map appropriate for uncoded
 sim_param(record).linetype = 'm:';
 sim_param(record).legend = sim_param(record).comment;
-sim_param(record).filename = strcat( data_directory, 't_bersim_1.mat');
+sim_param(record).filename = strcat( data_directory, 'SpeedProfile_1.mat');
 sim_param(record).reset = 0;
 sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-6; 
@@ -50,7 +50,7 @@ sim_param(record).ProfileSpeed = 1;
 
 % moderate length for timing test
 record = 2;
-sim_param(record).comment = 'moderate length test for timing test';
+sim_param(record).comment = 'moderate runtime';
 sim_param(record).sim_type = 'uncoded';
 sim_param(record).SNR = [0:0.5:70];
 sim_param(record).SNR_type = 'Eb/No in dB';
@@ -63,7 +63,7 @@ sim_param(record).bicm = 1;
 sim_param(record).demod_type = 1;  % max-log-map appropriate for uncoded
 sim_param(record).linetype = 'm:';
 sim_param(record).legend = sim_param(record).comment;
-sim_param(record).filename = strcat( data_directory, 't_bersim_2.mat');
+sim_param(record).filename = strcat( data_directory, 'SpeedProfile_2.mat');
 sim_param(record).reset = 0;
 sim_param(record).max_trials = 1e9*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = 1e-7; 
@@ -73,9 +73,10 @@ sim_param(record).MaxRunTime = 3*60;
 sim_param(record).timing_sample_rate = 60; 
 sim_param(record).ProfileSpeed = 1;
 
+
 % long length for timing test
 record = 3;
-sim_param(record).comment = 'UMTS-TC, BPSK, Rayleigh, rate 2048/3840';
+sim_param(record).comment = 'long runtime. turbo code';
 sim_param(record).SNR = 0:0.25:50;
 sim_param(record).framesize = 2048;
 sim_param(record).code_bits_per_frame = 3840;
@@ -114,7 +115,7 @@ sim_param(record).ProfileSpeed = 1;
 
 % convolutional code
 record = 4;
-sim_param(record).comment = 'Rate 1/2 K=7 NSC convolutional code w/ BPSK in AWGN';
+sim_param(record).comment = 'long runtime.  convolutional code';
 sim_param(record).sim_type = 'coded';
 sim_param(record).code_configuration = 0;
 sim_param(record).SNR = [0:0.5:8];

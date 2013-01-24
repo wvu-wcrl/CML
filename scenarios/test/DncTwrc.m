@@ -1,9 +1,13 @@
+% DncTwrc.m
+% Testing basic functionality of digital network coding
+%  in the two-way relay channel.
+
 % determine where your root directory is
 load( 'CmlHome.mat' );
 
 
 % determine where to store your files
-base_name = 'DncTwrcTest';
+base_name = 'DncTwrc';
 
 
 if ispc
@@ -27,12 +31,12 @@ sim_param(record).framesize = 1229;
 sim_param(record).code_bits_per_frame = 2048;
 sim_param(record).bicm = 1;
 sim_param(record).max_iterations = 1;
-sim_param(record).filename = strcat( data_directory, 'test_1.mat');
+sim_param(record).filename = strcat( data_directory, 'DncTwrc_1.mat');
 sim_param(record).sim_type = 'uncoded';
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).modulation = 'FSK';
 sim_param(record).channel = 'Rayleigh';
-sim_param(record).comment = '0-Perfect amplitude knowledge';
+sim_param(record).comment = 'Uncoded, Rayleigh, Csi=1, M=4,';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 4;
@@ -53,8 +57,6 @@ sim_param(record).MaxRunTime = 60;
 
 
 
-
-
 record = 2;
 sim_param(record).SNR = [0:0.5:50];
 sim_param(record).blocks_per_frame = 1024;
@@ -64,12 +66,12 @@ sim_param(record).framesize = 1229;
 sim_param(record).code_bits_per_frame = 2048;
 sim_param(record).bicm = 1;
 sim_param(record).max_iterations = 1;
-sim_param(record).filename = strcat( data_directory, 'test_2.mat');
+sim_param(record).filename = strcat( data_directory, 'DncTwrc_2.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).modulation = 'FSK';
 sim_param(record).channel = 'Rayleigh';
-sim_param(record).comment = '0-Perfect amplitude knowledge';
+sim_param(record).comment = 'Turbo code, BICM=1, Rayleigh, CSI=1, M=4';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 4;
@@ -101,12 +103,12 @@ sim_param(record).framesize = 1229;
 sim_param(record).code_bits_per_frame = 2048;
 sim_param(record).bicm = 2;
 sim_param(record).max_iterations = 10;
-sim_param(record).filename = strcat( data_directory, 'test_3.mat');
+sim_param(record).filename = strcat( data_directory, 'DncTwrc_3.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).modulation = 'FSK';
 sim_param(record).channel = 'Rayleigh';
-sim_param(record).comment = '0-Perfect amplitude knowledge';
+sim_param(record).comment = 'Turbo coded, BICM=2, Rayleigh, M=4';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 4;
@@ -145,7 +147,7 @@ sim_param(record).sim_type = 'coded';
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).modulation = 'FSK';
 sim_param(record).channel = 'Rayleigh';
-sim_param(record).comment = '0-Perfect amplitude knowledge';
+sim_param(record).comment = 'Turbo coded, BICM=2, Csi=2, M=2';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 4;
@@ -183,7 +185,7 @@ sim_param(record).modulation = 'FSK';
 sim_param(record).ldpc_impl = 'new';
 sim_param(record).parity_check_matrix = strcat( 'InitializeDVBS2(', effective_rate , ',', int2str( sim_param(record).framesize ), ')' );
 sim_param(record).channel = 'AWGN';
-sim_param(record).comment = '0-Perfect amplitude knowledge';
+sim_param(record).comment = 'LDPC coded, BICM=2, AWGN, Csi=2, M=4';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 0;
@@ -220,7 +222,7 @@ sim_param(record).modulation = 'FSK';
 sim_param(record).ldpc_impl = 'new';
 sim_param(record).parity_check_matrix = strcat( 'InitializeDVBS2(', effective_rate , ',', int2str( sim_param(record).framesize ), ')' );
 sim_param(record).channel = 'AWGN';
-sim_param(record).comment = '0-Perfect amplitude knowledge';
+sim_param(record).comment = 'LDPC coded, AWGN, BICM=2, M=4';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 0;
@@ -258,7 +260,7 @@ sim_param(record).modulation = 'FSK';
 sim_param(record).ldpc_impl = 'new';
 sim_param(record).parity_check_matrix = strcat( 'InitializeDVBS2(', effective_rate , ',', int2str( sim_param(record).framesize ), ')' );
 sim_param(record).channel = 'Rayleigh';
-sim_param(record).comment = '0-Perfect amplitude knowledge';
+sim_param(record).comment = 'LDPC, Rayleigh, BICM=1, M=4';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 0;

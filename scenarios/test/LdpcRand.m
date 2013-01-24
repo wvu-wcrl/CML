@@ -1,9 +1,12 @@
+% LdpcRand.m
+% Test random generation of LDPC H-matrices.
+
 % determine where your root directory is
 load( 'CmlHome.mat' );
 
 
 % determine where to store your files
-base_name = 'LdpcRandTest';
+base_name = 'LdpcRand';
 
 
 if ispc
@@ -28,7 +31,7 @@ sim_param(record).mod_order = 4;
 sim_param(record).framesize = 16200;
 sim_param(record).bicm = 1;
 sim_param(record).max_iterations = 50;
-sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_1.mat');
+sim_param(record).filename = strcat( data_directory, 'LdpcRand_1.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).modulation = 'FSK';
@@ -39,7 +42,7 @@ sim_param(record).ldpc_param.dv_dist = [ 0.4 0.52 0.08 ];
 sim_param(record).ldpc_param.constraint = 'eira';  % 'eira' or 'unconstrained'
 sim_param(record).ldpc_param.rate = effective_rate;
 sim_param(record).channel = 'Rayleigh';
-sim_param(record).comment = 'Standard DVB-S2 LDPC test: R = 3/5 N = 68400 K = 38800';
+sim_param(record).comment = 'DNC TWRC, DVB-S2: R = 3/5 N = 16200 K = 9720, [2 3 19]';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 0;
@@ -69,7 +72,7 @@ sim_param(record).mod_order = 4;
 sim_param(record).framesize = 16200;
 sim_param(record).bicm = 1;
 sim_param(record).max_iterations = 50;
-sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_2.mat');
+sim_param(record).filename = strcat( data_directory, 'LdpcRand_2.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).modulation = 'FSK';
@@ -80,7 +83,7 @@ sim_param(record).ldpc_param.dv_dist = [ 0.4 0.52 0.08 ];
 sim_param(record).ldpc_param.constraint = 'eira';  % 'eira' or 'unconstrained'
 sim_param(record).ldpc_param.rate = str2num(effective_rate);
 sim_param(record).channel = 'Rayleigh';
-sim_param(record).comment = 'Random DVB-S2 LDPC test: R = 3/5 N = 68400 K = 38800';
+sim_param(record).comment = 'DNC TWRC, DVB-S2: R = 3/5 N = 16200 K = 9720, [ 2 14 19 ]';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 0;
@@ -115,13 +118,13 @@ sim_param(record).mod_order = 32;
 sim_param(record).framesize = 64800;
 sim_param(record).bicm = 1;
 sim_param(record).max_iterations = 100;
-sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_3.mat');
+sim_param(record).filename = strcat( data_directory, 'LdpcRand_3.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).modulation = 'APSK';
 sim_param(record).ldpc_impl = 'new';
 sim_param(record).parity_check_matrix =  strcat( 'InitializeDVBS2(', effective_rate , ',', int2str( sim_param(record).framesize ), ')' );
 sim_param(record).channel = 'AWGN';
-sim_param(record).comment = 'Standard DVB-S2 LDPC, BICM';
+sim_param(record).comment = 'P2P, Standard DVB-S2, N=64800, K=38880, BICM=1';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'b';
 sim_param(record).demod_type = 0;
@@ -149,7 +152,7 @@ sim_param(record).mod_order = 32;
 sim_param(record).framesize = 64800;
 sim_param(record).bicm = 1;
 sim_param(record).max_iterations = 100;
-sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_4.mat');
+sim_param(record).filename = strcat( data_directory, 'LdpcRand_4.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).modulation = 'APSK';
 sim_param(record).ldpc_impl = 'new';
@@ -159,7 +162,7 @@ sim_param(record).ldpc_param.dv_dist = [ 0.4 0.52 0.08 ];
 sim_param(record).ldpc_param.constraint = 'eira';  % 'eira' or 'unconstrained'
 sim_param(record).ldpc_param.rate = str2num(effective_rate);
 sim_param(record).channel = 'AWGN';
-sim_param(record).comment = 'Random LDPC, dv = [2 4 19], BICM';
+sim_param(record).comment = 'P2P, DVB-S2, N=64800, K=38880, dv = [ 2 4 19 ], BICM=1';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 0;
@@ -189,7 +192,7 @@ sim_param(record).mod_order = 32;
 sim_param(record).framesize = 64800;
 sim_param(record).bicm = 2;
 sim_param(record).max_iterations = 100;
-sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_5.mat');
+sim_param(record).filename = strcat( data_directory, 'LdpcRand_5.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).modulation = 'APSK';
 sim_param(record).ldpc_impl = 'new';
@@ -199,7 +202,7 @@ sim_param(record).ldpc_param.dv_dist = [ 0.4 0.52 0.08 ];
 sim_param(record).ldpc_param.constraint = 'eira';  % 'eira' or 'unconstrained'
 sim_param(record).ldpc_param.rate = str2num(effective_rate);
 sim_param(record).channel = 'AWGN';
-sim_param(record).comment = 'Random LDPC, dv = [2 4 19], BICM-ID';
+sim_param(record).comment = 'P2P, DVB-S2, N=64800, K=38880, dv = [2 4 19], BICM=2';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'r';
 sim_param(record).demod_type = 0;
@@ -227,7 +230,7 @@ sim_param(record).mod_order = 4;
 sim_param(record).framesize = 64800;
 sim_param(record).bicm = 1;
 sim_param(record).max_iterations = 10;
-sim_param(record).filename = strcat( data_directory, 'LdpcRandTest_6.mat');
+sim_param(record).filename = strcat( data_directory, 'LdpcRand_6.mat');
 sim_param(record).sim_type = 'coded';
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).modulation = 'FSK';
@@ -238,7 +241,7 @@ sim_param(record).ldpc_param.dv_dist = [ 0.4 0.52 0.08 ];
 sim_param(record).ldpc_param.constraint = 'eira';  % 'eira' or 'unconstrained'
 sim_param(record).ldpc_param.rate = str2num(effective_rate);
 sim_param(record).channel = 'Rayleigh';
-sim_param(record).comment = '0-Perfect amplitude knowledge';
+sim_param(record).comment = 'DNC TWRC, DVB-S2, N=64800, K=38880, dv = [2 4 19], BICM=1';
 sim_param(record).legend = sim_param(record).comment;
 sim_param(record).linetype = 'k';
 sim_param(record).demod_type = 0;

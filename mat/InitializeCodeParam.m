@@ -284,6 +284,14 @@ sim_param.rate = code_param.rate;
 end
 
 
+
+
+
+
+
+
+
+
 function [H_rows, H_cols, K] = generate_random_H_matrix( sim_param, cml_home )
 
 error_check_input(sim_param);
@@ -431,9 +439,8 @@ function [H_rows H_cols] = gen_random_ldpc_code(C, K, dv2, dv3, a2new, a3new, ..
 create_ldpc_pchk_file( C, K, dv2, dv3, a2new, a3new,...
     tmp_path, ldpc_code_gen_path);
 
-pchk_path = [cml_home filesep 'data' filesep 'ldpc'];
 convert_pchk_alist(ldpc_code_gen_path, tmp_path,...
-                   tmp_path, 'tmpfile.pchk');
+    tmp_path, 'tmpfile.pchk');
 
 [H_rows H_cols] = translate_alist_to_hrows_hcols( tmp_path, 'tmpfile' );
 
@@ -523,7 +530,7 @@ end
 
 
 function convert_pchk_alist(ldpc_code_gen_path, tmp_path,...
-                             pchk_path, pchk_file)
+    pchk_path, pchk_file)
 
 % create alist creation command string
 sp = [' '];
@@ -538,7 +545,7 @@ system(cmd);
 end
 
 
-function [code_param H_rows H_cols] = ...
+function [sim_param code_param] = ...
     create_parity_check_matrix(sim_param, code_param, cml_home)
 
 pcm = sim_param.parity_check_matrix;  % shorten name
@@ -553,10 +560,8 @@ if strcmp( pcm, 'random' )    % randomly generate h-matrix
     [H_rows, H_cols, data_bits_per_frame ] =...
         generate_random_H_matrix( sim_param, cml_home );
     
-    code_param.H_rows = H_rows;
-    code_param.H_cols = H_cols;
+    code_param = assign_pcm_code_param( code_param, H_rows, H_cols );
     code_param.data_bits_per_frame = data_bits_per_frame;
-    
     code_param.P_matrix = [];
     
 elseif strcmp( pcm(1:6), 'strcat' )   % generate using 'InitializeDVBS2'
@@ -573,19 +578,54 @@ elseif strcmp( pcm(end-3:end), 'pchk')  % load pchk file
         case 'local'
             [ H_rows H_cols ] = convert_local_pchk_hrows_hcols( cml_home, pcm );
             
-            code_param.H_rows = H_rows;
-            code_param.H_cols = H_cols;
+            code_param = assign_pcm_code_param( code_param, ...
+                H_rows, H_cols );
             code_param.P_matrix = [];
             code_param.data_bits_per_frame =...
-                sim_param.framesize*sim_param.ldpc_param.rate; 
+                sim_param.framesize*sim_param.ldpc_param.rate;
+            
         case 'cluster'
             % form filename
             error('cluster reading of pchk file not implemented yet');
             %pcf_fp = [cml_home filesep 'data' filesep 'ldpc' filesep pcm];
     end
+    
+elseif strcmp( pcm(end-4:end), 'alist')
+    
+    % convert alist to H_rows, H_cols
+    pcm_path = [ cml_home filesep 'data' filesep 'ldpc' ];
+    pcm_prefix = pcm(1:end-6);
+    [H_rows H_cols] = translate_alist_to_hrows_hcols( pcm_path, pcm_prefix );
        
+    % assign H_rows, H_cols to code_param
+    code_param = assign_pcm_code_param( code_param, ...
+        H_rows, H_cols );
+    code_param.data_bits_per_frame =...
+        sim_param.framesize*sim_param.ldpc_param.rate;
+    code_param.P_matrix = [];
+
+elseif strcmp( pcm(end-2:end), 'mat')
+    
+    % load H_rows, H_cols     
+    pchk_path = [cml_home filesep 'data' filesep 'ldpc'];
+    pchk_path_file = [pchk_path filesep pcm];
+    
+    load(pchk_path_file);   % assume mat file contains H_rows, H_cols
+    
+    code_param = assign_pcm_code_param( code_param, ...
+        H_rows, H_cols );
+    code_param.data_bits_per_frame =...
+        sim_param.framesize*sim_param.ldpc_param.rate;
+    code_param.P_matrix = [];
 end
 
+end
+
+
+function code_param = assign_pcm_code_param( code_param, ...
+    H_rows, H_cols )
+code_param.H_rows = H_rows;
+code_param.H_cols = H_cols;
 end
 
 
@@ -602,7 +642,7 @@ end
 [ldpc_code_gen_path tmp_path] = create_path_to_tmp_gen_directory(cml_home);
 
 convert_pchk_alist(ldpc_code_gen_path, tmp_path,...
-                    pchk_path, pcm);
+    pchk_path, pcm);
 
 pcm_prefix = pcm(1:end-5);
 [H_rows H_cols] = translate_alist_to_hrows_hcols( tmp_path, pcm_prefix );
