@@ -564,7 +564,7 @@ if strcmp( pcm, 'random' )    % randomly generate h-matrix
     code_param.data_bits_per_frame = data_bits_per_frame;
     code_param.P_matrix = [];
     
-elseif strcmp( pcm(1:6), 'strcat' )   % generate using 'InitializeDVBS2'
+elseif ~isempty(strfind( pcm, 'InitializeDVBS2' ))   % generate using 'InitializeDVBS2'
     % parity check not recognized
     % if not random, use specified parity check matrix
     [code_param.H_rows, code_param.H_cols, code_param.P_matrix ] = eval( sim_param.parity_check_matrix );

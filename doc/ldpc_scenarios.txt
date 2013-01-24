@@ -1,5 +1,12 @@
+
+
 discuss specifying h-matrix as pchk file
-pchk file must be stored in <cml_home>/data/ldpc
+
+file containing parity check matrix  must be stored in <cml_home>/data/ldpc
+supported formats
+alist
+pchk
+mat   assumes file contains CML H_rows, H_cols matrices
 
   must specify code rate as sim_param.ldpc_param.rate
   ^ different than other ldpc scenarios
