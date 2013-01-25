@@ -1,0 +1,25 @@
+= WebCML Job Submission Functions =
+
+This folder contains functionality for creating WebCML jobs
+for submission to the WebCML web interface.
+
+
+= User Usage =
+
+To create job files for simulation scenario <scenario>
+and records <records>,
+
+>> CmlWebSubmit( scenario, records )
+
+The job files are placed in <cml_home>/jobs
+
+
+= Example =
+
+>> CmlWebSubmit('FskScenarios', 1);
+
+>> cd <cml_home>/jobs
+
+>> ls
+
+FskScenarios_1.mat

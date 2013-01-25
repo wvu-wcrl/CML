@@ -21,7 +21,7 @@ switch run_loc,
         
         [ project_root ] = CmlReadProjectRoot();        % read user's .cml_cfg to locate project directory
         
-        CreateJobs( scenario, records, project_root );  % create job file for this scenario and record
+        CreateJobsCluster( scenario, records, project_root );  % create job file for this scenario and record
                                                         % and move to user's job input queue
         
     case 'local'
@@ -29,7 +29,7 @@ switch run_loc,
         cml_home = CmlLoadCmlHome('local');
         
         [user remote_cmlroot remote_projroot] = ...
-            CmlReadClusterCfg(cml_home);
+            CmlReadAccountInfo();
 
         N_h = length(cml_home);
         SyncScenario(scenario, user, remote_cmlroot, N_h);
@@ -45,7 +45,7 @@ end
 end
 
 
-function CreateJobs( scenario, records, project_root )
+function CreateJobsCluster( scenario, records, project_root )
 
 [sim_param sim_state] = ReadScenario( scenario, records );    % read cml records from disk
 
@@ -53,13 +53,8 @@ job_input_queue = [project_root '/' 'JobIn'];
 
 N = length(records);   % number of simulation records
 for k = 1:N,
-
-
-
     JobParam = sim_param(k);   % convert data structures to naming convention used by job manager
     JobState = sim_state(k);
-
-
     
     CreateJob( k, scenario, records(k), JobParam, JobState,  job_input_queue );
 end
