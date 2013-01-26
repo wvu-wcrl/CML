@@ -6,9 +6,9 @@ function cml_home = CmlLoadCmlHome( SimLocation )
 
 switch SimLocation
     
-    case 'local'
+    case {'local', 'clusterlocal'}
   load('CmlHome.mat');
-    case 'cluster'
+    case 'clusterworker'
   load('CmlRHome.mat');
         % currently, take no action
         

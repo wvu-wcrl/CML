@@ -3,15 +3,19 @@
 %
 % Inputs
 %  cml_home        path to CML source root
-%  SimLocation     execution location of code - 'local' or 'cluster'
+%  SimLocation     execution location of code - 'local' or 'clusterworker'
 %
 %  Local and cluster operation are differentiated by the manner in
 %    in which CmlHome.mat is saved in the function 'save_cml_home'/
 %
 %     Last updated on 7/26/2012
 %
+%    - Possible future update: add support for location 'clusterlocal'
+%
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
+
+
 
 
 function CmlInit( cml_home, SimLocation, wid )
@@ -32,10 +36,10 @@ end
 function error_check_input( SimLocation )
 switch SimLocation,
     case 'local',
-    case 'cluster',
+    case 'clusterworker',
     otherwise
         fprintf('Please specify a valid value for SimLocation -  \n');
-        fprintf(' ''cluster'' or ''local'' \n');
+        fprintf(' ''clusterworker'' or ''local'' \n');
         return;
 end
 end
@@ -100,11 +104,11 @@ if strcmp( SimLocation, 'local' )
     save_directory = fullfile( cml_local_home, 'scenarios', cml_home_file );
     save( save_directory, save_flag, 'cml_home' );
     
-    cml_home_file = 'CmlRHome.mat';
-    cml_home = cml_home(2:end);
-    cml_home = ['/r' cml_home];
-    save_directory = fullfile( cml_local_home, 'scenarios', cml_home_file );
-    save( save_directory, save_flag, 'cml_home' );
+    %cml_home_file = 'CmlRHome.mat';
+    %cml_home = cml_home(2:end);
+    %cml_home = ['/r' cml_home];
+    %save_directory = fullfile( cml_local_home, 'scenarios', cml_home_file );
+    %save( save_directory, save_flag, 'cml_home' );
 end
 
 end

@@ -4,7 +4,7 @@ function run_loc = DetermineRunLocation()
   hostname = hostname(1:end-1);
 
 if strcmp(hostname, 'wcrlCluster')
-    run_loc = 'cluster';
+    run_loc = 'clusterworker';
 else
     run_loc = 'local';
 end

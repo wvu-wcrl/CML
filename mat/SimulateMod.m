@@ -152,7 +152,8 @@ end
 
 
 function verbosity = determine_verbosity( sim_param )
-if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+if strcmp(sim_param.SimLocation, 'local') || strcmp(sim_param.SimLocation, 'clusterlocal' ),...
+        verbosity = 'verbose'; else verbosity = 'silent'; end
 end
 
 
@@ -283,15 +284,16 @@ function continue_simulation = evaluate_simulation_stopping_conditions( sim_para
 % conditions
 c1 = snrpoint <= length(EsNo);
 
-if strcmp(sim_param.SimLocation, 'local' )
+if strcmp(sim_param.SimLocation, 'local' ) || strcmp(sim_param.SimLocation, 'clusterlocal' )
 c2 = 1;
-elseif strcmp(sim_param.SimLocation, 'cluster' )
+elseif strcmp(sim_param.SimLocation, 'clusterworker' )
 c2 = session_time < sim_param.MaxRunTime;
 end
 
 
 if c2 == 0,
-    if strcmp(sim_param.SimLocation, 'local'), verbosity = 'verbose'; else verbosity = 'silent'; end
+    if strcmp(sim_param.SimLocation, 'local') || strcmp(sim_param.SimLocation, 'clusterlocal' ),...
+            verbosity = 'verbose'; else verbosity = 'silent'; end
     CmlPrint('\nSimulation time expired.\n', [], verbosity);
 end
 
@@ -304,9 +306,9 @@ function execute_this_snr = evaluate_snr_point_stopping_conditions(sim_param, si
 c1 =  sim_state.trials( code_param.max_iterations, snrpoint ) < sim_param.max_trials( snrpoint ) ;
 c2 =  sim_state.frame_errors(code_param.max_iterations, snrpoint) < sim_param.max_frame_errors(snrpoint);
 
-if strcmp( sim_param.SimLocation, 'local' ),
+if strcmp( sim_param.SimLocation, 'local' ) || strcmp(sim_param.SimLocation, 'clusterlocal' ),
   c3 = 1;
-elseif strcmp(sim_param.SimLocation, 'cluster' )
+elseif strcmp(sim_param.SimLocation, 'clusterworker' )
   c3 = session_time < sim_param.MaxRunTime;
 end
 

@@ -1,12 +1,12 @@
 function [ldpc_decoder] = CreateLdpcDecoder( sim_param, code_param )
 
 
-if strcmp(sim_param.ldpc_impl, 'new')
-    
-    
+
+if strcmp(sim_param.ldpc_impl, 'new')    
     
     
     % load parity check matrix based on cluster or local
+    
     
     
     % check parity check matrix (nyuk nyuk) for consistency

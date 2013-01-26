@@ -277,7 +277,7 @@ convert_pchk_alist(ldpc_code_gen_path, tmp_path,...
 
 loc = determine_location;
 
-if strcmp(loc, 'cluster')
+if strcmp(loc, 'clusterworker')
     save_hmat_cluster( h_mat_full_path, H_rows, H_cols );
 elseif strcmp(loc, 'local')
     save(h_mat_full_path,'H_rows','H_cols');
@@ -384,7 +384,7 @@ ldpc_code_gen_path = [cml_home filesep 'module' filesep 'chan_code'...
     filesep 'ldpc' filesep 'code_gen' filesep];
 
 loc = determine_location;
-if strcmp(loc, 'cluster')
+if strcmp(loc, 'clusterworker')
     tmp_path = [filesep 'home' filesep 'pcs' filesep 'tmp'];
 elseif strcmp(loc, 'local')
     tmp_path = [ldpc_code_gen_path 'tmp'];
@@ -397,7 +397,7 @@ function loc = determine_location()
 
 [a whoami] = system('whoami');
 if strcmp( whoami(1:end-1) , 'pcs')
-    loc = 'cluster';
+    loc = 'clusterworker';
 else
     loc = 'local';
 end

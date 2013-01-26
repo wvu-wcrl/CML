@@ -6,7 +6,7 @@ function CmlSave( save_struct, SimLocation )
 
 switch SimLocation
     
-    case 'local'
+    case { 'local', 'clusterlocal' }
              save_state = save_struct.save_state;
              save_param = save_struct.save_param;
              save( save_struct.tempfile, save_struct.save_flag, 'save_state', 'save_param');
@@ -18,7 +18,7 @@ switch SimLocation
         
         movefile( save_struct.tempfile, save_struct.code_param.filename, 'f');
         
-    case 'cluster'
+    case 'clusterworker'
         % currently, take no action
         
          

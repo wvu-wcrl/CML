@@ -59,12 +59,12 @@ end
 function InitCml(cml_rhome, wid)
 cd(cml_rhome);
 cd('mat');
-CmlInit(cml_rhome, 'cluster', wid);
+CmlInit(cml_rhome, 'clusterworker', wid);
 end
 
 
 function sim_param = SetLocationToCluster( sim_param )
-  sim_param.SimLocation = 'cluster';
+  sim_param.SimLocation = 'clusterworker';
 end
 
 
