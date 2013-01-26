@@ -15,7 +15,7 @@
 %
 %     Copyright (C) 2012, Terry R. Ferrett and Matthew C. Valenti
 %
-%     Last updated on August 08/03/2012.
+%     Last updated on 08/03/2012.
 
 
 function TaskState = CmlWorker( InputParam )

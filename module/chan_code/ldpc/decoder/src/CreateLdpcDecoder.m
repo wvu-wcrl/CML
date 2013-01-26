@@ -3,7 +3,11 @@ function [ldpc_decoder] = CreateLdpcDecoder( sim_param, code_param )
 
 if strcmp(sim_param.ldpc_impl, 'new')
     
-    ldpc_decoder = LdpcDecoder();
+    
+    
+    
+    % load parity check matrix based on cluster or local
+    
     
     % check parity check matrix (nyuk nyuk) for consistency
     check_pcm( code_param.H_rows, code_param.H_cols,...
@@ -19,12 +23,11 @@ if strcmp(sim_param.ldpc_impl, 'new')
         [row_one col_one] = PostProcessH( code_param.H_rows, code_param.H_cols );
     end
     
+    % create LDPC decoder object.
+    ldpc_decoder = LdpcDecoder();
     ldpc_decoder = ldpc_decoder.CreateTannerGraph( row_one, col_one,...
         code_param.code_bits_per_frame );
 else
-    
-    
-    
     ldpc_decoder = [];
 end
 end
@@ -44,7 +47,7 @@ N = NMinusK + K;
 %  consistent with H-matrix size
 if N ~= framesize,
     ErrMsg = ['Frame size specified in scenario file' ' ',...
-               'not consistent with H-matrix dimensions.'];    
+        'not consistent with H-matrix dimensions.'];
     error(ErrMsg);
 end
 
@@ -53,7 +56,7 @@ end
 %  consistent with H-matrix size
 if K ~= data_bits_per_frame,
     ErrMsg = ['Data bits per frame specified in scenario file' ' ',...
-               'not consistent with H-matrix dimensions.'];    
+        'not consistent with H-matrix dimensions.'];
     error(ErrMsg);
 end
 
