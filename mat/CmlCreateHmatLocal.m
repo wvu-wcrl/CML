@@ -231,20 +231,15 @@ function h_matrix_path = form_h_matrix_path( cml_home, scen_name )
 h_matrix_path = [cml_home filesep 'output' filesep scen_name filesep...
     'supp' filesep 'hmat' ];
 
-%id = 'MATLAB:MKDIR:DirectoryExists';
-
-%warning('off', id);
 
 % make directory with sudo permission
-[a b] = strtok(h_mat_full_path,'/');
+[a b] = strtok(cml_home,'/');
 [user d] = strtok(b, '/');
 
 scen_path = [cml_home filesep 'output' filesep scen_name];
-
 cmd = ['sudo mkdir -p ' h_matrix_path ]; system(cmd);
 cmd = ['sudo chown -R ' user ':' user ' ' scen_path]; system(cmd);
 
-%mkdir(h_matrix_path); % create directory if it doesn't exist
 end
 
 
