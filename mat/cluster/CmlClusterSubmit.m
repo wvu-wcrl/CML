@@ -13,11 +13,11 @@
 
 function CmlClusterSubmit( scenario, records )
 
-run_loc = DetermineRunLocation();  % check if local or cluster
+RunLoc = CmlJobSubmRunLocation();  % check if local or cluster
 
-switch run_loc,
+switch RunLoc,
     
-    case 'cluster'
+    case 'clusterlocal'
         
         [ project_root ] = CmlReadProjectRoot();        % read user's .cml_cfg to locate project directory
         
