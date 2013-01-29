@@ -41,7 +41,7 @@ switch RunLoc,
     case 'local'
         
         cml_home = CmlLoadCmlHome('local');
-        [user remote_cmlroot remote_projroot] =  CmlReadAccountInfo(cml_home);
+        [user remote_cmlroot remote_projroot] =  CmlReadAccountInfo();
         
         ReportRemoteJobStatus(user, remote_projroot);
         
