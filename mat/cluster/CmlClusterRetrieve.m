@@ -171,7 +171,9 @@ save_param = SetSimLocationLocal( save_param );
 
 eval( scenario_name );
 
-save( [cml_home sim_param(cur_record).filename], 'save_param', 'save_state');
+% issue arose with this syntax while testing scenario LdpcHmat record 3
+%save( [cml_home sim_param(cur_record).filename], 'save_param', 'save_state';)
+save( [sim_param(cur_record).filename], 'save_param', 'save_state');
 
 delete( full_path_to_job_output_file );
 end
