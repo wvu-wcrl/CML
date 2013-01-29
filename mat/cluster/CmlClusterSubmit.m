@@ -13,7 +13,7 @@
 
 function CmlClusterSubmit( scenario, records )
 
-RunLoc = CmlJobSubmRunLocation();  % check if local or cluster
+RunLoc = CmlJobSubMRunLocation();  % check if local or cluster
 
 switch RunLoc,
     

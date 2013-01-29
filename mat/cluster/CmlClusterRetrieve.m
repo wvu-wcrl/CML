@@ -27,9 +27,9 @@ RunLoc = CmlJobSubMRunLocation();
 
 switch RunLoc,
     
-    case 'cluster'
+    case 'clusterlocal'
         [project_root] = ReadCmlCfg();
-        
+       
         running_queue = [project_root '/JobRunning'];
         listing = GetDirectoryListing( running_queue );
         consume_running_queue( running_queue, listing );
