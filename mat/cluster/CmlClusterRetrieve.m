@@ -23,9 +23,9 @@
 
 function CmlClusterRetrieve( )
 
-run_loc = DetermineRunLocation();  % check if local or cluster
+RunLoc = CmlJobSubMRunLocation();
 
-switch run_loc,
+switch RunLoc,
     
     case 'cluster'
         [project_root] = ReadCmlCfg();
