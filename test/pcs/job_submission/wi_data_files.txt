@@ -1,0 +1,43 @@
+== Job Submission with Data Files Using Web Interface ==
+
+The purpose of this document is to describe submitting
+jobs with data files to the web interface.
+
+Three types of parity check matrix files formats are demonstrated
+.alist
+.pchk
+.mat
+
+
+== Instructions ==
+
+1. On local computer, start MATLAB
+
+2. Change directories to CML root.
+
+3. Execute CmlStartup()
+   >> CmlStartup
+
+4a) LDPC parity check matrix specified by .alist file
+    >> CmlWebSubmit('LdpcHmat', 3)
+
+    - upload <cml_root>/jobs/LdpcHmat_3.mat as job file to web interface
+    - upload <cml_root>/data/ldpc/test_ldpc_hmat.alist as data file to web interface
+
+4b) LDPC parity check matrix specified by .pchk file
+    >> CmlWebSubmit('LdpcHmat', 2)
+
+    - upload <cml_root>/jobs/LdpcHmat_2.mat as job file to web interface
+    - upload <cml_root>/data/ldpc/test_ldpc_hmat.pchk as data file to web interface
+
+4c) LDPC parity check matrix specified by .mat file
+    >> CmlWebSubmit('LdpcHmat', 4)
+
+    - upload <cml_root>/jobs/LdpcHmat_4.mat as job file to web interface
+    - upload <cml_root>/data/ldpc/test_ldpc_hmat.mat as data file to web interface
+
+5. Observe job state in web interface
+
+
+Terry Ferrett
+1/29/2013
