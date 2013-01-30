@@ -333,7 +333,6 @@ if sim_param.timing_sample_rate ~= 0,
     sim_state.timing_data.trial_samples( bin ) = total_trials;                      % sample trial total
     
     sim_state.timing_data.time_samples = [ 0 : tsr : bin_st ];                        % adjust time axis
-    
 end
 
 end
