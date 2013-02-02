@@ -591,41 +591,43 @@ for i=1:length( sim_state_fieldnames )
     % process fixed length fields - fields which do not change as function
     %  of number of SNR points
     [action msg] = process_fl_fields(sim_state_fieldnames{i},...
-                                     SNR_has_changed,...
-                                     sim_param_in.sim_type);    
+        SNR_has_changed,...
+        sim_param_in.sim_type);
     switch action
-        case 'continueloop'
-            continue;
         case 'endsim'
             error(msg);
         case 'finishiteration'
     end
     
+    
     if isfield( save_state, sim_state_fieldnames{i} )
         saved_vector = getfield( save_state, sim_state_fieldnames{i} );
-        if ( SNR_has_changed & ~isempty( saved_vector ) )
-            % fix 6-11-06
-            row_count = size( saved_vector, 1 );
-            new_vector = zeros( row_count, number_new_SNR_points );
+        
+        if isstruct(saved_vector)   % assume structures are restored
+            sim_state = setfield( sim_state, sim_state_fieldnames{i}, saved_vector );
+        else                        % expand or contract double vectors
             
-            % this logic needs to be verified 8-10-06
-            for j=1:number_new_SNR_points
-                index = find( (save_param.SNR  <= sim_param_in.SNR(j) + epsilon)&(save_param.SNR >= sim_param_in.SNR(j)-epsilon) );
-                if (length( index ) > 1)
-                    error( 'Duplicate SNR points in saved sim' );
-                elseif (length(index) == 1)
-                    if isstruct( saved_vector ),
-                        error('changing SNR vector for exit analysis not currently supported.');
-                        
-                    else
+            
+            if ( SNR_has_changed & ~isempty( saved_vector ) )
+                % fix 6-11-06
+                row_count = size( saved_vector, 1 );
+                new_vector = zeros( row_count, number_new_SNR_points );
+                
+                % this logic needs to be verified 8-10-06
+                for j=1:number_new_SNR_points
+                    index = find( (save_param.SNR  <= sim_param_in.SNR(j) + epsilon)&(save_param.SNR >= sim_param_in.SNR(j)-epsilon) );
+                    if (length( index ) > 1)
+                        error( 'Duplicate SNR points in saved sim' );
+                    elseif (length(index) == 1)
                         new_vector(:,j) = saved_vector(:,index);
                     end
-                    
                 end
+                sim_state = setfield( sim_state, sim_state_fieldnames{i}, new_vector);
+            else
+                sim_state = setfield( sim_state, sim_state_fieldnames{i}, saved_vector );
             end
-            sim_state = setfield( sim_state, sim_state_fieldnames{i}, new_vector);
-        else
-            sim_state = setfield( sim_state, sim_state_fieldnames{i}, saved_vector );
+            
+            
         end
     end
 end
@@ -670,11 +672,11 @@ function [action msg] = process_fl_fields(field, SNR_has_changed, sim_type)
 %%%%
 
 switch field
-
+    
     case 'timing_data'
         action = 'finishiteration';
         msg = '';
-
+        
     case 'exit_state'
         if SNR_has_changed & strcmp(sim_type, 'exit'),
             action = 'endsim';
