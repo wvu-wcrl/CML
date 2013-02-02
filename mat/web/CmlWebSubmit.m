@@ -15,8 +15,8 @@ function CmlWebSubmit( scenario, records )
 
 cml_home = CmlLoadCmlHome('local');
 
-[user remote_cmlroot remote_projroot] = ...
-    CmlReadAccountInfo();
+%[user remote_cmlroot remote_projroot] = ...
+%    CmlReadAccountInfo();
 
 CreateJobsWeb(scenario, records);
 

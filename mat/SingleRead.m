@@ -78,7 +78,7 @@ switch sim_param_in.sim_type,
     case 'capacity',
         sim_state = init_capacity( sim_param_out, number_new_SNR_points);
     case 'exit',
-      sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points);
+        sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points);
     case 'uncoded',
         sim_state = init_uncoded(sim_param_in, sim_param_out, number_new_SNR_points, sim_state);
     case 'coded',
@@ -118,11 +118,11 @@ if ( (fid > 0)&( sim_param_out.reset < 1 ) )
     restore_struct.save_state = save_state;
     restore_struct.sim_state = sim_state;
     restore_struct.number_new_SNR_points = number_new_SNR_points;
-    restore_struct.epsilon = epsilon;    
+    restore_struct.epsilon = epsilon;
     sim_state = restore_saved_state( restore_struct );
     
     
-
+    
 end
 
 if (fid>0)
@@ -254,16 +254,16 @@ for i=1:length( spuf )
         % assume all params defined
         % error if params do not match
         if isfield( save_param, 'exit_param' )
-            if isfield( sim_param_in, 'exit_param')                
+            if isfield( sim_param_in, 'exit_param')
                 if save_param.exit_param.rate ~= sim_param_in.exit_param.rate,
                     error('saved exit_param.rate does not match scenario file');
-                end                
+                end
                 if ~isequal(save_param.exit_param.requested_IA, sim_param_in.exit_param.requested_IA),
                     error('saved exit_param.requested_IA does not match scenario file');
-                end                
+                end
                 switch save_param.exit_param.exit_phase,
                     case 'detector',
-                    case 'decoder',                        
+                    case 'decoder',
                         if save_param.exit_param.dv ~= sim_param_in.exit_param.dv,
                             error('saved exit_param.dv does not match scenario file');
                         end
@@ -272,9 +272,9 @@ for i=1:length( spuf )
                         end
                         if ~strcmp(save_param.exit_param.exit_type, sim_param_in.exit_param.exit_type),
                             error('saved exit_param.exit_type does not match scenario file');
-                        end                       
-                end                
-                sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );                
+                        end
+                end
+                sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );
             else
                 error
             end
@@ -282,10 +282,10 @@ for i=1:length( spuf )
         
         
         
-    elseif strcmp( spuf{i}, 'twrc_param') & isfield(save_param, 'twrc_param' ),               
+    elseif strcmp( spuf{i}, 'twrc_param') & isfield(save_param, 'twrc_param' ),
         sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );
-    elseif strcmp( spuf{i}, 'ldpc_param') & isfield(save_param, 'ldpc_param' ), 
-        sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );        
+    elseif strcmp( spuf{i}, 'ldpc_param') & isfield(save_param, 'ldpc_param' ),
+        sim_param_out = setfield( sim_param_out, spuf{i}, getfield( save_param, spuf{i} ) );
     else
         if isfield( save_param, spuf{i} )
             if isfield( sim_param_in, spuf{i} )
@@ -388,7 +388,7 @@ function sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_point
 switch sim_param_in.exit_param.exit_type,
     case 'ldpc',
         
-  error_check_ldpc_exit( sim_param_in );
+        error_check_ldpc_exit( sim_param_in );
         
         switch sim_param_in.exit_param.exit_phase,
             case {'decoder'},
@@ -404,7 +404,7 @@ switch sim_param_in.exit_param.exit_type,
                 sim_state.exit_state.dec_complete = 0;
                 
             case {'detector'},
-                sim_state = init_exit_state_metrics( sim_param_in, number_new_SNR_points );                
+                sim_state = init_exit_state_metrics( sim_param_in, number_new_SNR_points );
         end
     case 'turboproc',
         error('Turbo EXIT is still in the oven.');
@@ -468,7 +468,7 @@ switch ep.exit_phase,
         end
         
         check_for_completed_det_record( ep.det_scenario, ep.det_record );
-                
+        
         
     otherwise,
         error('exit_phase must be one of { ''detector'', ''decoder'' }');
@@ -584,8 +584,23 @@ if SNR_has_changed
     fprintf( 'Warning: SNR vector does not matched saved vector\n' );
 end
 
+
 % restore saved state, one structure element at a time
 for i=1:length( sim_state_fieldnames )
+    
+    % process fixed length fields - fields which do not change as function
+    %  of number of SNR points
+    [action msg] = process_fl_fields(sim_state_fieldnames{i},...
+                                     SNR_has_changed,...
+                                     sim_param_in.sim_type);    
+    switch action
+        case 'continueloop'
+            continue;
+        case 'endsim'
+            error(msg);
+        case 'finishiteration'
+    end
+    
     if isfield( save_state, sim_state_fieldnames{i} )
         saved_vector = getfield( save_state, sim_state_fieldnames{i} );
         if ( SNR_has_changed & ~isempty( saved_vector ) )
@@ -621,6 +636,7 @@ sim_state = orderfields( sim_state );
 end
 
 
+
 function sim_state = init_exit_state_metrics( sim_param_in, number_new_SNR_points )
 N = length(sim_param_in.exit_param.requested_IA);
 sim_state.trials = zeros( 1, number_new_SNR_points );
@@ -643,3 +659,35 @@ if sim_state.exit_state.det_complete ~= 1,
 end
 end
 
+
+
+function [action msg] = process_fl_fields(field, SNR_has_changed, sim_type)
+%%%%
+% The fields denoted as fixed length either do not change as a function of
+% SNR, or changing length as a function of SNR is not yet supported.
+% Take appropriate action based on conditions.
+%  Terry 1/2013
+%%%%
+
+switch field
+
+    case 'timing_data'
+        action = 'finishiteration';
+        msg = '';
+
+    case 'exit_state'
+        if SNR_has_changed & strcmp(sim_type, 'exit'),
+            action = 'endsim';
+            msg = 'changing SNR vector for exit analysis not currently supported.';
+        else
+            action = 'finishiteration';
+            msg = '';
+        end
+        
+    otherwise
+        action = 'finishiteration';
+        msg = '';
+        
+end
+
+end
