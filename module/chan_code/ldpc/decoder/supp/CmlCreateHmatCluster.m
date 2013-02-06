@@ -31,7 +31,7 @@ switch hmat_type
     case 'pchk'
         pcm_prefix = pcm(1:end-5);
         [ H_rows H_cols ErrMsg ] = cnv_pchk_hr_hc( obj, pcm, cml_home );
-       
+        
         if ~isempty(ErrMsg)
             SuccessFlag = 1;
             return;
@@ -40,8 +40,7 @@ switch hmat_type
         [ErrMsg] = save_hrows_hcols( obj, CurrentUser, pcm_prefix, H_rows, H_cols);
     case 'alist'
         pcm_prefix = pcm(1:end-6);
-        [JobInDir, JobRunningDir, JobOutDir, TempDir JobDataDir] =...
-            obj.SetPaths(CurrentUser.JobQueueRoot);
+        [JobInDir, JobRunningDir, JobOutDir, JobFailedDir, SuspendedDir, TempDir, JobDataDir, FiguresDir] = obj.SetPaths(CurrentUser.JobQueueRoot);
         [H_rows H_cols] = CmlAlistToHrowsHcols( JobDataDir, pcm_prefix );
         
         % return H_rows, H_cols, create code_param_long
@@ -95,8 +94,7 @@ function [ H_rows H_cols ErrMsg ] = cnv_pchk_hr_hc( obj, pcm, cml_home )
 
 tmp_path = obj.JobManagerParam.TempJMDir;
 
-[JobInDir, JobRunningDir, JobOutDir, TempDir JobDataDir] =...
-    obj.SetPaths(CurrentUser.JobQueueRoot);
+[JobInDir, JobRunningDir, JobOutDir, JobFailedDir, SuspendedDir, TempDir, JobDataDir, FiguresDir] = obj.SetPaths(CurrentUser.JobQueueRoot);
 
 [ErrMsg] = cnv_pchk_alist_cl(LdpcCodeGenP, JobDataDir, tmp_path, pcm);
 
@@ -149,8 +147,7 @@ PcmMatTmpP = fullfile(obj.JobManagerParam.TempJMDir, PcmMat);
 
 save( PcmMatTmp, 'H_rows', 'H_cols');
 
-[JobInDir, JobRunningDir, JobOutDir, TempDir] =...
-    obj.SetPaths(CurrentUser.JobQueueRoot);
+[JobInDir, JobRunningDir, JobOutDir, JobFailedDir, SuspendedDir, TempDir, JobDataDir, FiguresDir] = obj.SetPaths(CurrentUser.JobQueueRoot);
 
 PcmMatDataP = [ JobDataDir filesep PcmMat ];
 
