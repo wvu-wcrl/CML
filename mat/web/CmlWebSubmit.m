@@ -44,7 +44,7 @@ function CreateJobWeb( k, scenario, record, JobParam, JobState )
 
 [cml_home] = CmlLoadCmlHome('local');
 
-LocalJobsPath = [cml_home filesep 'jobs'];
+LocalJobsPath = [cml_home filesep 'jobs' filesep 'JobIn'];
 
 JobName = [scenario '_' int2str( record ) '.mat'];
 

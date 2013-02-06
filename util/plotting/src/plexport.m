@@ -16,9 +16,4 @@ switch it
         error('Image export type must be ''eps'' or ''pdf'' ');    
 end
 
-   
-
-
-
-
 end

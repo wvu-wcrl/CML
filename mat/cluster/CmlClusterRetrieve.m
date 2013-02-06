@@ -202,10 +202,6 @@ end
 
 
 
-
-
-
-
 function [ project_root ] = ReadCmlCfg()
 
 util_path = '/home/pcs/util';   % add path to file reading utility

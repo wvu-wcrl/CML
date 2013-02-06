@@ -1,3 +1,3 @@
 function listing = GetDirectoryListing( directory )
-listing = dir( [ directory '/*.mat' ] );
+listing = dir( [ directory filesep '*.mat' ] );
 end
