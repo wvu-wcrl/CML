@@ -19,7 +19,7 @@ switch RunLoc,
     
     case 'clusterlocal'
         
-        [ project_root ] = CmlReadProjectRoot();        % read user's .cml_cfg to locate project directory
+        [ project_root ] = ReadProjectRoot();        % read user's .cml_cfg to locate project directory
         
         CreateJobsCluster( scenario, records, project_root );  % create job file for this scenario and record
                                                         % and move to user's job input queue

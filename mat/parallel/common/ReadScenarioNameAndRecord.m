@@ -1,3 +1,5 @@
+
+% read scenario name and record as strings
 function [scenario_name record] = ReadScenarioNameAndRecord( name_record )
 [scenario_name suffix] = strtok( name_record, '_' );
 record = str2double( suffix(1:end-4) );

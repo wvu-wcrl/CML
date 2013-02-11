@@ -1,4 +1,4 @@
-% CmlReadProjectRoot.m
+% ReadProjectRoot.m
 %
 %  Read cluster CML job queue root.
 %
@@ -10,14 +10,12 @@
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
 
-
-
-function [ project_root ] = CmlReadProjectRoot()
+function [ project_root ] = ReadProjectRoot()
 
 util_path = '/home/pcs/util';   % add path to file reading utility
 addpath(util_path);
 
-cml_proj_cf = get_proj_cf();     % path to user cml project file
+cml_proj_cf = GetProjCf();     % path to user cml project file
 
 % get path to cml
 heading = '[GeneralSpec]';
@@ -35,24 +33,6 @@ project_root = out{1}{1};
 project_root = project_root(1:end);  %TEMP
 
 end
-
-
-function cf_path = get_proj_cf()    % get config file for this user
-
-  user = get_current_user();
-
-cml_proj_cf = 'cml_cfg';
-cf_path = ['/home' '/' user '/' cml_proj_cf];
-end
-
-
-function user = get_current_user()                                        
-  [dontcare user] = system('whoami');                                     
-user = user(1:end-1);                                                   
-end                                                                       
-        
-
-
 
 %     This library is free software;
 %     you can redistribute it and/or modify it under the terms of

@@ -28,25 +28,23 @@ RunLoc = CmlJobSubMRunLocation();
 switch RunLoc,
     
     case 'clusterlocal'
-        [project_root] = ReadCmlCfg();
+        [project_root] = ReadProjectRoot();
        
         running_queue = [project_root '/JobRunning'];
         listing = GetDirectoryListing( running_queue );
-        consume_running_queue( running_queue, listing );
+        ConsumeRunningQueue( running_queue, listing );
         
         output_queue = [project_root '/JobOut'];
         listing = GetDirectoryListing( output_queue );
-        consume_output_queue( output_queue, listing );
+        ConsumeOutputQueue( output_queue, listing );
         
-    case 'local'
-        
+    case 'local'        
         cml_home = CmlLoadCmlHome('local');
         [user remote_cmlroot remote_projroot] =  CmlReadAccountInfo();
         
         ReportRemoteJobStatus(user, remote_projroot);
         
-        RetrieveRemoteJobs(user, remote_cmlroot);
-        
+        RetrieveRemoteJobs(user, remote_cmlroot);        
 end
 
 end
@@ -89,7 +87,6 @@ RetrieveRemoteOutput(user, remote_cmlroot);
 end
 
 
-
 function ExecRemoteCmlClusterRetrieve(user, remote_cmlroot)
 c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
 c2 = ['matlab -r' ' '];
@@ -121,67 +118,19 @@ end
 
 
 % copy intermediate results from JobRunning to CML output
-function consume_running_queue( running_queue, listing )
+function ConsumeRunningQueue( running_queue, listing )
 N = size( listing );
 for k = 1:N,
     [scenario_name record] = read_scenario_name_and_record( listing(k).name );
     full_path_to_output_file = [ running_queue '/' listing(k).name ];
-    copy_job_out_to_cml_out( full_path_to_output_file, scenario_name, record);
+    CopyJobOutToCmlOut( full_path_to_output_file, scenario_name, record);
 end
-end
-
-
-
-function consume_output_queue( output_queue, listing )
-N = size( listing );
-for k = 1:N,
-    [scenario_name record] = read_scenario_name_and_record( listing(k).name );
-    full_path_to_output_file = [ output_queue '/' listing(k).name ];
-    move_job_out_to_cml_out( full_path_to_output_file, scenario_name, record);
-end
-end
-
-
-% read scenario name and record as strings
-function [scenario_name record] = read_scenario_name_and_record( name_record )
-[scenario_name suffix] = strtok( name_record, '_' );
-record = str2double( suffix(1:end-4) );
-
-flipped_name_record = name_record(end:-1:1);
-[rec_flip scen_flip] = strtok( flipped_name_record, '_' );
-
-
-scenario_name = scen_flip( end : -1 : 1+1 );
-
-rec_flipped_back = rec_flip(end:-1:1);
-record = str2double( strtok(rec_flipped_back, '.') );
-end
-
-
-% convert job output file to cml output file, move to cml out, and delete
-% job out
-function move_job_out_to_cml_out( full_path_to_job_output_file, scenario_name, record)
-cur_record = record;
-
-load( full_path_to_job_output_file );
-save_param = JobParam;
-save_state = JobState;
-
-save_param = SetSimLocationLocal( save_param );
-
-eval( scenario_name );
-
-% issue arose with this syntax while testing scenario LdpcHmat record 3
-%save( [cml_home sim_param(cur_record).filename], 'save_param', 'save_state';)
-save( [sim_param(cur_record).filename], 'save_param', 'save_state');
-
-delete( full_path_to_job_output_file );
 end
 
 
 % convert job running file file to cml output file, copy to cml out, and leave 
 % running file in place
-function  copy_job_out_to_cml_out( full_path_to_job_output_file, scenario_name, record )
+function  CopyJobOutToCmlOut( full_path_to_job_output_file, scenario_name, record )
 
 load( full_path_to_job_output_file );
 save_param = JobParam;
@@ -194,54 +143,6 @@ eval( scenario_name );
 save( [cml_home sim_param(record).filename], 'save_param', 'save_state');
 
 end
-
-
-function save_param = SetSimLocationLocal( save_param )
-save_param.SimLocation = 'local';
-end
-
-
-
-function [ project_root ] = ReadCmlCfg()
-
-util_path = '/home/pcs/util';   % add path to file reading utility
-addpath(util_path);
-
-cml_proj_cf = get_proj_cf();     % path to user cml project file
-
-% get path to cml
-heading = '[GeneralSpec]';
-key = 'CodeRoot';
-out = util.fp(cml_proj_cf, heading, key);
-cml_home = out{1}{1};
-
-addpath(cml_home);
-
-% get path to cml project root
-heading = '[GeneralSpec]';
-key = 'JobQueueRoot';
-out = util.fp(cml_proj_cf, heading, key);
-project_root = out{1}{1};
-%project_root = project_root(1:end-1);  %TEMP
-
-end
-
-
-
-function user = get_current_user()
-[dontcare user] = system('whoami');
-user = user(1:end-1);
-end
-
-
-
-function cf_path = get_proj_cf()    % get config file for this user
-user = get_current_user();
-
-cml_proj_cf = 'cml_cfg';
-cf_path = ['/home' '/' user '/' cml_proj_cf];
-end
-
 
 %     This library is free software;
 %     you can redistribute it and/or modify it under the terms of

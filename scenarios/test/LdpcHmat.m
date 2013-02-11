@@ -57,7 +57,8 @@ sim_param(record).legend = strcat('M=', num2str(sim_param(record).mod_order), ',
                                     'LDPC Impl=', sim_param(record).ldpc_impl);
 sim_param(record).MaxRunTime = 3*60;
                                 
-                                
+
+% .PCHK parity check matrix files not officially supported
 record = 2;
 effective_rate = '3/5'; 
 sim_param(record).comment = '.PCHK file';
@@ -89,6 +90,7 @@ sim_param(record).legend = strcat('M=', num2str(sim_param(record).mod_order), ',
                                    'BICM=', num2str(sim_param(record).bicm), ',',...
                                     'LDPC Impl=', sim_param(record).ldpc_impl);
 sim_param(record).MaxRunTime = 3*60;
+
 
 record = 3;
 effective_rate = '3/5'; 

@@ -61,7 +61,7 @@ end
 
 function stop_all_jobs()
 
-[project_root] = CmlReadProjectRoot();
+[project_root] = ReadProjectRoot();
 
 job_running_dir = [project_root filesep 'JobRunning'];
 job_output_dir =  [project_root filesep 'JobOut'];
@@ -87,7 +87,7 @@ end
 
 function stop_specified_jobs( scenario, records )
 
-[ project_root ] = CmlReadProjectRoot();
+[ project_root ] = ReadProjectRoot();
 path_to_running_queue = [project_root filesep 'JobRunning'];
 path_to_output_queue = [project_root filesep 'JobOut'];
 

@@ -1,6 +1,6 @@
 % makefile for the CML mex files
 %
-% Last updated July 4, 2006
+% Last updated Feb 10th, 2013
 
 % first clear all the mex files
 clear Capacity.c
@@ -83,3 +83,14 @@ else
     mex -output ../mex/Demod_PNC_FSK Demod_PNC_FSK.c
     mex -output ../mex/Somap_PNC Somap_PNC.c
 end
+
+
+% execute module-specific makefiles - Terry 2/2013
+[ cml_home ] = CmlLoadCmlHome('local');
+path_cml_mex = fullfile(cml_home, 'source');
+
+
+% LDPC Decoder
+path_ldpc_mex = fullfile(cml_home, 'module', 'chan_code', 'ldpc', ...
+                         'decoder', 'src', 'mexsrc');
+cd(path_ldpc_mex); make; cd (path_cml_mex);
