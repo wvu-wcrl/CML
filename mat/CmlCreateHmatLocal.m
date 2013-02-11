@@ -73,6 +73,16 @@ end
 
 function [sim_param code_param] = process_random( sim_param, code_param, cml_home)
 
+
+%%%%% Random code generation not yet officially supported
+%%%%% Current implementation specific to Linux operating system
+%%%%% For official support, this functionality must be generalized to all
+%%%%%   platforms
+%%%%%
+%%%%% For unofficial use in a Linux environment, comment the following
+%%%%%  error message.
+error('Random code generation not yet officially supported.');
+
 % check for constraint, if not set, assume eira
 if ~isfield(sim_param.ldpc_param, 'constraint')
     sim_param.ldpc_param.constraint = 'eira';
@@ -98,6 +108,16 @@ end
 
 
 function code_param = process_pchk( sim_param, code_param, cml_home, pcm )
+
+%%%%% Parity check matrix format .pchk not yet officially supported
+%%%%% Current implementation specific to Linux operating system
+%%%%% For official support, this functionality must be generalized to all
+%%%%%   platforms
+%%%%%
+%%%%% For unofficial use in a Linux environment, comment the following
+%%%%%  error message.
+error('Parity check matrix format .pchk not yet officially supported.');
+
 
 [ H_rows H_cols ] = convert_local_pchk_hrows_hcols( cml_home, pcm );
 
