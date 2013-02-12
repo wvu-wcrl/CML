@@ -16,7 +16,7 @@
 function MoveJobOutToCmlOut( job_file, scenario_name, record)
 cur_record = record;
 
-load( jobfile );
+load( job_file );
 save_param = JobParam;
 save_state = JobState;
 

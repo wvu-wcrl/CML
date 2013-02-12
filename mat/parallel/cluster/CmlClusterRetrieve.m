@@ -150,7 +150,7 @@ save_param = SetSimLocationLocal( save_param );
 
 eval( scenario_name );
 
-save( [cml_home sim_param(record).filename], 'save_param', 'save_state');
+save( [sim_param(record).filename], 'save_param', 'save_state');
 
 end
 

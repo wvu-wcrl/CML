@@ -26,7 +26,7 @@ for k = 1:N,
     JobParam = sim_param(k);   
     JobState = sim_state(k);
     
-    CreateJobCluster( k, scenario, records(k), JobParam, JobState,...
+    CreateJob(  scenario, records(k), JobParam, JobState,...
                job_input_queue );
 end
 
