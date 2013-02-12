@@ -25,7 +25,7 @@ switch location,
         
         % create cluster jobs from given scenario and records and
         %  move to job input queue
-        CreateJobsCluster( scenario, records, project_root );     
+        CreateJobs( scenario, records, project_root );     
         
     % submit job directly to cluster while running on user's computer.
     % functionality not fully implemented, so not officially supported.
@@ -48,41 +48,6 @@ switch location,
         % start jobs by executing CmlClusterSubmit directly on cluster.
         ExecuteRemoteSims(user, remote_cmlroot, scenario, records);                        
 end
-end
-
-
-% create job files while running on cluster
-function CreateJobsCluster( scenario, records, project_root )
-
-[sim_param sim_state] = ReadScenario( scenario, records );   
-
-job_input_queue = [project_root '/' 'JobIn'];
-
-% convert cml data structures to naming convention used by job manager
-N = length(records); 
-for k = 1:N,
-    JobParam = sim_param(k);   
-    JobState = sim_state(k);
-    
-    CreateJob( k, scenario, records(k), JobParam, JobState,...
-               job_input_queue );
-end
-
-end
-
-
-% create job file and save in user input queue
-function CreateJob( k, scenario, record, JobParam, JobState, ...
-    job_input_queue )
-
-% the data file for a particular job is assumed to have the same
-%  name as the job
-job_name = [scenario '_' int2str( record ) '.mat'];
-JobParam.code_param_long_filename = job_name;
-
-full_path_job_file = [job_input_queue '/' job_name];
-save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job input queue
-
 end
 
 

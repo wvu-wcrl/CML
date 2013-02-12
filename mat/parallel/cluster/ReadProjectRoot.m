@@ -2,20 +2,21 @@
 %
 %  Read cluster CML job queue root.
 %
-%
 % Inputs
 %
-%     Last updated on 8/13/2012
+%     Last updated on 2/11/2013
 %
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
 
 function [ project_root ] = ReadProjectRoot()
 
-util_path = '/home/pcs/util';   % add path to file reading utility
+% add path to file reading utility
+util_path = '/home/pcs/util';   
 addpath(util_path);
 
-cml_proj_cf = GetProjCf();     % path to user cml project file
+% path to user cml project file
+cml_proj_cf = GetProjCf();     
 
 % get path to cml
 heading = '[GeneralSpec]';

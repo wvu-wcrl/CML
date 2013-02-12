@@ -1,61 +1,26 @@
 % CmlWebSubmit.m
-% Creates job file for PCS web-interface submission
+% Creates job file for WebCML web-interface submission
 %
 % Inputs
 %  scenario          CML scenario name
-%  records            record list
+%  records           record list
 %
 %
-%     Last updated on 1/24/2013
+%     Last updated on 2/11/2013
 %
 %     Copyright (C) 2013, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
 
 function CmlWebSubmit( scenario, records )
 
-cml_home = CmlLoadCmlHome('local');
-
-%[user remote_cmlroot remote_projroot] = ...
-%    CmlReadAccountInfo();
-
-CreateJobsWeb(scenario, records);
-
-end
-
-
-function CreateJobsWeb( scenario, records )
-
-[sim_param sim_state] = ReadScenario( scenario, records );    % read cml records from disk
-
-N = length(records);   % number of simulation records
-
-for k = 1:N,
-    JobParam = sim_param(k);   % convert data structures to naming convention used by job manager
-
-    JobState = sim_state(k);    
-    
-    CreateJobWeb( k, scenario, records(k), JobParam, JobState );
-end
-
-end
-
-
-function CreateJobWeb( k, scenario, record, JobParam, JobState )
-
 [cml_home] = CmlLoadCmlHome('local');
 
-LocalJobsPath = [cml_home filesep 'jobs' filesep 'JobIn'];
+local_jobs_path = [cml_home filesep 'jobs'];
 
-JobName = [scenario '_' int2str( record ) '.mat'];
-
-JobParam.code_param_long_filename = JobName;
-
-LocalJobsFile = [LocalJobsPath filesep JobName];
-
-save( LocalJobsFile, 'JobParam', 'JobState' );
+% create job files from the specified scenarios and records
+CreateJobs(scenario, records, local_jobs_path);
 
 end
-
 
 %     This library is free software;
 %     you can redistribute it and/or modify it under the terms of

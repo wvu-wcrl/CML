@@ -1,9 +1,8 @@
 % CmlWebRetrieve.m
-% Creates job file for PCS web-interface submission
+% Translate completed WebCML job files in jobs/JobOut to CML output files.
 %
 % Inputs
 %  none
-%
 %
 %     Last updated on 2/11/2013
 %
@@ -12,17 +11,17 @@
 
 function CmlWebRetrieve(  )
 
-% set path to JobOut
 [cml_home] = CmlLoadCmlHome('local');
 
 LocalJobOut = [cml_home filesep 'jobs' filesep 'JobOut'];
 
+% get list of files in local jobout
 listing = GetDirectoryListing( LocalJobOut );
 
-ConsumeOutputQueue( LocalJobOut, listing);
+% translate job files to cml output files
+ConsumeOutputQueue( LocalJobOut, listing );
 
 end
-
 
 
 %     This library is free software;

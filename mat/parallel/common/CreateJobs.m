@@ -1,21 +1,37 @@
-% GetProjCf.m
-%  Get the location of the CML project config file for this user.
+% CreateJobs.m
+% Read simulation parameters for jobs given a scenario and set of records.
 %
 % Inputs
-%   no inputs
+%  scenario           CML scenario name
+%  records            Records within scenario
+%  job_root           Root of job directories
+%
 %
 %     Last updated on 2/11/2013
 %
-%     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
+%     Copyright (C) 2013, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
 
+% Read simulation parameters for jobs given a scenario and set of records.
+% For each record, create a job file and place in input queue.
+function CreateJobs( scenario, records, job_root )
 
-% get path to cml project configuration file for this user
-function cf_path = GetProjCf()
-  user = GetCurrentUser();
-cml_proj_cf = 'cml_cfg';
-cf_path = ['/home' '/' user '/' cml_proj_cf];
+[sim_param sim_state] = ReadScenario( scenario, records );   
+
+job_input_queue = [job_root filesep 'JobIn'];
+
+% convert cml data structures to naming convention used by job manager
+N = length(records); 
+for k = 1:N,
+    JobParam = sim_param(k);   
+    JobState = sim_state(k);
+    
+    CreateJobCluster( k, scenario, records(k), JobParam, JobState,...
+               job_input_queue );
 end
+
+end
+
 
 %     This library is free software;
 %     you can redistribute it and/or modify it under the terms of
@@ -31,3 +47,5 @@ end
 %     You should have received a copy of the GNU Lesser General Public
 %     License along with this library; if not, write to the Free Software
 %     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+

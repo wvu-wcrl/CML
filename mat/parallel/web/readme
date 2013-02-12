@@ -1,25 +1,58 @@
-= WebCML Job Submission Functions =
+== WebCML CML-Web Interface ==
 
-This folder contains functionality for creating WebCML jobs
-for submission to the WebCML web interface.
-
-
-= User Usage =
-
-To create job files for simulation scenario <scenario>
-and records <records>,
-
->> CmlWebSubmit( scenario, records )
-
-The job files are placed in <cml_home>/jobs
+These functions implement a user interface for creating job files
+to submit to the WebCML web interface.
 
 
-= Example =
+The user functions are
 
->> CmlWebSubmit('FskScenarios', 1);
+CmlWebSubmit(scenario, record)         Create WebCML job files from
+                                       specified scenario and records.
 
->> cd <cml_home>/jobs
+CmlWebRetrieve                         Convert completed job files to CML
+                                       output files.                                           
 
->> ls
+== Usage Example ==
 
-FskScenarios_1.mat
+Consider a user who wishes to execute 
+
+scenario   'FskScenarios'
+record      1
+
+using the web interface.
+
+1. Start CML on the user's local machine.
+>> cd CMLROOT
+>> CmlStartup
+
+where >> denotes a MATLAB prompt.
+
+    
+2. Create job file for execution.
+>> CmlWebSubmit('LdpcHmat', 3)
+The job file is stored in
+<cml_root>/jobs/JobIn/LdpcHmat_3.mat
+
+
+3. This particular simulation utilizes and auxiliary data file
+    to store the LDPC parity check matrix.
+
+The data file is stored in <cml_root>/data/ldpc/test_ldpc_hmat.alist
+
+
+4. Upload the job and data file to the web interface and retrieve
+    the completed job file (separate document).
+
+
+5. Place the retrieved job file in
+   <cml_root>/jobs/JobOut
+
+
+6. Convert job file to CML output file.
+>> CmlWebRetrieve
+
+
+7. Plot results.
+>> CmlPlot('LdpcHmat', 3)
+
+
