@@ -1,4 +1,4 @@
-% File CapacityScenarios
+% File ExitP2P
 %
 % This is a set of scenarios for the Coded Modulation Library.
 %

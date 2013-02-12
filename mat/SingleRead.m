@@ -44,6 +44,9 @@ sim_state = struct;
 [spcf spuf sim_state_fieldnames] = get_field_names( spc, spu, sim_state_prototype );
 
 number_new_SNR_points = get_number_input_snr_points(sim_param_in);
+if number_new_SNR_points == 0
+    clear number_new_SNR_points
+end
 
 check_for_consistent_snr_trial_vector_lengths(sim_param_in);
 
@@ -106,8 +109,6 @@ switch sim_param_in.sim_type,
         error( 'simulation type not supported\n' );
 end
 
-
-
 % restore the saved sim_state
 if ( (fid > 0)&( sim_param_out.reset < 1 ) )
     
@@ -117,7 +118,9 @@ if ( (fid > 0)&( sim_param_out.reset < 1 ) )
     restore_struct.sim_state_fieldnames = sim_state_fieldnames;
     restore_struct.save_state = save_state;
     restore_struct.sim_state = sim_state;
-    restore_struct.number_new_SNR_points = number_new_SNR_points;
+    if exist('number_new_SNR_points', 'var')
+        restore_struct.number_new_SNR_points = number_new_SNR_points;
+    end
     restore_struct.epsilon = epsilon;
     sim_state = restore_saved_state( restore_struct );
     
@@ -134,22 +137,11 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
 function [spcf spuc ssf] = get_field_names( spc, spu, sim_state_prototype )
 spcf = fieldnames( spc );
 spuc = fieldnames( spu );
 ssf = fieldnames( sim_state_prototype );
 end
-
-
 
 
 
@@ -162,6 +154,7 @@ end
 end
 
 
+
 function check_for_consistent_snr_trial_vector_lengths(sim_param_in)
 if isfield( sim_param_in, 'max_trials' )
     if ( length( sim_param_in.max_trials ) ~= length( sim_param_in.SNR ) )
@@ -169,7 +162,6 @@ if isfield( sim_param_in, 'max_trials' )
     end
 end
 end
-
 
 
 
@@ -205,6 +197,7 @@ end
 end
 
 
+
 function [ save_param save_state sim_param_out ] = load_previous_simulation_state( load_struct )
 
 fid = load_struct.fid;
@@ -230,11 +223,6 @@ end
 
 
 
-
-
-
-
-
 function sim_param_out = check_unchangeable_fieldnames( check_struct )
 
 spuf = check_struct.spuf;
@@ -243,11 +231,7 @@ save_param = check_struct.save_param;
 sim_param_in = check_struct.sim_param_in;
 sim_param_out = check_struct.sim_param_out;
 
-
 for i=1:length( spuf )
-    
-    
-    
     
     if strcmp( spuf{i}, 'exit_param') & strcmp(save_param.sim_type, 'exit'),
         % handle exit_param as a special case
@@ -303,12 +287,9 @@ for i=1:length( spuf )
         
     end
     
-    
 end
 
 end
-
-
 
 
 
@@ -331,7 +312,6 @@ end
 
 
 
-
 function set_default_if_no_match( match, sim_param_in, save_param, spuf, spu, i )
 if match
     if ~length( getfield( sim_param_in, spuf{i} ) )
@@ -345,7 +325,6 @@ if match
     end
 end
 end
-
 
 
 
@@ -372,8 +351,6 @@ end
 
 
 
-
-
 function sim_state = init_capacity( sim_param_out, number_new_SNR_points)
 % capacity simulation
 sim_state.trials = zeros( sim_param_out.max_iterations, number_new_SNR_points );
@@ -382,8 +359,8 @@ sim_state.capacity_avg = sim_state.trials;
 end
 
 
-function sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points);
 
+function sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points);
 
 switch sim_param_in.exit_param.exit_type,
     case 'ldpc',
@@ -477,6 +454,7 @@ end
 end
 
 
+
 function check_valid_dv_dist(sim_param_in)
 %given
 n = sim_param_in.framesize;
@@ -489,7 +467,6 @@ dv_dist_sum = sum(dv_dist);
 if abs(1 - dv_dist_sum) > 10^(-3),
     error('vnd degree distribution, sim_param_in.exit_param.dv_dist, must sum to 1.');
 end
-
 
 % compute number of vnd edges
 %vnd_edges = sum( n * dv_dist .* dv );
@@ -531,8 +508,8 @@ sim_state.timing_data.trial_samples = 0;
 sim_state.timing_data.time_samples = 0;
 sim_state.timing_data.elapsed_time = 0;
 
-
 end
+
 
 
 function sim_state = init_bloutage( sim_param_out, number_new_SNR_pints, sim_state )
@@ -541,6 +518,8 @@ sim_state.trials = zeros( sim_param_out.max_iterations, number_new_SNR_points );
 sim_state.frame_errors = zeros( sim_param_out.max_iterations, number_new_SNR_points );
 sim_state.FER = sim_state.trials;
 end
+
+
 
 function sim_state = init_outage( number_new_SNR_points, sim_state )
 % outage probability in block fading
@@ -551,10 +530,7 @@ end
 
 
 
-
-
 function sim_state = restore_saved_state( restore_struct )
-
 
 sim_param_in = restore_struct.sim_param_in;
 sim_param_out = restore_struct.sim_param_out;
@@ -562,12 +538,10 @@ save_param = restore_struct.save_param;
 sim_state_fieldnames = restore_struct.sim_state_fieldnames;
 sim_state = restore_struct.sim_state;
 save_state = restore_struct.save_state;
-number_new_SNR_points = restore_struct.number_new_SNR_points;
+if isfield(restore_struct, 'number_new_SNR_points')
+    number_new_SNR_points = restore_struct.number_new_SNR_points;
+end
 epsilon = restore_struct.epsilon;
-
-
-
-
 
 % determine if the SNR has changed
 SNR_has_changed = 0;
@@ -583,7 +557,6 @@ end
 if SNR_has_changed
     fprintf( 'Warning: SNR vector does not matched saved vector\n' );
 end
-
 
 % restore saved state, one structure element at a time
 for i=1:length( sim_state_fieldnames )
@@ -689,7 +662,6 @@ switch field
     otherwise
         action = 'finishiteration';
         msg = '';
-        
 end
 
 end
