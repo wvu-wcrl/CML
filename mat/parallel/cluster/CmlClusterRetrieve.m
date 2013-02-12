@@ -16,34 +16,45 @@
 %  above, and copies the CML output directory on the
 %  cluster to the output directory for the CML output directory stored locally.
 %
-%     Last updated on 11/27/2012
+%     Last updated on 2/11/2013
 %
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
 
 function CmlClusterRetrieve( )
 
-RunLoc = CmlJobSubMRunLocation();
+location = CmlJobSubMRunLocation();
 
-switch RunLoc,
+switch location,
     
+    % retrieve jobs while running on cluster.
     case 'clusterlocal'
+        
+        % read location of user's project root.
         [project_root] = ReadProjectRoot();
        
+        % retrieve state of jobs which are still running.
         running_queue = [project_root '/JobRunning'];
         listing = GetDirectoryListing( running_queue );
         ConsumeRunningQueue( running_queue, listing );
         
+        % consume jobs which have finished.
         output_queue = [project_root '/JobOut'];
         listing = GetDirectoryListing( output_queue );
         ConsumeOutputQueue( output_queue, listing );
         
+    % retrieve jobs from cluster by executing CmlClusterRetrieve remotely.
+    % copy CML's output directory from remote copy of CML to local.
     case 'local'        
         cml_home = CmlLoadCmlHome('local');
-        [user remote_cmlroot remote_projroot] =  CmlReadAccountInfo();
         
-        ReportRemoteJobStatus(user, remote_projroot);
+        % read linux account info used on cluster.
+        [user remote_cmlroot remote_projroot] =  CmlReadAccountInfo();        
         
+        % report the jobs which are in the running and output queues.
+        ReportRemoteJobStatus(user, remote_projroot);        
+        
+        % copy remote CML output folder to local
         RetrieveRemoteJobs(user, remote_cmlroot);        
 end
 
@@ -79,14 +90,12 @@ end
 
 % retrieve CML output files for completed cluster jobs 
 function RetrieveRemoteJobs( user, remote_cmlroot )
-
 ExecRemoteCmlClusterRetrieve(user, remote_cmlroot);
-
 RetrieveRemoteOutput(user, remote_cmlroot);
-
 end
 
 
+% execute CmlClusterRetrieve remotely
 function ExecRemoteCmlClusterRetrieve(user, remote_cmlroot)
 c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
 c2 = ['matlab -r' ' '];
@@ -103,6 +112,7 @@ system(cmd);
 end
 
 
+% copy remote CML output directory to local
 function RetrieveRemoteOutput(user, remote_cmlroot)
 
 cml_home = CmlLoadCmlHome('local');
@@ -121,7 +131,7 @@ end
 function ConsumeRunningQueue( running_queue, listing )
 N = size( listing );
 for k = 1:N,
-    [scenario_name record] = read_scenario_name_and_record( listing(k).name );
+    [scenario_name record] = ReadScenarioNameAndRecord( listing(k).name );
     full_path_to_output_file = [ running_queue '/' listing(k).name ];
     CopyJobOutToCmlOut( full_path_to_output_file, scenario_name, record);
 end

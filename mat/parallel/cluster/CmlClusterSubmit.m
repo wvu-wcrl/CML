@@ -3,87 +3,81 @@
 %
 % Inputs
 %  scenario          CML scenario name
-%  records            record list
+%  records           record list
 %
 %
-%     Last updated on 7/9/2012
+%     Last updated on 2/11/2013
 %
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
 
 function CmlClusterSubmit( scenario, records )
 
-RunLoc = CmlJobSubMRunLocation();  % check if local or cluster
+location = CmlJobSubMRunLocation();  % check if local or cluster
 
-switch RunLoc,
+switch location,    
     
+    % submit job while running directly on the cluster
     case 'clusterlocal'
         
-        [ project_root ] = ReadProjectRoot();        % read user's .cml_cfg to locate project directory
+        % read location of user's project root
+        [ project_root ] = ReadProjectRoot(); 
         
-        CreateJobsCluster( scenario, records, project_root );  % create job file for this scenario and record
-                                                        % and move to user's job input queue
+        % create cluster jobs from given scenario and records and
+        %  move to job input queue
+        CreateJobsCluster( scenario, records, project_root );     
         
-    case 'local'
-        
-        cml_home = CmlLoadCmlHome('local');
-        
+    % submit job directly to cluster while running on user's computer.
+    % functionality not fully implemented, so not officially supported.
+    case 'local'        
+        cml_home = CmlLoadCmlHome('local');        
+       
+        % read linux account info used on cluster
         [user remote_cmlroot remote_projroot] = ...
             CmlReadAccountInfo();
-
-        N_h = length(cml_home);
-        SyncScenario(scenario, user, remote_cmlroot, N_h);
         
+        % N_h used in constructing partial path to scenario files.
+        N_h = length(cml_home);
+        
+        % push local scenarios to copy of cml on cluster
+        SyncScenario(scenario, user, remote_cmlroot, N_h);        
         fprintf(['Submitting ' scenario ' ' 'records ' ...
             '[' int2str(records) ']']);
         fprintf(' for cluster execution.\n');
-        ExecuteRemoteSims(user, remote_cmlroot, scenario, records);                
         
+        % start jobs by executing CmlClusterSubmit directly on cluster.
+        ExecuteRemoteSims(user, remote_cmlroot, scenario, records);                        
+end
 end
 
 
-end
-
-
+% create job files while running on cluster
 function CreateJobsCluster( scenario, records, project_root )
 
-[sim_param sim_state] = ReadScenario( scenario, records );    % read cml records from disk
+[sim_param sim_state] = ReadScenario( scenario, records );   
 
 job_input_queue = [project_root '/' 'JobIn'];
 
-N = length(records);   % number of simulation records
+% convert cml data structures to naming convention used by job manager
+N = length(records); 
 for k = 1:N,
-    JobParam = sim_param(k);   % convert data structures to naming convention used by job manager
+    JobParam = sim_param(k);   
     JobState = sim_state(k);
     
-    CreateJob( k, scenario, records(k), JobParam, JobState,  job_input_queue );
+    CreateJob( k, scenario, records(k), JobParam, JobState,...
+               job_input_queue );
 end
 
 end
 
 
+% create job file and save in user input queue
+function CreateJob( k, scenario, record, JobParam, JobState, ...
+    job_input_queue )
 
-function FunctionPathRemote = rename_local_remote(FunctionPathLocal)
-
-[dc suffix] = strtok(FunctionPathLocal, '/');
-
-FunctionPathRemote = ['/rhome' suffix];
-
-end
-
-
-
-function CreateJob( k, scenario, record, JobParam, JobState, job_input_queue )
-
-%load('CmlHome.mat');    % create path to cml_home
-%[dc suffix] = strtok(cml_home, '/');
-%cml_home = ['/rhome' suffix];
-%JobParam.cml_home = cml_home;
-
-%JobParam.scenario = scenario;  % this might get chopped off in job manager processing
-%JobParam.record = record;
-
-job_name = [scenario '_' int2str( record ) '.mat'];  % create job filename
+% the data file for a particular job is assumed to have the same
+%  name as the job
+job_name = [scenario '_' int2str( record ) '.mat'];
 JobParam.code_param_long_filename = job_name;
 
 full_path_job_file = [job_input_queue '/' job_name];
@@ -92,11 +86,12 @@ save(full_path_job_file, 'JobParam', 'JobState');% save job file in user's job i
 end
 
 
-
+% push local scenario files to cluster copy of cml
 function SyncScenario(scenario, user, remote_cmlroot, N_h)
 fullpath_localscen = which(scenario);
 partialpath_localscen = fullpath_localscen(N_h + 1:end);
 fullpath_remotescen = [remote_cmlroot partialpath_localscen];
+
 
 cmd = ['scp' ' ' fullpath_localscen ' ' user...
     '@wcrlcluster.csee.wvu.edu' ':' fullpath_remotescen ' > /dev/null'];
@@ -104,7 +99,7 @@ system(cmd);
 end
 
 
-
+% execute jobs by running CmlClusterSubmit on the cluster
 function ExecuteRemoteSims(user, remote_cmlroot, scenario, records)
 c1 = ['ssh' ' ' user '@wcrlcluster.csee.wvu.edu '];
 c2 = ['matlab -r' ' '];
