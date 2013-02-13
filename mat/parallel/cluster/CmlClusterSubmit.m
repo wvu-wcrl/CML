@@ -54,16 +54,18 @@ end
 end
 
 
-
+% copy data files requested by simulation to project data directory
 function CopyCmlDat2ProjDat( scenario, records, project_root )
 
 % load scenarios and records
 [sim_param sim_state] = ReadScenario( scenario, records );
 
-% convert cml data structures to naming convention used by job manager
+
 N = length(records);
-for k = 1:N,
+for k = 1:N,    
     
+    % ldpc parity check matrices.
+    % later: convert to switch statement
     if( sim_param(k).code_configuration == 2 ) % ldpc
         pcm = sim_param(k).parity_check_matrix;
         hmat_type = GetHmatType( pcm );
@@ -80,6 +82,7 @@ for k = 1:N,
         end
     end
     
+    
 end
 
 end
@@ -95,6 +98,13 @@ cml_data_file = fullfile( cml_home, 'data', 'ldpc', pcm );
 
 % construct path to data file in project directory
 proj_data_file = fullfile( project_root, 'Data', pcm );
+
+% produce an error if the data file does not exist
+if ~exist( proj_data_file, 'file' )
+    ErrStr = sprintf(['Project data file %s does not exist'], ...
+        proj_data_file);
+    error(ErrStr);
+end
 
 % copy parity check matrix to data file
 copyfile( cml_data_file, proj_data_file );
