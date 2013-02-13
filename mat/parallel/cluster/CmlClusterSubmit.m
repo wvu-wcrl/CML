@@ -94,7 +94,7 @@ function CopyPchktoJobData( pcm, project_root )
 cml_data_file = fullfile( cml_home, 'data', 'ldpc', pcm );
 
 % construct path to data file in project directory
-proj_data_file = fullfile( project_root, pcm );
+proj_data_file = fullfile( project_root, 'Data', pcm );
 
 % copy parity check matrix to data file
 copyfile( cml_data_file, proj_data_file );
