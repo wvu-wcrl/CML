@@ -15,23 +15,26 @@ function CmlClusterSubmit( scenario, records )
 
 location = CmlJobSubMRunLocation();  % check if local or cluster
 
-switch location,    
+switch location,
     
     % submit job while running directly on the cluster
     case 'clusterlocal'
         
         % read location of user's project root
-        [ project_root ] = ReadProjectRoot(); 
+        [ project_root ] = ReadProjectRoot();
+        
+        % copy data files requested by simulation to project data directory
+        CopyCmlDat2ProjDat( scenario, records, project_root );
         
         % create cluster jobs from given scenario and records and
         %  move to job input queue
-        CreateJobs( scenario, records, project_root );     
+        CreateJobs( scenario, records, project_root );
         
-    % submit job directly to cluster while running on user's computer.
-    % functionality not fully implemented, so not officially supported.
-    case 'local'        
-        cml_home = CmlLoadCmlHome('local');        
-       
+        % submit job directly to cluster while running on user's computer.
+        % functionality not fully implemented, so not officially supported.
+    case 'local'
+        cml_home = CmlLoadCmlHome('local');
+        
         % read linux account info used on cluster
         [user remote_cmlroot remote_projroot] = ...
             CmlReadAccountInfo();
@@ -40,14 +43,62 @@ switch location,
         N_h = length(cml_home);
         
         % push local scenarios to copy of cml on cluster
-        SyncScenario(scenario, user, remote_cmlroot, N_h);        
+        SyncScenario(scenario, user, remote_cmlroot, N_h);
         fprintf(['Submitting ' scenario ' ' 'records ' ...
             '[' int2str(records) ']']);
         fprintf(' for cluster execution.\n');
         
         % start jobs by executing CmlClusterSubmit directly on cluster.
-        ExecuteRemoteSims(user, remote_cmlroot, scenario, records);                        
+        ExecuteRemoteSims(user, remote_cmlroot, scenario, records);
 end
+end
+
+
+
+function CopyCmlDat2ProjDat( scenario, records, project_root )
+
+% load scenarios and records
+[sim_param sim_state] = ReadScenario( scenario, records );
+
+% convert cml data structures to naming convention used by job manager
+N = length(records);
+for k = 1:N,
+    
+    if( sim_param(k).code_configuration == 2 ) % ldpc
+        pcm = sim_param(k).parity_check_matrix;
+        hmat_type = GetHmatType( pcm );
+        switch hmat_type,
+            case 'cml_dvbs2'
+            case 'pchk'
+                CopyPchktoJobData( pcm, project_root );
+            case 'alist'
+                CopyPchktoJobData( pcm, project_root );
+            case 'mat'
+                CopyPchktoJobData( pcm, project_root );
+            case 'random'
+            case 'not_supported'
+        end
+    end
+    
+end
+
+end
+
+
+
+function CopyPchktoJobData( pcm, project_root )
+
+[ cml_home ] = CmlLoadCmlHome('clusterlocal');
+
+% construct path to parity check matrix in cml
+cml_data_file = fullfile( cml_home, 'data', 'ldpc', pcm );
+
+% construct path to data file in project directory
+proj_data_file = fullfile( project_root, pcm );
+
+% copy parity check matrix to data file
+copyfile( cml_data_file, proj_data_file );
+
 end
 
 
@@ -87,7 +138,7 @@ function recstr = ConstructRecords(records)
 recstr = '\[';
 N = length(records);
 for k = 1:N,
-    recstr = [recstr int2str(records(k)) '\' ' '];    
+    recstr = [recstr int2str(records(k)) '\' ' '];
 end
 recstr(end) = '\';
 recstr(end) = ']';
