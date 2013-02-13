@@ -26,7 +26,7 @@ function [sim_param code_param] = CmlCreateHmatLocal(sim_param, code_param, cml_
 
 pcm = sim_param.parity_check_matrix;    % shorten parity check matrix name
 
-hmat_type = get_hmat_type( pcm );
+hmat_type = GetHmatType( pcm );
 
 % type of parity check matrix to process
 switch hmat_type
@@ -47,28 +47,6 @@ end
 
 end
 
-
-function hmat_type = get_hmat_type( pcm )
-if ~isempty(strfind( pcm, 'InitializeDVBS2' ))
-    hmat_type = 'cml_dvbs2';
-    
-elseif strcmp( pcm(end-3:end), 'pchk')
-    hmat_type = 'pchk';
-    
-elseif strcmp( pcm(end-4:end), 'alist')
-    hmat_type = 'alist';
-    
-elseif strcmp( pcm(end-2:end), 'mat')
-    hmat_type = 'mat';
-    
-elseif strcmp( pcm, 'random')
-    hmat_type = 'random';
-    
-else
-    hmat_type = 'not_supported';
-    
-end
-end
 
 
 function [sim_param code_param] = process_random( sim_param, code_param, cml_home)
