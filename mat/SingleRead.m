@@ -360,7 +360,7 @@ end
 
 
 
-function sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points);
+function sim_state = init_exit(sim_param_in, sim_param_out, number_new_SNR_points)
 
 switch sim_param_in.exit_param.exit_type,
     case 'ldpc',
