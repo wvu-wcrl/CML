@@ -20,14 +20,16 @@ function [H_rows H_cols ErrMsg] = CmlAlistToHrowsHcols( tmp_path, pcm_prefix )
 AlistFile = [pcm_prefix '.alist'];
 FullPathAlistFile = [tmp_path filesep pcm_prefix '.alist'];
 
-try
+
 fid = fopen(FullPathAlistFile, 'r');
-catch
+
+if fid == -1,
 ErrMsg = sprintf('Data file %s does not exist.', AlistFile);
 H_rows = 0;
 H_cols = 0;
 return;
 end
+
 ErrMsg = [''];
 
 

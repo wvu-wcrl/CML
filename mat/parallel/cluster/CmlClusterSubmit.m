@@ -100,7 +100,7 @@ cml_data_file = fullfile( cml_home, 'data', 'ldpc', pcm );
 proj_data_file = fullfile( project_root, 'Data', pcm );
 
 % produce an error if the data file does not exist
-if ~exist( proj_data_file, 'file' )
+if ~exist( cml_data_file, 'file' )
     ErrStr = sprintf(['Project data file %s does not exist'], ...
         proj_data_file);
     error(ErrStr);

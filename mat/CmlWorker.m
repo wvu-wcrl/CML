@@ -135,18 +135,12 @@ end
 
 function code_param_long = read_code_param_long( sim_param, cml_rhome )
 
-[str1 str2] = strtok( cml_rhome, filesep );
-[str3 str4] = strtok(str2, filesep);
-project_path = fullfile(filesep, str1, str3, 'Projects', 'cml', 'data', 'Jm');
-
 task_data_file = sim_param.code_param_long_filename;
 
-project_data_file_path = fullfile(project_path, task_data_file);
-
-if exist( project_data_file_path, 'file' ) == 0,
+if exist( task_data_file, 'file' ) == 0,
     code_param_long = struct;  % create empty struct
 else
-    load(project_data_file_path);
+    load(task_data_file);
 end
 
 end
