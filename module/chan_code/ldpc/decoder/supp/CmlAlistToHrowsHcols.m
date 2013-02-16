@@ -15,10 +15,21 @@
 %
 %     Last updated on 1/25/2013
 
-function [H_rows H_cols] = CmlAlistToHrowsHcols( tmp_path, pcm_prefix )
+function [H_rows H_cols ErrMsg] = CmlAlistToHrowsHcols( tmp_path, pcm_prefix )
 
-alistfile = [tmp_path filesep pcm_prefix '.alist'];
-fid = fopen(alistfile, 'r');
+AlistFile = [pcm_prefix '.alist'];
+FullPathAlistFile = [tmp_path filesep pcm_prefix '.alist'];
+
+try
+fid = fopen(FullPathAlistFile, 'r');
+catch
+ErrMsg = sprintf('Data file %s does not exist.', AlistFile);
+H_rows = 0;
+H_cols = 0;
+return;
+end
+ErrMsg = [''];
+
 
 dim = fscanf(fid, '%d', [1,2]);
 cols=dim(2); rows = dim(1);

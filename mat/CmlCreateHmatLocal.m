@@ -162,7 +162,11 @@ function code_param = process_alist( sim_param, code_param, cml_home, pcm )
 % convert alist to H_rows, H_cols
 pcm_path = [ cml_home filesep 'data' filesep 'ldpc' ];
 pcm_prefix = pcm(1:end-6);
-[H_rows H_cols] = CmlAlistToHrowsHcols( pcm_path, pcm_prefix );
+[H_rows H_cols ErrMsg] = CmlAlistToHrowsHcols( pcm_path, pcm_prefix );
+
+if ~isempty(ErrMsg)
+error(ErrMsg);
+end
 
 % assign H_rows, H_cols to code_param
 code_param = assign_pcm_code_param( code_param, ...
