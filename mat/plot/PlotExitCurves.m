@@ -1,15 +1,14 @@
-function [FigHandle, FigNumber] = PlotExitCurves(sim_param, sim_state, FigHandle, FigNumber, SnrPoint, NumberCases, VarArgLength)
+function [FigHandle, FigNumber] = PlotExitCurves(sim_param, sim_state, FigHandle, FigNumber, SnrPoint)
 % Plot exit curves.
 
-% get snr points.
-[ return_data_or_plot, SnrPoint ] = process_exit_input(sim_param, SnrPoint, NumberCases, VarArgLength);
-
-if strcmp( return_data_or_plot, 'plot')
+for i=1:length(sim_param)
+    % get snr points.
+    [ return_data_or_plot, CurrentSnrPoint ] = process_exit_input(sim_param(i), SnrPoint);
     
-    for s = 1:length(SnrPoint)
-        [CurrentSnrPoint, snr_ind] = get_snr_point( sim_param, SnrPoint(s) );
+    % if strcmp( return_data_or_plot, 'plot')
         
-        for i=1:length(sim_param)
+        for s = 1:length(CurrentSnrPoint)
+            [SingleSnrPoint, snr_ind] = get_snr_point( sim_param(i), CurrentSnrPoint(s) );
             FigNumber = FigNumber + 1;
             % clf;  %%% added 12/15/2012.
             FigHandle = [FigHandle figure( FigNumber )];
@@ -26,17 +25,17 @@ if strcmp( return_data_or_plot, 'plot')
             annotate_exit_params( sim_param(i), snr_ind );
             
         end
-    end
+    % end
 end
 end
 
 
-function [return_data_or_plot, SnrPoint] = process_exit_input(sim_param, SnrPoint, NumberCases, VarArgLength)
+function [return_data_or_plot, SnrPoint] = process_exit_input(sim_param, SnrPoint)
 
-if VarArgLength > 3
-    error('Too many input arguments!');
-
-elseif VarArgLength == 3
+% if VarArgLength > 3
+%     error('Too many input arguments!');
+%     
+% elseif VarArgLength == 3
     
     return_data_or_plot = 'plot';
     
@@ -57,13 +56,13 @@ elseif VarArgLength == 3
         SnrPoint(IndNotValidSnr) = [];
     end
     
-elseif VarArgLength == 2
-    return_data_or_plot = 'return_data';
-end
+% elseif VarArgLength == 2
+%     return_data_or_plot = 'return_data';
+% end
 
-if NumberCases > 1
-    error('Please specify a single EXIT record.');
-end
+% if NumberCases > 1
+%     error('Please specify a single EXIT record.');
+% end
 end
 
 

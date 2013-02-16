@@ -52,10 +52,10 @@ end
 % Plot exit curves, if there are any exit curves requested.
 if ( sum( SimTypes(2,:) ) )
     if length(varargin) >= 3
-        VarArgLength = length(varargin);
+        % VarArgLength = length(varargin);
         SnrPoint = varargin{3};
         [FigHandle, fig_number] = PlotExitCurves( ...
-            sim_param(SimTypes(2,:) == 1), sim_state(SimTypes(2,:) == 1), FigHandle, fig_number, SnrPoint, number_cases, VarArgLength);
+            sim_param(SimTypes(2,:) == 1), sim_state(SimTypes(2,:) == 1), FigHandle, fig_number, SnrPoint);
     end
 end
 
