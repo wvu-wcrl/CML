@@ -14,9 +14,9 @@ load( 'CmlHome.mat' );
 % determine where to store your files
 base_name = 'LdpcHmat';
 if ispc
-    data_directory = strcat( cml_home, '\output\', base_name, '\' );
+    data_directory = strcat( '\output\', base_name, '\' );
 else
-    data_directory = strcat( cml_home, '/output/', base_name, '/' );
+    data_directory = strcat( '/output/', base_name, '/' );
 end
 if ~exist( data_directory, 'dir' )
     mkdir(data_directory);
