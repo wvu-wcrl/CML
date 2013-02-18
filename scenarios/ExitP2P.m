@@ -7,10 +7,10 @@
 %
 % Last updated on July 4, 2006
 
-% determine where your root directory is
+% determine where your root directory is.
 load( 'CmlHome.mat' );
 
-% determine where to store your files
+% determine where to store your files.
 base_name = 'exitp2p';
 if ispc
     data_directory = strcat( '\output\', base_name, '\' );
@@ -82,8 +82,6 @@ sim_param(record).MaxRunTime = 3*60;
 
 
 
-
-
 record = 3;
 sim_param(record).comment = 'EXIT analysis of 16-QAM in AWGN';
 sim_param(record).sim_type = 'exit';
@@ -111,4 +109,3 @@ sim_param(record).exit_param.requested_IA = 0.1:0.1:0.9;
 sim_param(record).exit_param.det_scenario = 'ExitP2P';
 sim_param(record).exit_param.det_record = 1;
 sim_param(record).MaxRunTime = 3*60;
-
