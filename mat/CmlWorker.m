@@ -8,10 +8,10 @@
 %     Note: See readme.txt for a description of the structure formats.
 %
 %     Required inputs:
-%	  
+%
 %
 %     Example:
-%     
+%
 %
 %     Copyright (C) 2012, Terry R. Ferrett and Matthew C. Valenti
 %
@@ -47,7 +47,7 @@ RandSeed = InputParam.RandSeed;       % parameters general to any task
 MaxRunTime = InputParam.MaxRunTime;
 
 sim_param.MaxRunTime = MaxRunTime;    % SimulateMod expects MaxRuntime
-                                      % to reside in sim_param
+% to reside in sim_param
 
 cml_rhome = sim_param.cml_rhome;      % derived parameters
 wid = InputParam.wid;
@@ -64,7 +64,7 @@ end
 
 
 function sim_param = SetLocationToCluster( sim_param )
-  sim_param.SimLocation = 'clusterworker';
+sim_param.SimLocation = 'clusterworker';
 end
 
 
