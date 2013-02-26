@@ -32,32 +32,115 @@ switch location,
         
         % read location of user's project root.
         [project_root] = ReadProjectRoot();
-       
+        
         % retrieve state of jobs which are still running.
         running_queue = [project_root '/JobRunning'];
         listing = GetDirectoryListing( running_queue );
         ConsumeRunningQueue( running_queue, listing );
         
-        % consume jobs which have finished.
+        
+        %  remove internal data files of jobs
+        %  under the following conditions
+        %  1. job file in JobOut
+        %  2. job file NOT in JobRunning/JobIn
+        % construct paths to all queues
+        input_queue = [project_root '/JobIn'];
+        running_queue = [project_root '/JobRunning'];
         output_queue = [project_root '/JobOut'];
+        int_dat = [project_root '/Data' '/Jm'];
+        
+        % get listing of jobs in jobout
+        listing = GetDirectoryListing( output_queue );
+        DeleteIntDat( listing,...
+            input_queue,...
+            running_queue,...
+            int_data );
+        
+        
+        % consume jobs which have finished.
+        output_queue = [project_root '/JobOut'];% whenever a retrieve is performed
         listing = GetDirectoryListing( output_queue );
         ConsumeOutputQueue( output_queue, listing );
         
-    % retrieve jobs from cluster by executing CmlClusterRetrieve remotely.
-    % copy CML's output directory from remote copy of CML to local.
-    case 'local'        
+        
+        
+        % retrieve jobs from cluster by executing CmlClusterRetrieve remotely.
+        % copy CML's output directory from remote copy of CML to local.
+    case 'local'
         cml_home = CmlLoadCmlHome('local');
         
         % read linux account info used on cluster.
-        [user remote_cmlroot remote_projroot] =  CmlReadAccountInfo();        
+        [user remote_cmlroot remote_projroot] =  CmlReadAccountInfo();
         
         % report the jobs which are in the running and output queues.
-        ReportRemoteJobStatus(user, remote_projroot);        
+        ReportRemoteJobStatus(user, remote_projroot);
         
         % copy remote CML output folder to local
-        RetrieveRemoteJobs(user, remote_cmlroot);        
+        RetrieveRemoteJobs(user, remote_cmlroot);
 end
 
+end
+
+
+% delete internal data files which are no longer needed
+function DeleteIntDat( listing,...
+    input_queue,...
+    running_queue,...
+    int_data )
+
+% iterate over jobs in jobout
+N = size( listing );
+for k = 1:N,
+    % get job filename
+    job_name = listing(k).name;
+    
+    [int_df_name] = GetIntDatName( job_name, int_data )
+    
+    % check if data file exists
+    int_df_ex = exist( int_df_name, 'file');
+    
+    if int_df_ex,
+        
+        [job_in_dnex job_running_dnex ] = ...
+            ChkJInJRun( input_queue, running_queue, job_name);        
+        
+        % if file does not exist in job in and
+        % does not exist in job running
+        if job_in_dnex & job_running_dnex
+            % delete data file
+            delete( int_df_name );
+        end
+        
+    end
+end
+end
+
+
+% check if job files exist in jobin and jobrunning
+%  for file in jobout
+function [job_in_dnex job_running_dnex ] = ...
+    ChkJInJRun( input_queue, running_queue, job_name)
+
+% construct path to job running and job out file
+job_in_file = [ input_queue filesep job_name ];
+job_running_file = [ running_queue filesep job_name ];
+
+% check if files exist
+job_in_dnex = ~exist( job_in_file, 'file' );
+job_running_dnex = ~exist( job_running_file, 'file' );
+end
+
+
+% Get internal data file name
+function [int_df_name] = GetIntDatName( job_name, int_data )
+
+% tokenize job filename
+[scenario_name record] = ReadScenarioNameAndRecord( job_name );
+
+% construct path to data file
+% *functionalize
+int_df_name = ...
+    [ int_data filesep scenario_name '_' record '_' 'Data.mat'];
 end
 
 
@@ -88,7 +171,7 @@ fprintf(running_jobs);
 end
 
 
-% retrieve CML output files for completed cluster jobs 
+% retrieve CML output files for completed cluster jobs
 function RetrieveRemoteJobs( user, remote_cmlroot )
 ExecRemoteCmlClusterRetrieve(user, remote_cmlroot);
 RetrieveRemoteOutput(user, remote_cmlroot);
@@ -138,7 +221,7 @@ end
 end
 
 
-% convert job running file file to cml output file, copy to cml out, and leave 
+% convert job running file file to cml output file, copy to cml out, and leave
 % running file in place
 function  CopyJobOutToCmlOut( full_path_to_job_output_file, scenario_name, record )
 
