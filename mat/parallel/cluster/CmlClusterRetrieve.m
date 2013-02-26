@@ -47,14 +47,14 @@ switch location,
         input_queue = [project_root '/JobIn'];
         running_queue = [project_root '/JobRunning'];
         output_queue = [project_root '/JobOut'];
-        int_dat = [project_root '/Data' '/Jm'];
+        int_data_dir = [project_root '/Data' '/Jm'];
         
         % get listing of jobs in jobout
         listing = GetDirectoryListing( output_queue );
         DeleteIntDat( listing,...
             input_queue,...
             running_queue,...
-            int_data );
+            int_data_dir );
         
         
         % consume jobs which have finished.
@@ -86,7 +86,7 @@ end
 function DeleteIntDat( listing,...
     input_queue,...
     running_queue,...
-    int_data )
+    int_data_dir )
 
 % iterate over jobs in jobout
 N = size( listing );
@@ -94,7 +94,7 @@ for k = 1:N,
     % get job filename
     job_name = listing(k).name;
     
-    [int_df_name] = GetIntDatName( job_name, int_data )
+    [int_df_name] = GetIntDatName( job_name, int_data_dir );
     
     % check if data file exists
     int_df_ex = exist( int_df_name, 'file');
@@ -132,15 +132,14 @@ end
 
 
 % Get internal data file name
-function [int_df_name] = GetIntDatName( job_name, int_data )
+function [int_df_name] = GetIntDatName( job_name, int_data_dir )
 
 % tokenize job filename
 [scenario_name record] = ReadScenarioNameAndRecord( job_name );
 
 % construct path to data file
-% *functionalize
 int_df_name = ...
-    [ int_data filesep scenario_name '_' record '_' 'Data.mat'];
+    [ int_data_dir filesep scenario_name '_' int2str(record) '_' 'Data.mat'];
 end
 
 
