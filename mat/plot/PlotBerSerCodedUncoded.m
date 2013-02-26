@@ -41,7 +41,13 @@ for i=1:length(sim_param_coded)
     hold on
 end
 
-legend( sim_param_uncoded.legend, sim_param_coded.legend, 0 );
+if ~( isempty(sim_param_uncoded) || isempty(sim_param_coded) )
+    legend( sim_param_uncoded.legend, sim_param_coded.legend, 0 );
+elseif isempty(sim_param_uncoded)
+    legend( sim_param_coded.legend, 0 );
+elseif isempty(sim_param_coded)
+    legend( sim_param_uncoded.legend, 0 );
+end
 xlabel( 'Eb/N0 in dB' );
 ylabel( 'BER' );
 

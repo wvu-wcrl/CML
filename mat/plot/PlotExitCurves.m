@@ -6,25 +6,25 @@ for i=1:length(sim_param)
     [ return_data_or_plot, CurrentSnrPoint ] = process_exit_input(sim_param(i), SnrPoint);
     
     % if strcmp( return_data_or_plot, 'plot')
+    
+    for s = 1:length(CurrentSnrPoint)
+        [SingleSnrPoint, snr_ind] = get_snr_point( sim_param(i), CurrentSnrPoint(s) );
+        FigNumber = FigNumber + 1;
+        % clf;  %%% added 12/15/2012.
+        FigHandle = [FigHandle figure( FigNumber )];
         
-        for s = 1:length(CurrentSnrPoint)
-            [SingleSnrPoint, snr_ind] = get_snr_point( sim_param(i), CurrentSnrPoint(s) );
-            FigNumber = FigNumber + 1;
-            % clf;  %%% added 12/15/2012.
-            FigHandle = [FigHandle figure( FigNumber )];
-            
-            plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IE_vnd(:,snr_ind), 'k-' );
-            hold on
-            plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IA_cnd(:,snr_ind), 'r--' );
-            hold off
-            
-            xlabel('I_{A,VND}, I_{E,CND}');
-            ylabel('I_{E,VND}, I_{E,CND}');
-            legend('VND', 'CND');
-            
-            annotate_exit_params( sim_param(i), snr_ind );
-            
-        end
+        plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IE_vnd(:,snr_ind), 'k-' );
+        hold on
+        plot( sim_param(i).exit_param.requested_IA, sim_state(i).exit_state.IA_cnd(:,snr_ind), 'r--' );
+        hold off
+        
+        xlabel('I_{A,VND}, I_{E,CND}');
+        ylabel('I_{E,VND}, I_{E,CND}');
+        legend('VND', 'CND');
+        
+        annotate_exit_params( sim_param(i), snr_ind );
+        
+    end
     % end
 end
 end
@@ -34,28 +34,28 @@ function [return_data_or_plot, SnrPoint] = process_exit_input(sim_param, SnrPoin
 
 % if VarArgLength > 3
 %     error('Too many input arguments!');
-%     
+%
 % elseif VarArgLength == 3
+
+return_data_or_plot = 'plot';
+
+% if length(SnrPoint) > 1
+%    error('Please supply a single SNR point.');
+% end
+
+IndNotValidSnr = [];
+for s = 1:length(SnrPoint)
+    snr_ind = get_snr_ind( sim_param, SnrPoint(s));
     
-    return_data_or_plot = 'plot';
-    
-    % if length(SnrPoint) > 1
-    %    error('Please supply a single SNR point.');
-    % end
-    
-    IndNotValidSnr = [];
-    for s = 1:length(SnrPoint)
-        snr_ind = get_snr_ind( sim_param, SnrPoint(s));
-        
-        if isempty( snr_ind )
-            fprintf(['\nSNR point ' num2str(SnrPoint(s)) ' dB was not found.\n']);
-            IndNotValidSnr = [IndNotValidSnr ,s];
-        end
+    if isempty( snr_ind )
+        fprintf(['\nSNR point ' num2str(SnrPoint(s)) ' dB was not found.\n']);
+        IndNotValidSnr = [IndNotValidSnr ,s];
     end
-    if ~isempty(IndNotValidSnr)
-        SnrPoint(IndNotValidSnr) = [];
-    end
-    
+end
+if ~isempty(IndNotValidSnr)
+    SnrPoint(IndNotValidSnr) = [];
+end
+
 % elseif VarArgLength == 2
 %     return_data_or_plot = 'return_data';
 % end

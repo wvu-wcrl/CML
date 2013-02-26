@@ -54,7 +54,13 @@ for i=1:length(sim_param_coded)
 end
 
 figure( FigNumber );
-legend( sim_param_outage.legend, sim_param_coded.legend, 0 );
+if ~( isempty(sim_param_outage) || isempty(sim_param_coded) )
+    legend( sim_param_outage.legend, sim_param_coded.legend, 0 );
+elseif isempty(sim_param_outage)
+    legend( sim_param_coded.legend, 0 );
+elseif isempty(sim_param_coded)
+    legend( sim_param_outage.legend, 0 );
+end
 xlabel( 'Eb/N0 in dB' );
 ylabel( 'FER' );
 
@@ -138,7 +144,13 @@ for i=1:length(sim_param_coded)
 end
 
 figure( FigNumber );
-legend( sim_param_outage.legend, sim_param_coded.legend, 0 );
+if ~( isempty(sim_param_outage) || isempty(sim_param_coded) )
+    legend( sim_param_outage.legend, sim_param_coded.legend, 0 );
+elseif isempty(sim_param_outage)
+    legend( sim_param_coded.legend, 0 );
+elseif isempty(sim_param_coded)
+    legend( sim_param_outage.legend, 0 );
+end
 xlabel( 'Es/N0 in dB' );
 ylabel( 'FER' );
 
