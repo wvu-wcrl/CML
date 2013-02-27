@@ -105,13 +105,9 @@ end
 function sim_param_out = check_for_undefined_MaxRunTime(sim_param_in)
 if isfield( sim_param_in, 'MaxRunTime' )
     if isempty(sim_param_in.MaxRunTime)
-        error('Please define MaxRunTime in all scenario records.');
-    else
-        sim_param_out = sim_param_in;
-    end
-    
-else
-    sim_param_out = sim_param_in;
+        sim_param_in.MaxRunTime = -1;  % set to -1: convention specifying
+                                       % that jm will set MaxRunTime                                                    
+    end           
 end
-
+sim_param_out = sim_param_in;
 end
