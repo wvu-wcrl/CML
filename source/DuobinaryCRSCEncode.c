@@ -17,9 +17,9 @@
        outz = output parity bits
        Sc   = circular state 
 
-   Copyright (C) 2005-2007, Matthew C. Valenti and Shi Cheng
+   Copyright (C) 2005-2010, Matthew C. Valenti and Shi Cheng
 
-   Last updated on Oct. 12, 2007
+   Last updated on June 10, 2010
 
    Function DuobinaryCRSCEncode is part of the Iterative Solutions 
    Coded Modulation Library. The Iterative Solutions Coded Modulation 
@@ -40,15 +40,15 @@
 */
 #include "mex.h"
 #include "math.h"
-#include ".\include\maxstar.h"
-// #include ".\include\turbo.h"
+#include "./include/maxstar.h"
+#include "./include/convolutional.h"
 
 int find_circular_state( double *x, int len)
 {
-  // Circular_state Matrix
+  /* Circular_state Matrix */
   int Matrix_Sc[6][8] = { {0, 6, 4, 2, 7, 1, 3, 5}, {0, 3, 7, 4, 5, 6, 2, 1}, {0, 5, 3, 6, 2, 7, 1, 4}, {0, 4, 1, 5, 6, 2, 7, 3}, {0, 2, 5, 7, 1, 3, 4, 6}, {0, 7, 6, 1, 3, 4, 5, 2}};
   int temp = 0, A, B;
-  int gen = 5; // feedback = [1 1 0 1], removing the feedback node, we have gen = 5.
+  int gen = 5; /* feedback = [1 1 0 1], removing the feedback node, we have gen = 5. */
   
   int state = 0, newstate = 0, i = 0;
   for ( i = 0; i< len; i++)
@@ -70,7 +70,7 @@ int find_circular_state( double *x, int len)
 void Duobinary_Encode_wSc( double *x, double *z, int len, int *int_gen, int M_poly, int Sc)
 {
   int temp = 0, A, B;
-  int gen = 5; // feedback = [1 1 0 1], removing the feedback node, we have gen = 5.
+  int gen = 5; /* feedback = [1 1 0 1], removing the feedback node, we have gen = 5. */
   
   int state = Sc, newstate = 0, i = 0, j = 0;
   for ( i = 0; i< len; i++)
@@ -127,19 +127,17 @@ void mexFunction( int nlhs, mxArray *plhs[],
   Sc = find_circular_state( srcx, len);
   *( mxGetPr(plhs[1]) ) = Sc;
   codoutz = mxGetPr( plhs[0]);
-  //printf("%d", Sc);
   for (i =0; i < M_poly; i++)
   {
 	  int_gen[i] = 0;
 	  for (j = 0; j<N_poly; j++)
 		  int_gen[i] += ( ((int)poly_vec[i+j*M_poly]) & 1 ) << (N_poly-1-j);
-//	  printf("int_gen  %d\n", int_gen[i]);
   }
   
   Duobinary_Encode_wSc( srcx, codoutz, len, int_gen, M_poly, Sc);
   
 
-  free( int_gen, len);
+  free( int_gen ); /* fixed 6-10-10 */
 
 
 }

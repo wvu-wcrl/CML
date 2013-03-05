@@ -95,6 +95,13 @@ end
 % this is the location of the mex directory for this architecture
 addpath( fullfile( cml_home, 'mex', lower(computer) ) );
 
+
+% Module specific paths
+
+% LDPC decoder - added by Terry 3/2013
+addpath( fullfile(cml_home, 'module', 'chan_code', 'ldpc', ...
+                         'decoder', 'src', 'mex', lower(computer)) );
+
 end
 
 

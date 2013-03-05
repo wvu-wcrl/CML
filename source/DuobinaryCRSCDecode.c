@@ -33,9 +33,9 @@
                    but might be different when max_option is not -1.
 
 
-   Copyright (C) 2005-2007, Matthew C. Valenti and Shi Cheng
+   Copyright (C) 2005-2010, Matthew C. Valenti and Shi Cheng
 
-   Last updated on Oct. 12, 2007
+   Last updated on June 10, 2010
 
    Function DuobinaryCRSCDecode is part of the Iterative Solutions 
    Coded Modulation Library. The Iterative Solutions Coded Modulation 
@@ -56,8 +56,9 @@
 */
 #include "mex.h"
 #include "math.h"
-#include ".\include\maxstar.h"
-#include ".\include\turbo.h"
+#include "./include/maxstar.h"
+#include "./include/convolutional.h"
+/* changed \ to / in the above 6-10-10 mcv */
 
 #define ABS_ERR 1E-7
 #define MAX_CYCLE 4
@@ -76,11 +77,11 @@
 void Duobinary_SISO_wtrellis( float *inx, float *inz, float *outx, float *outz, float *soft_bits, int len, int *trellis_end_state, int *trellis_out , int dec_type)
 {
 
-    int m_input = 2;  // 2 input bits,
-	int max_states = 8; // total state numbers
+    int m_input = 2;  /* 2 input bits, */
+	int max_states = 8; /* total state numbers */
 	int M_input = 1<<m_input;
-	int llr_height = M_input -1;  //llr_height is 3 for DVB and Wimax code
-	float **beta, **alpha, *gamma, *tempab, *temp_llrout;  // tempab saves the temporary calcuation of beta and alpha, for comparison with the stopping threshold
+	int llr_height = M_input -1;  /* llr_height is 3 for DVB and Wimax code */
+	float **beta, **alpha, *gamma, *tempab, *temp_llrout;  /* tempab saves the temporary calcuation of beta and alpha, for comparison with the stopping threshold */
 	int i, j, max_trellis = M_input * max_states;
 	int cycles= 0, stop_it = 0, temp_input, temp_output;
     float (*max_star[])(float, float) =
@@ -89,7 +90,7 @@ void Duobinary_SISO_wtrellis( float *inx, float *inz, float *outx, float *outz, 
 	};
 
 
-	// allocate memory for alpha, beta, and gamma
+	/* allocate memory for alpha, beta, and gamma */
 	beta = malloc( sizeof(float*)* max_states);
 	alpha = malloc( sizeof(float*)* max_states);
 	for ( i = 0; i < max_states; i++)
@@ -101,28 +102,28 @@ void Duobinary_SISO_wtrellis( float *inx, float *inz, float *outx, float *outz, 
     tempab = malloc (sizeof(float) * max_states);
     temp_llrout = malloc( sizeof(float)* M_input);
 
-    // initialization  for CRSC code
+    /* initialization  for CRSC code */
     for (i =0; i< max_states; i++)
 	{
 		alpha[i][0] = 0;
 		beta[i][len] = 0;
 	}
 
-	//beta
+	/* beta */
 	cycles = 0;
 	  
 	while (cycles < MAX_CYCLE )
 	{
         
-		for (i = len-1; i>=0; i--)  // calculate beta[][i] based on beta[][i+1]
+		for (i = len-1; i>=0; i--)  /* calculate beta[][i] based on beta[][i+1] */
 		{
-			stop_it = 1; // stop iterations
+			stop_it = 1; /* stop iterations */
 			for (j = 0; j< max_trellis; j++)
 			{
 				temp_input = j%M_input;
 				temp_output = trellis_out[j];
-				gamma[j] = ( temp_input ==0)? 0: inx[ (temp_input -1)+ i*llr_height ];   //llr for systematic symbol
-				gamma[j] += ( temp_output ==0)? 0: inz[ (temp_output -1)+ i*llr_height ];  //llr for parity symbol
+				gamma[j] = ( temp_input ==0)? 0: inx[ (temp_input -1)+ i*llr_height ];   /* llr for systematic symbol */
+				gamma[j] += ( temp_output ==0)? 0: inz[ (temp_output -1)+ i*llr_height ];  /* llr for parity symbol */
 				gamma[j] += beta[ trellis_end_state[j] ][i+1];
 			}
 			for (j= 0; j< max_states; j++)
@@ -153,21 +154,21 @@ void Duobinary_SISO_wtrellis( float *inx, float *inz, float *outx, float *outz, 
 		cycles++;
 	}
 
-    // alpha
+    /* alpha */
 	cycles = 0;
 	  
 	while (cycles < MAX_CYCLE )
 	{
         
-		for (i = 0; i<len; i++)  // calculate alpha[][i+1] based on beta[][i]
+		for (i = 0; i<len; i++)  /* calculate alpha[][i+1] based on beta[][i] */
 		{
-			stop_it = 1; // stop iterations
+			stop_it = 1; /* stop iterations */
 			for (j = 0; j< max_trellis; j++)
 			{
 				temp_input = j%M_input;
 				temp_output = trellis_out[j];
-				gamma[j] = ( temp_input ==0)? 0: inx[ (temp_input -1)+ i*llr_height ];   //llr for systematic symbol
-				gamma[j] += ( temp_output ==0)? 0: inz[ (temp_output -1)+ i*llr_height ];  //llr for parity symbol
+				gamma[j] = ( temp_input ==0)? 0: inx[ (temp_input -1)+ i*llr_height ];   /* llr for systematic symbol */
+				gamma[j] += ( temp_output ==0)? 0: inz[ (temp_output -1)+ i*llr_height ];  /* llr for parity symbol */
 				gamma[j] += alpha[ j/M_input ][i];
 			}
 			for (j= 0; j< max_states; j++)
@@ -198,7 +199,7 @@ void Duobinary_SISO_wtrellis( float *inx, float *inz, float *outx, float *outz, 
 		cycles++;
 	}
 
-	// find output vectors
+	/* find output vectors */
 
     for (i = 0; i< len; i++)
 	{
@@ -206,11 +207,11 @@ void Duobinary_SISO_wtrellis( float *inx, float *inz, float *outx, float *outz, 
 		{
 		   	temp_input = j%M_input;
 			temp_output = trellis_out[j];
-			gamma[j] = ( temp_input ==0)? 0: inx[ (temp_input -1)+ i*llr_height ];   //llr for systematic symbol
-			gamma[j] += ( temp_output ==0)? 0: inz[ (temp_output -1)+ i*llr_height ];  //llr for parity symbol
+			gamma[j] = ( temp_input ==0)? 0: inx[ (temp_input -1)+ i*llr_height ];   /* llr for systematic symbol */
+			gamma[j] += ( temp_output ==0)? 0: inz[ (temp_output -1)+ i*llr_height ];  /* llr for parity symbol */
 			gamma[j] += alpha[ j/M_input ][i]+ beta[ trellis_end_state[j] ][i+1];
 		}
-        // output for systematic symbols
+        /* output for systematic symbols */
 		for (j =0; j< M_input; j++)
 			temp_llrout[j] = -MAXLOG;
 		for (j = 0; j< max_trellis; j++)
@@ -245,17 +246,17 @@ void Duobinary_SISO_wtrellis( float *inx, float *inz, float *outx, float *outz, 
 
 
 
-// find the trellis for doubinary crsc code:
+/* find the trellis for doubinary crsc code:
 // int_gen is the generator vector in binary form
 // M_poly is the number of the vectors
 // trellis_end_state, trellis_out are both 32 by 1 vectors, 
 // The i th element of trellis_end_state is the end state of the starting state floor(i/4) with input i%4,
-// The i th element of trellis_out is the output of the starting state floor(i/4) with input i%4,
+// The i th element of trellis_out is the output of the starting state floor(i/4) with input i%4, */
 
-void find_Duobinary_trellis( int *trellis_end_state, int* trellis_out, int *int_gen, int M_poly)
+void find_Duobinary_trellis( int *trellis_end_state, int* trellis_out, int *int_gen, int M_poly) 
 {
 	int start_state = 0, end_state = 0;
-	int i, j, A, B, gen =5, temp;  // feedback = [1 1 0 1], removing the feedback node, we have gen = 5.
+	int i, j, A, B, gen =5, temp;  /* feedback = [1 1 0 1], removing the feedback node, we have gen = 5. */
 	for (i= 0; i< 32; i++)
 	{
 		start_state = i/4;
@@ -290,9 +291,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
   if ( (nrhs!=4) || (nlhs>3) )
     mexErrMsgTxt(" [outx, outz, soft_bits]= DuobinaryCRSCDecode( inx, inz, poly, dec_type)");
     
-  inx=mxGetPr(prhs[0]);                         // systematic couples input (couples for duo RSC)  in GF(4)
-  inz=mxGetPr(prhs[1]);                         // parity couples input
-  poly_vec=mxGetPr(prhs[2]);                         // polynomials
+  inx=mxGetPr(prhs[0]);                         /* systematic couples input (couples for duo RSC)  in GF(4) */
+  inz=mxGetPr(prhs[1]);                         /* parity couples input */
+  poly_vec=mxGetPr(prhs[2]);                    /* polynomials */
   dec_type=*(mxGetPr(prhs[3]));                
   
   if ( ( mxGetM(prhs[0])!= 3) ||( mxGetM(prhs[1]) !=3) )
@@ -316,10 +317,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
 		  int_gen[i] += ( ((int)poly_vec[i+j*M_poly]) & 1 ) << (N_poly-1-j);
   }
   
-  find_Duobinary_trellis( trellis_end_state, trellis_out, int_gen, M_poly);  // find the end state of the trellis, and the output associated with the polynomials.
+  find_Duobinary_trellis( trellis_end_state, trellis_out, int_gen, M_poly);  /* find the end state of the trellis, and the output associated with the polynomials. */
   
-//  for (i = 0; i< 32; i++)
- //   printf( " starting: %d, input %d, ending %d, output %d\n", i/4, i%4, trellis_end_state[i], trellis_out[i]);
   free( int_gen);
   
   inx_float = malloc(sizeof(int) * 3*len);
@@ -358,7 +357,5 @@ void mexFunction( int nlhs, mxArray *plhs[],
   free( outx_float);
   free( outz_float);
   free( soft_float);
-
-  
 
 }

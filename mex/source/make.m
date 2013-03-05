@@ -45,3 +45,21 @@ for i=1:length(D)
     end
 end
 
+
+
+% execute module-specific makefiles - Terry 2/2013
+[ cml_home ] = CmlLoadCmlHome('local');
+path_cml_mex = fullfile(cml_home, 'mex', 'source');
+
+
+% LDPC Decoder
+
+% construct path to module source
+path_ldpc_mex = fullfile(cml_home, 'module', 'chan_code', 'ldpc', ...
+                         'decoder', 'src', 'mexsrc');
+
+% execute makefile
+cd(path_ldpc_mex); 
+make; 
+cd (path_cml_mex);
+
