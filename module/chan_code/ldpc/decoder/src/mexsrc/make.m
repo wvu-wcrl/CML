@@ -16,8 +16,7 @@ function makenew( varargin )
    tmp = fileparts(pwd);
    root_dir = fileparts(tmp);
    cputype = lower( computer );
-   target_dir = [root_dir filesep 'mex' filesep cputype];
-
+   target_dir = ['''' root_dir filesep 'mex' filesep cputype ''''];
 
 % specify compile flags appended to all build strings
 if ispc,

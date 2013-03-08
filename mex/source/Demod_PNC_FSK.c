@@ -3,22 +3,22 @@
    Description: Computes log-probability of M-ary PNC symbols at relay in two-way relay channel
 
    The calling syntax is:
-      [output] = Demod_PNC_FSK( y, EsNo, csi_flag, a1, a2, sqE1, sqE2, csi1sw )
+   [output] = Demod_PNC_FSK( y, EsNo, csi_flag, a1, a2, sqE1, sqE2, csi1sw )
 
    Where:
-      output  = linear vector containing symbol probability matrices for each
-                 symbol received at relay.  See [1] in the source file for more details.
+   output  = linear vector containing symbol probability matrices for each
+   symbol received at relay.  See [1] in the source file for more details.
 
-      input   = 1   y         M by N matrix of received symbols
-                2   EsNo      Signal-to-noise ratio
-                3   csi_flag  0 - full csi, 1 - partial csi, 2 - no csi
-                4   a1        M by N matrix of fading coefs for channel 1
-                5   a2        M by N matrix of fading coefs for channel 2
-                6   sqE1      Energy per symbol, source 1
-                7   sqE2      Energy per symbol, source 2 
-                8   csi1sw    Select alpha estimation type
-                              0 - knowledge of phase dif
-                              1 - phase dif approximated
+   input   = 1   y         M by N matrix of received symbols
+   2   EsNo      Signal-to-noise ratio
+   3   csi_flag  0 - full csi, 1 - partial csi, 2 - no csi
+   4   a1        M by N matrix of fading coefs for channel 1
+   5   a2        M by N matrix of fading coefs for channel 2
+   6   sqE1      Energy per symbol, source 1
+   7   sqE2      Energy per symbol, source 2 
+   8   csi1sw    Select alpha estimation type
+   0 - knowledge of phase dif
+   1 - phase dif approximated
 
 
    Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
@@ -36,28 +36,23 @@
 
 
 /* [1]
-  the output is a linear vector containing symbol probability matrices for
-  each symbol received at the relay.  
+   the output is a linear vector containing symbol probability matrices for
+   each symbol received at the relay.  
 
-  The dimensionality of the matrix is  MxM, where M is the modulation order.
+   The dimensionality of the matrix is  MxM, where M is the modulation order.
 
-  Each matrix is placed into the vector one row at a time, so for example
-  in the 4-ary case
+   Each matrix is placed into the vector one row at a time, so for example
+   in the 4-ary case
 
-  [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]
+   [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]
  
-  becomes
+   becomes
 
-  [1 2 3 4
-  5 6 7 8
-  9 10 11 12
-  13 14 15 16]
+   [1 2 3 4
+   5 6 7 8
+   9 10 11 12
+   13 14 15 16]
 */
-
-
-
-
-
 
 
 #include <mex.h>    /* required matlab include for c-mex */
@@ -93,9 +88,11 @@ static float logbesseli0(float x) {
 }
 
 
-
-
-
+double Log2( double n )  
+{  
+    // log(n)/log(2) is log2.  
+    return log( n ) / log( 2 );  
+}
 
 
 static void Demod_PNC_MFSK( double llr[],   float yr_f[],   float yi_f[],
@@ -106,16 +103,12 @@ static void Demod_PNC_MFSK( double llr[],   float yr_f[],   float yi_f[],
 			    int csi_flag,   int M,  int ns,  int csi1sw ) {
     
   int i, j, k, s;             /* iterators */
-
   float a1Mag, a2Mag, aMag;   /* fading coefficients */
-
   int Ml; /* bits per symbol */
-    
   int A, B;  /* temporary variables */
-
   float log_term_dif, log_term_same;
 
-  Ml = log2(M); 
+  Ml = (int)Log2(M); 
     
 
   /* terms which are constant for each symbol */
@@ -127,22 +120,13 @@ static void Demod_PNC_MFSK( double llr[],   float yr_f[],   float yi_f[],
   /* loop over all symbols */
   for(s=0; s < ns; s++){
         
-        
-        
-        
-        
     if(csi_flag == 0){
-            
       mexErrMsgTxt("full csi case (csi = 0) not implemented");
       return;
-            
     }
 
 
-
-
     else if (csi_flag == 1){
-            
             
       /* compute fading coefficient magnitudes */
       if(csi1sw==0){
@@ -176,17 +160,12 @@ static void Demod_PNC_MFSK( double llr[],   float yr_f[],   float yi_f[],
 	      + logbesseli0(2*snr*sqrt(aMag*(yr_f[s*M + i]*yr_f[s*M + i] + yi_f[s*M + i]*yi_f[s*M + i])));
                         
 	  }
-                    
 	}
       }
-            
-    }
-
-
-
-  
-    else if( csi_flag == 2) {
-
+      
+    }   
+    
+    else if( csi_flag == 2) {     
 
    
       /*   compute values of log p(y|q1, q2)  */
@@ -226,21 +205,7 @@ static void Demod_PNC_MFSK( double llr[],   float yr_f[],   float yi_f[],
   }    
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
@@ -252,14 +217,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     
   double *hr1, *hi1;   /* gain for channel 1 */
   double *hr2, *hi2;   /* gain for channel 2 */
-  float *hr1_f, *hi1_f;   /* gain for channel 1 */
-  float *hr2_f, *hi2_f;   /* gain for channel 2 */
-    
+  float *hr1_f, *hi1_f;   /* gain for channel 1, float */
+  float *hr2_f, *hi2_f;   /* gain for channel 2, float */
     
   double *yr, *yi;           /* matched filter outputs */
   float *yr_f, *yi_f;
     
-  double *sym_likelihood;         /* log-likelihood ratios */
+  double *sym_likelihood;         /* symbol log-likelihood ratios */
   double  *sym_likelihood_f;
     
   int csi_flag;        /* channel state information
@@ -267,43 +231,34 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 			* 1 - alpha known, theta unknown
 			* 2 - alpha and theta unknown */
     
-  double sqE1, sqE2;   /* signal energies */
-    
-  int csi1sw;          /* alpha approximation */
-    
+  double sqE1, sqE2;   /* signal energies */    
+  int csi1sw;          /* alpha approximation mode */    
   int i, j, k;           /* iterators */
-    
-  int tmp;
     
     
     
   if (nrhs < 2)                                       /* validate number of i/o args */
-    mexErrMsgTxt("Usage: [output] = DemodPncRelay( input, EsNo,\
+    mexErrMsgTxt("Usage: [output] = Demod_PNC_FSK( input, EsNo,\
                 csi_flag, \
                 a1, \
                 a2, \
                 sqE1, \
                 sqE2, \
-                csi1switch)");
+                csi1switch)");                
                 
                 
-                
-  ns = mxGetN(prhs[0]);      /* number of symbols in frame */
-    
+  ns = mxGetN(prhs[0]);      /* number of symbols in frame */    
   M = mxGetM(prhs[0]);       /* symbol vector dimensions */
-
   no = (int)ns*M*M;  /* amount of memory to allocate for output */
 
 
-
   /******* allocate memory for received symbols *********/    
-  yr_f = calloc( ns*M, sizeof(float) );      /* real part of the received symbols */
   yr = mxGetPr(prhs[0]);
-    
+
+  yr_f = calloc( ns*M, sizeof(float) );      /* real part of the received symbols */    
   for (i=0; i<ns; i++)                               /* cast to float */
     for (j=0; j<M; j++)
-      yr_f[i*M+j] = (float) yr[i*M+j];
-    
+      yr_f[i*M+j] = (float) yr[i*M+j];    
     
     
   yi_f = calloc( ns*M, sizeof(float) );       /* imaginary part of received symbols */
@@ -315,27 +270,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	yi_f[i*M+j] = (float) yi[i*M+j];
   }
   /*****************************************************/
-    
-
-    
-    
-    
+       
     
   snr = (float) *mxGetPr(prhs[1]);     /* second input is the SNR */
     
-    
-
-
-
   if (nrhs > 2 )                       /* third input (optional) is the csi flag */
     csi_flag = (int) *mxGetPr(prhs[2]);
   else
-    csi_flag = 0;
-    
-
-
-
-    
+    csi_flag = 0;    
     
     
   if(nrhs>3) {    /* fourth input (optional) are the fading amplitudes */
@@ -346,13 +288,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     hr1_f = calloc( ns, sizeof(float) );
     hi1_f = calloc( ns, sizeof(float) );
     hr2_f = calloc( ns, sizeof(float) );
-    hi2_f = calloc( ns, sizeof(float) );
-        
+    hi2_f = calloc( ns, sizeof(float) );        
         
     hr1 = mxGetPr(prhs[3]);    /* real part of the fading process 1*/
     for (i=0; i<ns ;i++)           /* cast to float */
-      hr1_f[i] = (float) hr1[i];
-        
+      hr1_f[i] = (float) hr1[i];        
         
     if (mxIsComplex(prhs[3]) ) {   /* imaginary part of the fading process 1 */
       hi1 = mxGetPi(prhs[3]);
@@ -360,8 +300,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       for (i=0; i<ns ;i++)         /* cast to float */
 	hi1_f[i] = (float) hi1[i];
     }
-        
-        
+               
         
     hr2 = mxGetPr(prhs[4]);   /* real part of the fading process 2*/
         
@@ -379,14 +318,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
 
 
-
-
-
   /***** fifth input: symbol energies **********/    
   sqE1 = (float) *mxGetPr(prhs[5]);       
   sqE2 = (float) *mxGetPr(prhs[6]);
-  /********************************/
-    
+  /********************************/    
 
   /***** sixth input: csi switch  **************************/
   csi1sw = (int)*mxGetPr(prhs[7]);        
@@ -399,11 +334,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   sym_likelihood_f = mxGetPr( plhs[0] );
   /***************************************/
     
-    
 
-
-
-  /*********** call to demodulator ************/
+  /*********** call to frame-wise demodulator ************/
   Demod_PNC_MFSK( sym_likelihood,   yr_f,   yi_f,
 		hr1_f,  hi1_f,
 		hr2_f,  hi2_f,
@@ -412,10 +344,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 		csi_flag,   M,  ns,  csi1sw );
   /*******************************************/
     
-
-
     
-  /********** assign outputs ****************/
+  /********** assign computed LLRs to output ****************/
   for (i=0; i<no ;i++) {
     sym_likelihood_f[i] = sym_likelihood[i];
   }
@@ -423,19 +353,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     
     
   /* free memory */
-  free( yr_f );
+  free( yr_f );   /* matched filter outputs */
   free( yi_f );
   if(nrhs > 3){
-    free( hr1_f );
+    free( hr1_f );  /* fading processes */
     free( hi1_f );
     free( hr2_f );
     free( hi2_f );
-  }
+  }    
     
-    
-  free( sym_likelihood );
-    
-    
+  free( sym_likelihood );    
 }
 
 

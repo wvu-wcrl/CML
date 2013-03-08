@@ -15,6 +15,7 @@ mex_dir = this_dir(1:length(this_dir)-6);
 
 % determine where to put target
 target_dir = strcat( mex_dir, lower( computer ) );
+target_dir = ['''' target_dir ''''];
 
 % Obtain a list of all the files in this directory
 if nargin

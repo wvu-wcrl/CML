@@ -88,6 +88,12 @@ static float logbesseli0(float x) {
 }
 
 
+double Log2( double n )  
+{  
+    // log(n)/log(2) is log2.  
+    return log( n ) / log( 2 );  
+}
+
 
 static void Demod_PNC_MFSK( double llr[],   float yr_f[],   float yi_f[],
 			    float hr1_f[],  float hi1_f[],
@@ -102,7 +108,7 @@ static void Demod_PNC_MFSK( double llr[],   float yr_f[],   float yi_f[],
   int A, B;  /* temporary variables */
   float log_term_dif, log_term_same;
 
-  Ml = log2(M); 
+  Ml = (int)Log2(M); 
     
 
   /* terms which are constant for each symbol */
