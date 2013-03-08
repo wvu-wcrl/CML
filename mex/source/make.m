@@ -51,9 +51,7 @@ end
 [ cml_home ] = CmlLoadCmlHome('local');
 path_cml_mex = fullfile(cml_home, 'mex', 'source');
 
-
 % LDPC Decoder
-
 % construct path to module source
 path_ldpc_mex = fullfile(cml_home, 'module', 'chan_code', 'ldpc', ...
                          'decoder', 'src', 'mexsrc');

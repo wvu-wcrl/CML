@@ -51,7 +51,7 @@ else
     comp_initstate_l = ['mex -output <out_dir>/InitState_mx -I./lib InitState_mx.c ./lib/ldpc-util.c ./lib/math-supp.c']
     CompileMex(comp_initstate_l);
     
-    comp_iterate = ['mex  -output <out_dir>/Iterate_mx -I./lib Iterate_mx.c ./lib/ldpc-util.c ./lib/math-supp.c'];
+    comp_iterate_l = ['mex  -output <out_dir>/Iterate_mx -I./lib Iterate_mx.c ./lib/ldpc-util.c ./lib/math-supp.c'];
     CompileMex(comp_iterate_l);   
 end
 

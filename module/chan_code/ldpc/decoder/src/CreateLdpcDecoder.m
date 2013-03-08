@@ -5,11 +5,9 @@ function [ldpc_decoder] = CreateLdpcDecoder( sim_param, code_param )
 if strcmp(sim_param.ldpc_impl, 'new')    
     
     
-    % load parity check matrix based on cluster or local
+    % load parity check matrix based on cluster or local    
     
-    
-    
-    % check parity check matrix (nyuk nyuk) for consistency
+    % check parity check matrix for consistency
     check_pcm( code_param.H_rows, code_param.H_cols,...
         code_param.data_bits_per_frame,...
         sim_param.framesize);
