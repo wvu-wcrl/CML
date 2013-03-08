@@ -1,4 +1,4 @@
-MATLAB implementation of a soft-input, soft-output iterative LDPC decoder 
+MATLAB implementation of a soft-input, soft-output iterative LDPC decoder
 capable of operating under BICM or BICM-ID decoding frameworks.
 
 For a discussion of the theory of LDPC decoding, see *Ryan text*
@@ -8,7 +8,8 @@ For a discussion of the theory of LDPC decoding, see *Ryan text*
 
 Within MATLAB,
 
-1. Add src/ and src/mex to the path.
+1. Add src/ and mex/<arch> to the path, where <arch> is the system
+   type returned from the MATLAB command 'lower(computer)'
 
 2. Instantiate an LDPC Decoder object.
     >> ldpc_decoder = LdpcDecoder();
@@ -46,21 +47,43 @@ src/                               LDPC decoder source code
      @LdpcDecoder/    
                    LdpcDecoder.m   MATLAB class implementation of 
                                    LPDC decoder
-     
-     mex/                          C-mex components of decoder
-         InitState_mx.c            Initialize decoder state.
-         Iterate_mx.c              Perform decoding iteration.
-         PostProcessH.m            Utility to convert CML H_rows and H_cols
+
+     CreateLdpcDecoder.m           Function to create an LDPC decoder object
+                                   given CML sim_param and sim_state.
+
+     PostProcessH.m                Utility to convert CML H_rows and H_cols
                                    to data structures compatible with decoder.
-         
-          lib/                     Supporting C-files.
-              ldpc-util.c          Utility functions for LDPC decoder.
-              ldpc-util.h          ldpc-util.c header.
-              math-supp.c          Mathematical functions for LDPC decoder.
-              math-supp.h          math-supp.c header.
+     
+     mexsrc/                       C-mex components of decoder
+         InitState_mx.c            Initialize decoder state.
+         Iterate_mx.c              Perform decoding iteration.         
+         make.m                    Makefile to build C-mex source
+
+             lib/                  Supporting C-files.
+                 ldpc-util.c       Utility functions for LDPC decoder.
+                 ldpc-util.h       ldpc-util.c header.
+                 math-supp.c       Mathematical functions for LDPC decoder.
+                 math-supp.h       math-supp.c header.
                                     
+
+mex/                               Compiled C-mex binaries.
+
+supp/                              Supporting functionality.
+
+     CmlAlistToHrowsHcols.m        Converts parity check matrix specified
+                                   as an A-list file (Google for it) to
+                                   CML's native H_rows, H_cols format
+
+     CmlDegreeDist.m               Compute valid degree distributions
+                                   under D=3, d_v1 = 2.  See [1] for details.
+
 tst/                               LDPC decoder tests
     class/                         Decoder class test.
           test_input.mat           Test inputs - LDPC decoder parameters.
           test_ldpc_decoder.m      Script to test all decoder components.  
     
+
+
+[1]   M.C. Valenti and X. Xiang, “Constellation shaping for bit-interleaved 
+      LDPC coded APSK,” IEEE Transactions on Communications, vol. 60, 
+      no. 10, pp. 2960-2970, Oct. 2012. 

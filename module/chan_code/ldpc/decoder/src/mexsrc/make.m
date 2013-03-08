@@ -1,74 +1,78 @@
 % make.m
-% Makefile for LDPC Decoder
+% makefile for LDPC module
+%
 % 
-% Compile C-mex functions and place in top level binary directory
-%  mex/
-% and architecture speicific directory
-%  mex/<arch>
+% Usage: 
+%  - Place makefile in directory containing module c-mex source files
+%  - Specify target directory. Default is '../mex/<arch>' 
+%  - Specify any desired compiler flags in the variable 'flags'
+%  - Within MATLAB, switch to this directory and execute 'make'  
 %
-%  To add a C-mex source file for compilation,
-%   1. Create string containing compilation command using Windows file
-%   separators.
-%   
-%   2. Create string containing compilation command using Linux/Mac file
-%   separators.
-%
-%   3. Within the ispc if-block below,
-%      call the function 'CompileMex' with the compilation command as
-%      argument.
-%
-%
-%  Example
-%
-% if ispc,  
-%   comp_initstate_w = ['mex -output <out_dir>\InitState_mx -I.\lib InitState_mx.c .\lib\ldpc-util.c .\lib\math-supp.c']
-%   CompileMex(comp_initstate_w);
-% else
-%   comp_initstate_l = ['mex -output <out_dir>\InitState_mx -I.\lib InitState_mx.c .\lib\ldpc-util.c .\lib\math-supp.c']
-%   CompileMex(comp_initstate_l);  
-% end
-%
-%
-% Last updated Feb 10th, 2013
-function make()
+% Last updated March 7, 2013
+function makenew( varargin )
 
-% clear mex files
-clear InitState_mx.c
-clear Iterate_mx.c
+% specify targest directory
+   mex_src_dir = pwd;
+   tmp = fileparts(pwd);
+   root_dir = fileparts(tmp);
+   cputype = lower( computer );
+   target_dir = [root_dir filesep 'mex' filesep cputype];
 
-% if linux, delete files
-if isunix,
-    delete ../mex/*
-end
 
+% specify compile flags appended to all build strings
 if ispc,
-    comp_initstate_w = ['mex -output <out_dir>\InitState_mx -I.\lib InitState_mx.c .\lib\ldpc-util.c .\lib\math-supp.c']
-    CompileMex(comp_initstate_W);
-    
-    comp_iterate_w = ['mex  -output <out_dir>\Iterate_mx -I.\lib Iterate_mx.c .\lib\ldpc-util.c .\lib\math-supp.c'];
-    CompileMex(comp_iterate_w);
-else    
-    comp_initstate_l = ['mex -output <out_dir>/InitState_mx -I./lib InitState_mx.c ./lib/ldpc-util.c ./lib/math-supp.c']
-    CompileMex(comp_initstate_l);
-    
-    comp_iterate_l = ['mex  -output <out_dir>/Iterate_mx -I./lib Iterate_mx.c ./lib/ldpc-util.c ./lib/math-supp.c'];
-    CompileMex(comp_iterate_l);   
-end
-
+flags = '-I.\lib .\lib\ldpc-util.c .\lib\math-supp.c';
+ else
+flags = '-I./lib ./lib/ldpc-util.c ./lib/math-supp.c';
 end
 
 
-% compile mex function and place in mex/ and mex/<arch>
-function CompileMex(comp_str)
-comp_str_mex = SetOutputDir( comp_str, '../mex' );
-comp_str_arch = SetOutputDir( comp_str, [ '../mex/' lower(computer)] );
-eval(comp_str_mex);
-eval(comp_str_arch);
+% obtain a list of all the files in this directory
+if nargin
+    desired_file = varargin{1};
+    D = dir( strcat( pwd, filesep, desired_file ) );
+else
+    D = dir( pwd );
 end
 
 
-% set output path
-function comp_str_out = SetOutputDir(comp_str_in, output_dir)
-% find instances of '<out_dir>' and replace with specified output dir
-comp_str_out = strrep(comp_str_in, '<out_dir>', output_dir);
+% Look for c-files in the list of files
+for i=1:length(D)
+    % is this a c-file?
+    if ( length( D(i).name ) > 2 )
+        if strcmp( D(i).name( (length(D(i).name)-1):length(D(i).name) ), '.c' )
+            % yes, this is a c file, so compile it
+            
+            % function name
+            fun_name = D(i).name( 1:length(D(i).name)-2 );
+            
+            % clear the function
+            clear_string = ['clear ', D(i).name];
+            eval( clear_string );
+            
+            % compile
+            %%% modify this
+            compile_string = ['mex ' D(i).name ' -outdir ', target_dir, ' ', flags ];
+            eval( compile_string );
+        end
+    end
 end
+
+
+%   This function is part of the Iterative Solutions 
+%   Coded Modulation Library. The Iterative Solutions Coded Modulation 
+%   Library is free software; you can redistribute it and/or modify it 
+%   under the terms of the GNU Lesser General Public License as published 
+%   by the Free Software Foundation; either version 2.1 of the License, 
+%   or (at your option) any later version.
+%
+%   This library is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%   Lesser General Public License for more details.
+%  
+%   You should have received a copy of the GNU Lesser General Public
+%   License along with this library; if not, write to the Free Software
+%   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+%
+%
