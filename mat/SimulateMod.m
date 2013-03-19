@@ -29,14 +29,16 @@ tic;              % for timing simulation execution
 %%% enter primary simulation loop
 session_time = toc;
 snrpoint = 1;
-continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, session_time );
+continue_simulation = evaluate_simulation_stopping_conditions( sim_param,...
+                                                     EsNo, snrpoint, session_time );
 while ( continue_simulation )
     print_current_snr( sim_param, snrpoint );
     %   print_current_time( clock, sim_param, verbosity );
     
     
     %%% enter individual snr simulation loop
-    execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, session_time );
+    execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param,...
+                             sim_state, code_param, snrpoint, session_time );
     while ( execute_this_snr )
         [sim_state] =               increment_trials_counter( sim_state, code_param, snrpoint );
         
@@ -57,25 +59,30 @@ while ( continue_simulation )
                 
             otherwise
                 if (code_param.outage == 0) % error rate simulation
-                    [detected_data, errors] = CmlDecode( symbol_likelihood, data, sim_param, code_param, ldpc_decoder );
+                    [detected_data, errors] = CmlDecode( symbol_likelihood,...
+                        data, sim_param, code_param, ldpc_decoder );
                     
                     
                     echo_x_on_error( errors, code_param, verbosity );
-                    [ sim_state ] =                 update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors );
+                    [ sim_state ] =  update_bit_frame_error_rate( sim_state, ...
+                        code_param, snrpoint, errors );
                     
                     if ~code_param.coded
-                        [ sim_state ] =             update_symbol_error_rate( sim_param, sim_state, code_param, snrpoint, data, detected_data );
+                        [ sim_state ] = update_symbol_error_rate( sim_param,...
+                            sim_state, code_param, snrpoint, data, detected_data );
                     end
                     
                     sim_state = record_trial_time( sim_param, sim_state, code_param, snrpoint);
                     
                 else % capacity simulation
                     if ( sim_param.bicm )             % bicm cap
-                        cap = compute_bicm_capacity( sim_param, code_param, symbol_likelihood, bit_likelihood );
+                        cap = compute_bicm_capacity( sim_param, code_param,...
+                            symbol_likelihood, bit_likelihood );
                     else                                        % cm cap
                         cap = log2(sim_param.mod_order)*Capacity( symbol_likelihood, data );
                     end
-                    [sim_state] = update_fer_statistics( cap, code_param, sim_state, snrpoint, verbosity );
+                    [sim_state] = update_fer_statistics( cap, code_param,...
+                                                      sim_state, snrpoint, verbosity );
                 end
                 
                 
@@ -91,7 +98,8 @@ while ( continue_simulation )
         
         save_simulation_state( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
         
-        execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state, code_param, snrpoint, session_time );
+        execute_this_snr = evaluate_snr_point_stopping_conditions( sim_param, sim_state,...
+                                                      code_param, snrpoint, session_time );
     end
     
     
@@ -102,7 +110,8 @@ while ( continue_simulation )
     %%% determine whether to continue the simulation
     snrpoint = snrpoint + 1;  % next snr point
     session_time = toc;
-    continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, snrpoint, session_time );
+    continue_simulation = evaluate_simulation_stopping_conditions( sim_param, EsNo, ...
+                                                                  snrpoint, session_time );
 end
 
 
@@ -115,7 +124,7 @@ end
 
 
 function elapsed_time = update_global_sim_time( sim_state, session_time_dt)
-elapsed_time = sim_state.timing_data.elapsed_time + session_time_dt;  % update global simulation timer
+ elapsed_time = sim_state.timing_data.elapsed_time + session_time_dt; 
 end
 
 
@@ -337,22 +346,6 @@ end
 
 end
 
-
-% 
-% function [ldpc_decoder] = CreateLdpcDecoder( sim_param, code_param )
-% if strcmp(sim_param.ldpc_impl, 'new')
-% 
-%     ldpc_decoder = LdpcDecoder();
-%         
-%     [row_one col_one] = PostProcessH( code_param.H_rows, code_param.H_cols );
-%         
-%     ldpc_decoder = ldpc_decoder.CreateTannerGraph( row_one, col_one,...
-%         code_param.code_bits_per_frame );
-%      
-% else
-% ldpc_decoder = [];
-% end
-% end
 
 
 
