@@ -1,19 +1,24 @@
+% exports figure handles as .pdf files. Linux-specific.
 function plexport(fhd, it, figpath)
 
 switch it
     case 'eps'
-        print(fhd, '-depsc', '-r600', figpath);
+        epsfn = [figpath '.eps']
+        print(fhd, '-depsc', '-r600', epsfn);
     case 'pdf'
-        tmpeps = '/var/tmp/tmpeps';
-        print(fhd, '-depsc', '-r600', tmpeps);
+        tmpprefix = '/var/tmp/tmpimg';
+        tmpeps = [tmpprefix '.eps'];
+        print(fhd, '-depsc', tmpeps);
         
-        cmd = ['epstopdf' ' ' tmpeps '.eps'];
+        cmd = ['epstopdf' ' ' tmpeps];
         system(cmd);
         
-        cmd = ['mv' ' ' tmpeps '.eps' ' ' figpath '.pdf'];
+        tmppdf = [tmpprefix '.pdf'];
+        pdffn = [figpath '.pdf'];
+        cmd = ['mv' ' ' tmppdf ' ' pdffn];
         system(cmd);
     otherwise
-        error('Image export type must be ''eps'' or ''pdf'' ');    
+        error('Image export type must be ''eps'' or ''pdf'' ');
 end
 
 end
