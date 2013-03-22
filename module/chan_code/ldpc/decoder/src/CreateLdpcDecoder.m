@@ -1,6 +1,6 @@
-% CreateLdpcDecoder.m 
+% CreateLdpcDecoder.m
 %  Create an LDPC decoder object given CML sim_param and code_param.
-%  
+%
 % Inputs
 %  sim_param       CML structure containing general simulation parameters
 %  code_param      CML structure containing channel_coding parameters
@@ -12,25 +12,30 @@
 
 function [ldpc_decoder] = CreateLdpcDecoder( sim_param, code_param )
 
-if strcmp(sim_param.ldpc_impl, 'new')    
+if sim_param.code_configuration == 2,
     
-    % check parity check matrix for consistency
-    check_pcm( code_param.H_rows, code_param.H_cols,...
-        code_param.data_bits_per_frame,...
-        sim_param.framesize);
-    
-    % currently no difference in logic between random and otherwise
-    if strcmp(sim_param.parity_check_matrix, 'random')
-        [row_one col_one] = PostProcessH( code_param.H_rows, code_param.H_cols );
+    if strcmp(sim_param.ldpc_impl, 'new')
+        
+        % check parity check matrix for consistency
+        check_pcm( code_param.H_rows, code_param.H_cols,...
+            code_param.data_bits_per_frame,...
+            sim_param.framesize);
+        
+        % currently no difference in logic between random and otherwise
+        if strcmp(sim_param.parity_check_matrix, 'random')
+            [row_one col_one] = PostProcessH( code_param.H_rows, code_param.H_cols );
+        else
+            % check H_rows, H_cols for consistency
+            [row_one col_one] = PostProcessH( code_param.H_rows, code_param.H_cols );
+        end
+        
+        % create LDPC decoder object.
+        ldpc_decoder = LdpcDecoder();
+        ldpc_decoder = ldpc_decoder.CreateTannerGraph( row_one, col_one,...
+            code_param.code_bits_per_frame );
     else
-        % check H_rows, H_cols for consistency
-        [row_one col_one] = PostProcessH( code_param.H_rows, code_param.H_cols );
+        ldpc_decoder = [];
     end
-    
-    % create LDPC decoder object.
-    ldpc_decoder = LdpcDecoder();
-    ldpc_decoder = ldpc_decoder.CreateTannerGraph( row_one, col_one,...
-        code_param.code_bits_per_frame );
 else
     ldpc_decoder = [];
 end
