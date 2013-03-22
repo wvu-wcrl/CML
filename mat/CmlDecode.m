@@ -67,10 +67,8 @@ if (code_param.coded)
             input_decoder_u = zeros(1, code_param.data_bits_per_frame );            
             
             
-        case {2} % ldpc            
-            if ( sim_param.bicm )
-                bicm_iterations = code_param.max_iterations;
-            end            
+        case {2} % ldpc                        
+                bicm_iterations = code_param.max_iterations;            
         case {3} % HSDPA
             % BICM-ID not supported
             bicm_iterations = 1;
@@ -159,7 +157,7 @@ if (code_param.coded)
                 
                 
                 if strcmp(sim_param.ldpc_impl, 'new')
-                    if( sim_param.bicm == 1 )
+                    if( sim_param.bicm == 0  || sim_param.bicm == 1 )
                         [ldpc_decoder detected_data errors] = LdpcDecode_bicm(ldpc_decoder,...
                             code_param.max_iterations, input_decoder_c,  data, errors);
                         return;

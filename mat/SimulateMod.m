@@ -193,7 +193,7 @@ end
 end
 
 
-function sim_state = update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors);
+function sim_state = update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors)
 % update frame error and bit error counters
 sim_state.bit_errors( 1:code_param.max_iterations, snrpoint ) = sim_state.bit_errors( 1:code_param.max_iterations, snrpoint ) + errors;
 sim_state.frame_errors( 1:code_param.max_iterations, snrpoint ) = sim_state.frame_errors( 1:code_param.max_iterations, snrpoint ) + (errors>0);
