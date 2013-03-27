@@ -19,7 +19,13 @@ function I = J2(sigma)
 %
 %     Last updated on 9/4/2012
 
-
+    % Any input argument > 10 should return 1.
+    % Arguments >> 10 fail by causing J2() to return infinity.
+    % The following statement prevents this behavior by clipping
+    %  arguments larger than 10, consistent with Brink's definition.
+    %  Terry 3/2013
+    sigma(sigma>=10) = 10;   
+    
     sigma_threshold = 1.6363;
     sigma = reshape(sigma,length(sigma),1);
     s = [sigma.^3 sigma.^2 sigma ones(size(sigma))];

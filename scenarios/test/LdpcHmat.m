@@ -57,20 +57,20 @@ sim_param(record).save_rate = 5;
 sim_param(record).legend = strcat('M=', num2str(sim_param(record).mod_order), ',',...
                                    'BICM=', num2str(sim_param(record).bicm), ',',...
                                     'LDPC Impl=', sim_param(record).ldpc_impl);
-%sim_param(record).MaxRunTime = 3*60;
+sim_param(record).MaxRunTime = 3*60;
                                 
 
-% .PCHK parity check matrix files not officially supported
+
 record = 2;
 effective_rate = '3/5'; 
-sim_param(record).comment = '.PCHK file';
+sim_param(record).comment = '.alist file';
 sim_param(record).sim_type = 'coded';
 sim_param(record).code_configuration = 2; % LDPC
 sim_param(record).ldpc_impl = 'new';   % specify ldpc implementation
 sim_param(record).SNR = [0:0.5:3];
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).framesize = 64800; 
-sim_param(record).parity_check_matrix = 'test_ldpc_hmat.pchk';   % support .pchk or .alist h-matrix
+sim_param(record).parity_check_matrix = 'test_ldpc_hmat.alist';   % support .pchk or .alist h-matrix
 sim_param(record).ldpc_param.rate = str2num( effective_rate );
 sim_param(record).modulation = 'FSK';
 sim_param(record).csi_flag = 2;
@@ -93,41 +93,9 @@ sim_param(record).legend = strcat('M=', num2str(sim_param(record).mod_order), ',
                                     'LDPC Impl=', sim_param(record).ldpc_impl);
 sim_param(record).MaxRunTime = 3*60;
 
+                   
 
 record = 3;
-effective_rate = '3/5'; 
-sim_param(record).comment = '.alist file';
-sim_param(record).sim_type = 'coded';
-sim_param(record).code_configuration = 2; % LDPC
-sim_param(record).ldpc_impl = 'new';   % specify ldpc implementation
-sim_param(record).SNR = [0:0.5:3];
-sim_param(record).SNR_type = 'Eb/No in dB';
-sim_param(record).framesize = 64800; 
-sim_param(record).parity_check_matrix = 'test_ldpc_hmat.alist';   % support .pchk or .alist h-matrix
-sim_param(record).ldpc_param.rate = str2num( effective_rate );
-sim_param(record).modulation = 'FSK';
-sim_param(record).csi_flag = 2;
-sim_param(record).mod_order = 2;
-sim_param(record).channel = 'AWGN';
-sim_param(record).bicm = 2;
-sim_param(record).demod_type = 0; 
-sim_param(record).linetype = 'm-';
-sim_param(record).max_iterations = 30;
-sim_param(record).decoder_type = 0;
-sim_param(record).filename = strcat( data_directory, 'LdpcHmat_3.mat');
-sim_param(record).reset = 0;
-sim_param(record).max_trials = 1e8*ones( size(sim_param(record).SNR) );
-sim_param(record).minBER = MINBER; 
-sim_param(record).max_frame_errors = 300*ones( size(sim_param(record).SNR) );
-sim_param(record).plot_iterations = sim_param(record).max_iterations;
-sim_param(record).save_rate = 20;
-sim_param(record).legend = strcat('M=', num2str(sim_param(record).mod_order), ',',...
-                                   'BICM=', num2str(sim_param(record).bicm), ',',...
-                                    'LDPC Impl=', sim_param(record).ldpc_impl);
-sim_param(record).MaxRunTime = 3*60;
-
-                                
-record = 4;
 effective_rate = '3/5'; 
 sim_param(record).comment = '.mat file';
 sim_param(record).sim_type = 'coded';
@@ -147,7 +115,7 @@ sim_param(record).demod_type = 0;
 sim_param(record).linetype = 'm-';
 sim_param(record).max_iterations = 30;
 sim_param(record).decoder_type = 0;
-sim_param(record).filename = strcat( data_directory, 'LdpcHmat_4.mat');
+sim_param(record).filename = strcat( data_directory, 'LdpcHmat_3.mat');
 sim_param(record).reset = 0;
 sim_param(record).max_trials = 1e8*ones( size(sim_param(record).SNR) );
 sim_param(record).minBER = MINBER; 
