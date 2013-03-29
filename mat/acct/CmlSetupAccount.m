@@ -66,7 +66,8 @@ end
 function write_webcml_cf(username)
 
 [ cml_home ] = CmlLoadCmlHome('local');
-CfgFi = [ cml_home filesep 'cfg' filesep 'webcml'];
+CfgFi = [ cml_home filesep 'mat' filesep 'acct' filesep 'webcml'];
+%CfgFi = [ cml_home filesep 'cfg' filesep 'webcml'];
 
 CfgFiID = fopen(CfgFi,'w');
 

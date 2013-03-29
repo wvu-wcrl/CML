@@ -16,7 +16,9 @@
 function Ex = CmlCfgEx()
 
 cml_home = CmlLoadCmlHome('local');
-CfgFi = [ cml_home filesep 'cfg' filesep 'webcml'];
+%CfgFi = [ cml_home filesep 'cfg' filesep 'webcml'];
+
+CfgFi = [ cml_home filesep 'mat' filesep 'acct' filesep 'webcml']
 CfgFiEx = exist(CfgFi, 'file');
 if CfgFiEx == 2, Ex = 'yes'; else Ex = 'no'; end
 

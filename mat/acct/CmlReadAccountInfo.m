@@ -19,7 +19,8 @@ function [user remote_cmlroot remote_projroot] = ...
 
 [cml_home] = CmlLoadCmlHome('local');
 
-cfp = strcat(cml_home, '/cfg/webcml');
+%cfp = strcat(cml_home, '/cfg/webcml');
+cfp = [ cml_home filesep 'mat' filesep 'acct' filesep 'webcml'];
 
 Ex = CmlCfgEx();
 if strcmp( Ex, 'no' )
