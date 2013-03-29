@@ -7,7 +7,7 @@
 
 function sc_startup(cml_home)
 
-addpath( [cml_home filesep 'util' filesep 'scenario_creation' filesep 'src']);
+addpath( [cml_home filesep 'util' filesep 'scencr' filesep 'src']);
 
 end
 

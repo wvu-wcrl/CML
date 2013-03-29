@@ -1,5 +1,11 @@
 function cml_home = CmlLoadCmlHome( SimLocation )
+%
+% Load location of 'CmlHome' from disk to variable in workspace.
+% 
+% 'CmlHome' stored as MATLAB variable in 'CmlHome.mat'
+%
 % Inputs
+%  No inputs.
 %
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.

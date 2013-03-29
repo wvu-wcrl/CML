@@ -1,5 +1,15 @@
 function CmlPrint(Msg, data, verbosity)
+% Print message stored as string variable based on verbosity level.
+%
 % Inputs
+%  Msg        Message stored as fprintf-formatted string.
+%
+%  data       Data referenced in 'Msg'
+%
+%  verbosity  Desired verbosity level. 
+%             'verbose' - print output
+%             'silent'   - print nothing
+%
 %
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.

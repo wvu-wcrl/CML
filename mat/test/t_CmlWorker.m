@@ -3,12 +3,9 @@
 load('CmlHome.mat');
 
 
-output_path = [cml_home '/scenarios' '/t_bersim' '/*'];
-sys_cmd = ['rm' ' ' output_path];
-try system(sys_cmd); catch end;
 
 
-[sim_param sim_state] = ReadScenario('t_BerSim', 1);
+[sim_param sim_state] = ReadScenario('PcsBer', 1);
 JobParam = sim_param;
 JobState = sim_state;
 

@@ -1,5 +1,13 @@
 function CmlSave( save_struct, SimLocation )
+%
+% Save simulation state.
+% Specific save operation based on simulation location.
+%
+% When running locally, save simulation state to save_param.filename
+% When running on the cluster, take no action. 
+%
 % Inputs
+%  No inputs
 %
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
