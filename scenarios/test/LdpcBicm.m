@@ -13,8 +13,10 @@ if ispc
 else
     data_directory = strcat( '/output/', base_name, '/' );
 end
-if ~exist( data_directory, 'dir' )
-    mkdir(data_directory);
+
+full_directory = strcat( cml_home, data_directory );
+if ~exist( full_directory, 'dir' )
+    mkdir( full_directory);
 end
 
 
