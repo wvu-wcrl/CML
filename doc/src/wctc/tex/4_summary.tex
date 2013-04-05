@@ -1,0 +1,24 @@
+\begin{frame}
+\frametitle{Steps to Submitting a Job}
+
+\begin{enumerate}
+\item Create a WCTC account at \url{http://wctc.csee.wvu.edu}
+
+\item Download and install CML from \url{http://code.google.com/p/iscml/wiki/cml}
+
+\item Select a CML error-rate scenario and record to simulate and create a job file using
+\\ $>>$ CmlWebSubmit(scenario, record)
+\vspace{3mm}
+\\ The job file is located in $<$CMLROOT$>$/jobs/JobIn/$<$scenario$>$\_$<$record$>$.mat
+
+\item Log in to the WCTC web interface and upload the job file.
+
+\item Once the job is completed, download the job results file to \\
+$<$CMLROOT$>$/jobs/JobOut/$<$scenario$>$\_$<$record$>$.mat
+
+\item Convert the job results file to a CML output file and plot
+\\ $>>$ CmlWebRetrieve
+\\ $>>$ CmlPlot(scenario, record)
+\end{enumerate}
+
+\end{frame}

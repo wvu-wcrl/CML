@@ -1,0 +1,153 @@
+\documentclass{beamer}
+
+
+
+%%%% Packages %%%%%%%%%
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{makeidx}
+
+\usepackage{color}
+\usepackage{cite}
+% \usepackage{pseudocode}
+
+\usepackage{epsf}
+\usepackage{graphicx}
+\usepackage{subfigure}
+%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+
+% \usepackage[pdftex]{graphicx}
+\graphicspath{{./fig/pdf/}}
+\DeclareGraphicsExtensions{{.pdf}}
+
+% \usepackage[dvips]{graphicx}
+% \graphicspath{{../fig/eps/}}
+% \DeclareGraphicsExtensions{{.eps}}
+
+
+
+\xdefinecolor{lavendar}{rgb}{0.8,0.6,1}
+
+
+
+%%%%%%%%%%%%%%%%%% 
+\mode<presentation> {
+  \usetheme{AnnArbor}
+  \useoutertheme{infolines}
+  \usefonttheme{professionalfonts}
+  \setbeamercovered{transparent}
+}
+%%%%%%%%%%%%%%%%%%% 
+
+
+
+
+\setbeamertemplate{navigation symbols}{} % turns off navigation bar
+
+
+% Turn off all footer information other than page numbers
+% From 
+% http://stackoverflow.com/questions/1435837/how-to-remove-footers-of-latex-beamer-templates
+\setbeamertemplate{footline}[page number]{}
+
+
+
+\newenvironment{itemize_loose}
+{\begin{itemize}%
+    \setlength{\itemsep}{5mm}%
+  }
+  {\end{itemize}}
+
+
+% Add an outline at the beginning of every section highlighting current section.
+\AtBeginSection[] % Do nothing for \section*
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+
+%%%%%%%%% Front Matter %%%%%%%%%%%%%
+
+%%%%%% Title and Subtitle %%%%%
+\title[Title Abbreviation]{WVU WCRL Communication Theory Cloud: \\
+                                      An Introduction}
+%\subtitle{ subtitle }
+
+
+%%%% Author %%%
+\author[\hspace{0.5in} Ferrett \hspace{0.7in}]{ Terry Ferrett }
+
+
+%%%%% Institution %%%%%%%%
+\institute{ Lane Department of Computer Science and Electrical Engineering\\
+  West Virginia University
+}
+
+
+%%%%% Date %%%%%%%%%
+\date % (optional, should be abbreviation of conference name)
+{April 3rd, 2013}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+
+
+
+
+%%%%%%%%% Start of Document %%%%%%%%%%
+\begin{document}
+
+
+
+
+
+%%%% Slide Containing Title Page %%%%%% 
+\begin{frame}
+  \titlepage
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+
+
+%%%%% Slide Containing Outline %%%%%%%%
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents[sectionstyle=show, subsectionstyle=hide]
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+
+
+%%%%%% Presentation Sections %%%%%%
+\section{Motivation}
+\input{1_motivation.tex}
+
+\section{Creating a WCRL Communication Theory Cloud Account}
+\input{2_account.tex}
+
+\section{Job Submission Tutorial: BPSK in AWGN}
+\input{3_tutorial.tex}
+
+\section{Job Submission Summary}
+\input{4_summary.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+
+
+\end{document}
+
+
+
+
+
