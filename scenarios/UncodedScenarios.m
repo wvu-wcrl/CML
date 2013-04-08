@@ -24,24 +24,26 @@ end
 
 % uncoded modulation in AWGN
 record = 1;
-sim_param(record).comment = 'Uncoded BPSK in AWGN';
-sim_param(record).sim_type = 'uncoded';
-sim_param(record).SNR = [0:0.5:11];
-sim_param(record).SNR_type = 'Eb/No in dB';
-sim_param(record).framesize = 100000;
-sim_param(record).modulation = 'BPSK';
-sim_param(record).mod_order = 2;
-sim_param(record).channel = 'AWGN';
-sim_param(record).bicm = 1;
-sim_param(record).demod_type = 0; 
-sim_param(record).linetype = 'g:';
-sim_param(record).legend = sim_param(record).comment;
-sim_param(record).filename = strcat( data_directory, 'BPSKAWGN.mat');
-sim_param(record).reset = 1;
+sim_param(record).sim_type = 'uncoded';     % This is an uncoded error-rate simulation.
+sim_param(record).modulation = 'BPSK';      % Modulation type is BPSK
+sim_param(record).mod_order = 2;            % Modulation order is 2
+sim_param(record).channel = 'AWGN';         % Channel type is AWGN
+sim_param(record).minBER = 1e-6;            % We want to simulate down to an error-rate of 1e-6
+sim_param(record).SNR_type = 'Eb/No in dB'; % The SNR range is specified in energy-per-bit
+sim_param(record).SNR = [0:0.5:11];         % Desired SNR range in dB
+sim_param(record).framesize = 100000;       % Each frame contains 100,000 symbols
+
+% Maximum trials to execute per SNR point
 sim_param(record).max_trials = 100000*ones( size(sim_param(record).SNR) );
-sim_param(record).minBER = 1e-6; 
+% Maximum frame errors to gather at each SNR point
 sim_param(record).max_frame_errors = 60*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 10;
+sim_param(record).comment = 'Uncoded BPSK in AWGN';   % 
+sim_param(record).linetype = 'b';
+sim_param(record).legend = sim_param(record).comment;
+sim_param(record).filename = strcat( data_directory, 'BPSKAWGN.mat');
+sim_param(record).reset = 0;
+
 
 record = 2;
 sim_param(record).comment = 'Uncoded QPSK in AWGN';

@@ -315,10 +315,10 @@ end
 function set_default_if_no_match( match, sim_param_in, save_param, spuf, spu, i )
 if match
     if ~length( getfield( sim_param_in, spuf{i} ) )
-        fprintf( ['Warning: Field "' spuf{i} '" undefined in the scenario file, using default value\n' ] );
+        %fprintf( ['Warning: Field "' spuf{i} '" undefined in the scenario file, using default value\n' ] );
         save_param = setfield( save_param, spuf{i}, getfield( spu, spuf{i} ) );
     elseif ~length( getfield( save_param, spuf{i} ) )
-        fprintf( ['Warning: stored value of field ' spuf{i} ' is set to [], using default value\n' ] );
+        %fprintf( ['Warning: stored value of field ' spuf{i} ' is set to [], using default value\n' ] );
         save_param = setfield( save_param, spuf{i}, getfield( spu, spuf{i} ) );
     else
         fprintf( ['Warning: field ' spuf{i} ' does not match stored value, using stored value\n' ] );
