@@ -605,9 +605,9 @@ for i=1:length( sim_state_fieldnames )
     end
 end
 
-% alphabetize fields
-sim_param_out = orderfields( sim_param_out );
-sim_state = orderfields( sim_state );
+% alphabetize fields - removed 4/18/2013 by Terry - causing crashes
+%sim_param_out = orderfields( sim_param_out );
+%sim_state = orderfields( sim_state );
 end
 
 

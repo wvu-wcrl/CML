@@ -91,8 +91,10 @@ for file=1:number_of_files
                 sim_param(case_number).reset = 0;
             end
             
-            [sim_param_out(case_number), sim_state(case_number)] = SingleRead( sim_param(case_number) );
-            
+            %[sim_param_out(case_number), sim_state(case_number)] = SingleRead( sim_param(case_number) );
+            [a b] =  SingleRead( sim_param(case_number) );
+            sim_param_out(case_number) = a;
+            sim_state(case_number) = b;
         end
         sim_param_output(offset+1:offset+num_cases) = sim_param_out(1:num_cases);
         sim_state_output(offset+1:offset+num_cases) = sim_state(1:num_cases);

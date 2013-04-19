@@ -5,7 +5,7 @@
 PRO=wcrlcluster.csee.wvu.edu:/home/tferrett/cml/output
 
 # path to local output
-PLO=/home/tferrett/cmlmerge/cmlnew/
+PLO=/home/tferrett/cml
 
 # copy
 scp -r $PRO $PLO

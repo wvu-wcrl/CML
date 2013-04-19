@@ -2,7 +2,7 @@
 % CmlCsv2Scen converts CSV files describing CML scenarios to
 %  .m files for execution.
 %
-%   Place CSV files in <CMLROOT>/util/scenario_creation/csv
+%   Place CSV files in <CMLROOT>/util/scencr/csv
 %
 % The calling syntax is:
 %     CmlCsv2Scen([scenario_csv_file])
@@ -12,7 +12,7 @@
 %         scenario_csv_file   CSV file describing CML scenario
 %       
 %         Providing no input argument processes all .csv files in
-%          <CMLROOT>/util/scenario_creation/csv
+%          <CMLROOT>/util/scencr/csv
 %
 %     Output
 %       Scenario file placed in <CMLROOT>/localscenarios
@@ -20,7 +20,7 @@
 %
 %
 %     Example:
-%       - User creates <CMLROOT>/util/scenario_creation/csv/fsk_uncoded.csv
+%       - User creates <CMLROOT>/util/scencr/csv/fsk_uncoded.csv
 %
 %        >> CmlCsv2Scen('fsk_uncoded.csv');
 %
@@ -51,7 +51,7 @@ function [csv_path csv_files] = read_input( cml_home, num_input_args, varargin )
 
 
 if num_input_args == 0,
-    csv_path = [cml_home filesep 'util' filesep 'scenario_creation' ...
+    csv_path = [cml_home filesep 'util' filesep 'scencr' ...
         filesep 'csv'];
     
     csv_file_struct = dir([csv_path filesep '*.csv']);
@@ -64,7 +64,7 @@ if num_input_args == 0,
     end
     
 elseif num_input_args == 1,
-    csv_path = [cml_home filesep 'util' filesep 'scenario_creation' ...
+    csv_path = [cml_home filesep 'util' filesep 'scencr' ...
         filesep 'csv'];
     csv_files{1} = varargin{1}{1};
 else
@@ -76,7 +76,7 @@ end
 
 
 function conv_path = set_path_to_conversion_script( cml_home )
-conv_path = [cml_home filesep 'util' filesep 'scenario_creation' ...
+conv_path = [cml_home filesep 'util' filesep 'scencr' ...
     filesep 'src' filesep 'csv2cml'];
 end
 

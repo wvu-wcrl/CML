@@ -22,7 +22,7 @@ switch location,
         
         % read location of user's project root
         [ project_root ] = ReadProjectRoot();
-        
+
         % copy data files requested by simulation to project data directory
         CopyCmlDat2ProjDat( scenario, records, project_root );
         

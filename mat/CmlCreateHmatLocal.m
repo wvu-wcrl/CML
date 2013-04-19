@@ -59,7 +59,7 @@ function [sim_param code_param] = process_random( sim_param, code_param, cml_hom
 %%%%%
 %%%%% For unofficial use in a Linux environment, comment the following
 %%%%%  error message.
-error('Random code generation not yet officially supported.');
+%error('Random code generation not yet officially supported.');
 
 % check for constraint, if not set, assume eira
 if ~isfield(sim_param.ldpc_param, 'constraint')
@@ -139,6 +139,7 @@ if strcmp(constraint, 'eira')
     
     %%% path and filename convention for hmat filename
     %%% cml/localscenarios/<scenario>/supp/hmat/<scen>_<rec>_hmat.mat
+    %%% cml/data/ldpc/<scen>_<rec>_hmat.mat
     
     h_mat_full_path = form_h_matrix_full_path( sim_param, cml_home );
     
@@ -230,17 +231,17 @@ end
 
 function h_matrix_path = form_h_matrix_path( cml_home, scen_name )
 
-h_matrix_path = [cml_home filesep 'output' filesep scen_name filesep...
-    'supp' filesep 'hmat' ];
+
+h_matrix_path = [ cml_home filesep 'data' filesep 'ldpc' ];
 
 
 % make directory with sudo permission
-[a b] = strtok(cml_home,'/');
-[user d] = strtok(b, '/');
+%[a b] = strtok(cml_home,'/');
+%[user d] = strtok(b, '/');
 
-scen_path = [cml_home filesep 'output' filesep scen_name];
-cmd = ['sudo mkdir -p ' h_matrix_path ]; system(cmd);
-cmd = ['sudo chown -R ' user ':' user ' ' scen_path]; system(cmd);
+%scen_path = [cml_home filesep 'output' filesep scen_name];
+%cmd = ['sudo mkdir -p ' h_matrix_path ]; system(cmd);
+%cmd = ['sudo chown -R ' user ':' user ' ' scen_path]; system(cmd);
 
 end
 
