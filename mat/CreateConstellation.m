@@ -14,13 +14,14 @@ function [S, mapping] = CreateConstellation( mod_type, varargin )
 %         not needed for 'BPSK' (M=2), 'QPSK' (M=4), or 'HEX' (M=16).  Default for 'FSK' is M=2.
 %     [label_type] = the labelling type, may be a string or a vector.
 %         strings must be 'gray', 'Antigray', 'SP', 'SSP', 'MSEW',
-%        'huangITNr1', 'huangITNr2', 'huangLetterNr1', or 'huangLetterNr2'
-%         not needed for BPSK, QPSK, HSDPA, HEX, APSK, or orthogonal FSK (h=1).
-%     [h] = modulation index.  Used only for FSK modulation.  Default h=1.
+%        'huangITNr1', 'huangITNr2', 'huangLetterNr1', or 'huangLetterNr2',
+%        or 'DVB' for APSK modulation. Not needed for BPSK, QPSK, HSDPA, HEX, or orthogonal FSK (h=1).
+%     [h] = modulation index for FSK modulation or ring radius ratios for APSK modulation. 
+%           Default h=1. The default value for 16-APSK is 2.85; for 32-APSK is [2.84,5.27]. 
 %
 % Copyright (C) 2005-2007, Matthew C. Valenti and Shi Cheng
 %
-% Last updated on Dec. 27, 2007
+% Last updated on Apr. 23, 2013
 %
 % Function CreateConstellation is part of the Iterative Solutions Coded Modulation
 % Library (ISCML).
@@ -184,21 +185,32 @@ elseif ( strcmpi( mod_type, 'HEX' ) ) % HEX modulation
 elseif ( strcmpi(mod_type, 'APSK' )  )% APSK modulation 
     % inner ring is QPSK with first_angle pi/4
     temps = exp( 1i*( 2*pi*(0:3)/4 + pi/4 ) );
-    % mapping is fixed
     if (M==16)
-        rho = h(1); % this could be varied
+        % determin if there is input to change the ring radius ratios
+        if (h==1)  
+            rho = 2.85; % default value
+        elseif (length(h)==1)
+            rho = h;
+        else
+            error( 'Only one radius ratio is needed for 16-APSK' );
+        end
         % outer ring is 12-PSK w/ radius rho
         temps(5:16) = rho*exp( 1i*( 2*pi*(0:11)/12 + pi/12 ));
     elseif (M==32)
-        rho1 = h(1);  % these could be varied
-        rho2 = h(2);
+        if (h==1)
+            rho = [2.84, 5.27]; % default value
+        elseif (length(h)==2)
+            rho = h;
+        else
+             error( 'Two radius ratios are needed for 32-APSK' );
+        end
         % middle and outer rings
-        temps(5:16) = rho1*exp( 1i*( 2*pi*(0:11)/12 + pi/12 ));
-        temps(17:32) = rho2*exp( 1i*( 2*pi*(0:15)/16 + pi/8 ) );  
+        temps(5:16) = rho(1)*exp( 1i*( 2*pi*(0:11)/12 + pi/12 ));
+        temps(17:32) = rho(2)*exp( 1i*( 2*pi*(0:15)/16 + pi/8 ) );  
     else
         error( 'APSK requires M=16 or 32' );
     end
-    
+     
     if ischar( label_type )
         switch label_type
             case 'DVB'
@@ -206,6 +218,7 @@ elseif ( strcmpi(mod_type, 'APSK' )  )% APSK modulation
                     % the first two bits are flipped
                     mapping = [0,2,3,1,8,12,4,6,14,10,11,15,7,5,13,9];
                 elseif (M == 32)
+                    % mapping from DVB-S2 standard
                     mapping=[17,21,23,19,16,0,1,5,4,20,22,6,7,3,2,18,...
                         8, 25,9,13,29,12,28,30,14,31,15,11,27,10,26,24];
                 else
