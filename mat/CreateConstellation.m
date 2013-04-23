@@ -58,7 +58,7 @@ end
 % Optional argument: Label Type
 if (length(varargin)>=2)
     label_type = varargin{2};
-    if ~isstr( label_type )
+    if ~ischar( label_type )
         if (length( label_type ) ~= M )
             error( 'Length of label_type must be M' );
         elseif (sum( sort( label_type ) ~= [0:M-1] ) > 0)
@@ -90,7 +90,7 @@ if ( strcmpi( mod_type, 'HSDPA' ) )
             -1 1
             -1 -1]';
         S = (temp(1,:) + sqrt(-1)*temp(2,:))/sqrt(2);
-        mapping = [0:3];
+        mapping = (0:3);
     elseif (M==16) % 16-QAM
         for point=0:15
             temp = point;
@@ -109,13 +109,13 @@ elseif ( strcmpi( mod_type, 'BPSK' ) )
     S = [1 -1]; % BPSK
     mapping = 0:1;
 elseif ( strcmpi( mod_type, 'QPSK' ) )
-    S = [1 +j -j -1];  % QPSK
+    S = [1 +1i -1i -1];  % QPSK
     mapping = 0:3;
 elseif  ( strcmpi( mod_type, 'PSK' ) )
     % PSK modulation
-    temps = exp( j*2*pi * [0:M-1]/M);
+    temps = exp( 1i*2*pi * [0:M-1]/M);
 
-    if isstr( label_type )
+    if ischar( label_type )
         switch label_type
             case 'gray'
                 mapping = [0,1];
@@ -162,47 +162,59 @@ elseif ( strcmpi( mod_type, 'HEX' ) ) % HEX modulation
         -2
         2
         4
-        (-1 +j*sqrt(3) )
-        (-3 +j*sqrt(3) )
-        ( 1 +j*sqrt(3) )
-        ( 3 +j*sqrt(3) )
-        ( 1 -j*sqrt(3) )
-        (-1 -j*sqrt(3) )
-        ( 3 -j*sqrt(3) )
-        (-3 -j*sqrt(3) )
-        (-2 +j*2*sqrt(3) )
-        (   -j*2*sqrt(3) )
-        (   +j*2*sqrt(3) )
-        (-2 -j*2*sqrt(3) ) ] );
+        (-1 +1i*sqrt(3) )
+        (-3 +1i*sqrt(3) )
+        ( 1 +1i*sqrt(3) )
+        ( 3 +1i*sqrt(3) )
+        ( 1 -1i*sqrt(3) )
+        (-1 -1i*sqrt(3) )
+        ( 3 -1i*sqrt(3) )
+        (-3 -1i*sqrt(3) )
+        (-2 +1i*2*sqrt(3) )
+        (   -1i*2*sqrt(3) )
+        (   +1i*2*sqrt(3) )
+        (-2 -1i*2*sqrt(3) ) ] );
 
     % normalize
-    temps = S/sqrt( mean( abs(S).^2 ) );;
+    temps = S/sqrt( mean( abs(S).^2 ) );
     
     % fix mapping
     S(mapping+1) = temps;   
   
 elseif ( strcmpi(mod_type, 'APSK' )  )% APSK modulation 
-    % inner ring is QPSK
-    temps = [+1 +j -1 -j];
-
+    % inner ring is QPSK with first_angle pi/4
+    temps = exp( 1i*( 2*pi*(0:3)/4 + pi/4 ) );
     % mapping is fixed
     if (M==16)
-        rho = 2.85; % this could be varied
+        rho = h(1); % this could be varied
         % outer ring is 12-PSK w/ radius rho
-        temps(5:16) = rho*exp( j*2*pi*[0:11]'/12);
-        mapping = [3 11 9 1 6 2 10 14 15 13 12 8 0 4 5 7];  %fixed 7-10-10
+        temps(5:16) = rho*exp( 1i*( 2*pi*(0:11)/12 + pi/12 ));
     elseif (M==32)
-        rho1 = 2.84;  % these could be varied
-        rho2 = 5.27;
+        rho1 = h(1);  % these could be varied
+        rho2 = h(2);
         % middle and outer rings
-        temps(5:16) = rho1*exp( j*2*pi*[0:11]'/12);
-        temps(17:32) = rho2*exp( j*2*pi*[0:15]'/16 );
-        mapping = [24  8  0 16 29 28 12 13  9  1  5  4 20 21 17 25  ...
-            26 30 14 10 15 11  3  7  2  6 22 18 23 19 27 31];
+        temps(5:16) = rho1*exp( 1i*( 2*pi*(0:11)/12 + pi/12 ));
+        temps(17:32) = rho2*exp( 1i*( 2*pi*(0:15)/16 + pi/8 ) );  
     else
         error( 'APSK requires M=16 or 32' );
     end
-
+    
+    if ischar( label_type )
+        switch label_type
+            case 'DVB'
+                if (M == 16)
+                    % the first two bits are flipped
+                    mapping = [0,2,3,1,8,12,4,6,14,10,11,15,7,5,13,9];
+                elseif (M == 32)
+                    mapping=[17,21,23,19,16,0,1,5,4,20,22,6,7,3,2,18,...
+                        8, 25,9,13,29,12,28,30,14,31,15,11,27,10,26,24];
+                else
+                    error( 'DVB-S2 coded APSK only supported for M=16 or 32' );
+                end
+            otherwise
+                error('Currently only DVB labeling is supported for APSK');
+        end
+    end
     % mapping is fixed
     S(mapping+1) = temps;
 
@@ -212,9 +224,9 @@ elseif ( strcmpi(mod_type, 'APSK' )  )% APSK modulation
 elseif ( strcmpi( mod_type, 'QAM') )% QAM modulation
     if ( M == 32)
         % the mapping is not right here (just CM capacity)
-        S(1:4) = [ ((-3:2:3)'+j*5) ];
-        S(5:10) = [ ((-5:2:5)'+j*3) ];
-        S(11:16) = [ ((-5:2:5)'+j*1) ];
+        S(1:4) =  ((-3:2:3)'+1i*5) ;
+        S(5:10) =  ((-5:2:5)'+1i*3) ;
+        S(11:16) =  ((-5:2:5)'+1i*1) ;
         S(17:32) = conj(S(1:16));
         % normalize
         temps = S/sqrt( mean( abs(S).^2 ) );
@@ -226,11 +238,11 @@ elseif ( strcmpi( mod_type, 'QAM') )% QAM modulation
 
     t = (- sqrt(M) +1) :2: (sqrt(M) - 1);
     temps = ones( sqrt(M), 1) * t;
-    temps = temps - j*temps';
+    temps = temps - 1i*temps';
     temps = reshape( temps.', 1, M);
     % fprintf( 'Energy = %f\n', mean( abs(temps/2).^2 ) );
     
-    if (isstr( label_type )&(nargin>=3) )
+    if (ischar( label_type )&&(nargin>=3) )
         switch label_type
             case 'gray'
                 if M == 16
@@ -327,12 +339,12 @@ elseif ( strcmpi( mod_type, 'FSK' ) )
         % nonorthogonal FSK
         for m = 1:M
             for n = 1:M
-                temps(n,m) = sinc((m-n)*h)* exp(-j*pi*(m-n)*h);
+                temps(n,m) = sinc((m-n)*h)* exp(-1i*pi*(m-n)*h);
             end
         end
     end
 
-    if isstr( label_type )
+    if ischar( label_type )
         if ( strcmpi( label_type, 'gray'  ) )
             mapping = [0,1];
             for m = 2:log2(M)
@@ -390,7 +402,7 @@ elseif ( strcmpi( mod_type, 'FSK' ) )
             if (M==8)
                 mapping = [0 1 3 2 7 6 4 5];
             elseif (M==16)
-                mapping = [0 1 3 2 7 6 4 5 15 14 12 13 8 9 11 10]
+                mapping = [0 1 3 2 7 6 4 5 15 14 12 13 8 9 11 10];
             else
                 error( 'reversegray mapping only supported for M=8 or 16' );
             end
