@@ -161,8 +161,11 @@ end
 
 
 function verbosity = determine_verbosity( sim_param )
-if strcmp(sim_param.SimLocation, 'local') || strcmp(sim_param.SimLocation, 'clusterlocal' ),...
-        verbosity = 'verbose'; else verbosity = 'silent'; end
+if( strcmp(sim_param.SimLocation, 'local') || strcmp(sim_param.SimLocation, 'clusterlocal' ) )
+        verbosity = 'verbose';
+else
+    verbosity = 'silent';
+end
 end
 
 
