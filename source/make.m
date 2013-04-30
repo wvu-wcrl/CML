@@ -26,6 +26,7 @@ clear DemodFSK.c
 clear Demod2D.c
 clear Demod_PNC_FSK.c
 clear Somap_PNC.c
+clear Capacity_DNC.c
 
 % if this is linux, the files need to be deleted
 if isunix
@@ -58,6 +59,7 @@ if (( strcmp(tempstring(1:3), '7.2' )|strcmp(tempstring(1:3), '7.1' ) )&ispc) % 
     mex -output ../mex/Demod2D.dll Demod2D.c
     mex -output ../mex/Demod_PNC_FSK.dll Demod_PNC_FSK.c
     mex -output ../mex/Somap_PNC.dll Somap_PNC.c
+    mex -output ../mex/Capacity_DNC.dll Capacity_DNC.c
 else
     mex -output ../mex/Capacity Capacity.c
     mex -output ../mex/CapacityTableLookup CapacityTableLookup.c
@@ -82,6 +84,7 @@ else
     mex -output ../mex/Demod2D Demod2D.c
     mex -output ../mex/Demod_PNC_FSK Demod_PNC_FSK.c
     mex -output ../mex/Somap_PNC Somap_PNC.c
+    mex -output ../mex/Capacity_DNC Capacity_DNC.c
 end
 
 

@@ -21,7 +21,8 @@ if ~exist( data_directory, 'dir' )
     mkdir(data_directory);
 end
 
-trials=100;
+trials=40;
+
 
 % CM capacity in AWGN
 % BPSK
@@ -428,6 +429,65 @@ sim_param(record).filename = strcat( data_directory, 'PSK64CM.mat');
 sim_param(record).reset = 0;
 sim_param(record).max_trials = trials*ones( size(sim_param(record).SNR) );
 sim_param(record).save_rate = 20;
+
+record = 22;
+sim_param(record).comment = 'Capacity of QPSK in Rayleigh';
+sim_param(record).sim_type = 'capacity';
+sim_param(record).SNR = [-20:0.5:40];
+sim_param(record).SNR_type = 'Es/No in dB';
+sim_param(record).framesize = 3000;
+sim_param(record).modulation = 'PSK';
+sim_param(record).mod_order = 4;
+sim_param(record).channel = 'Rayleigh';
+sim_param(record).bicm = 1;
+sim_param(record).demod_type = 4; % does not matter if not BICM
+sim_param(record).linetype = 'r-';
+sim_param(record).legend = sim_param(record).comment;
+sim_param(record).filename = strcat( data_directory, 'QPSK_R.mat');
+sim_param(record).reset = 0;
+sim_param(record).max_trials = trials*ones( size(sim_param(record).SNR) );
+sim_param(record).save_rate = 50;
+
+
+
+record = 23;
+sim_param(record).comment = 'BICM Capacity of 4-FSK in Rayleigh';
+sim_param(record).sim_type = 'capacity';
+sim_param(record).SNR = [-20:0.5:40];
+sim_param(record).SNR_type = 'Es/No in dB';
+sim_param(record).framesize = 3000;
+sim_param(record).modulation = 'FSK';
+sim_param(record).mod_order = 4;
+sim_param(record).channel = 'Rayleigh';
+sim_param(record).csi_flag = 1;
+sim_param(record).bicm = 1;
+sim_param(record).demod_type = 4; % does not matter if not BICM
+sim_param(record).linetype = 'k-';
+sim_param(record).legend = sim_param(record).comment;
+sim_param(record).filename = strcat( data_directory, 'BICM_4FSK_R.mat');
+sim_param(record).reset = 0;
+sim_param(record).max_trials = trials*ones( size(sim_param(record).SNR) );
+sim_param(record).save_rate = 50;
+
+record = 24;
+sim_param(record).comment = 'CM Capacity of 4-FSK in Rayleigh';
+sim_param(record).sim_type = 'capacity';
+sim_param(record).SNR = [-20:0.5:40];
+sim_param(record).SNR_type = 'Es/No in dB';
+sim_param(record).framesize = 3000;
+sim_param(record).modulation = 'FSK';
+sim_param(record).mod_order = 4;
+sim_param(record).channel = 'Rayleigh';
+sim_param(record).csi_flag = 1;
+sim_param(record).bicm = 0;
+sim_param(record).demod_type = 4; % does not matter if not BICM
+sim_param(record).linetype = 'r-';
+sim_param(record).legend = sim_param(record).comment;
+sim_param(record).filename = strcat( data_directory, 'CM_4FSK_R.mat');
+sim_param(record).reset = 0;
+sim_param(record).max_trials = trials*ones( size(sim_param(record).SNR) );
+sim_param(record).save_rate = 50;
+
 
 % To add a new record, cut and paste one of the above records.
 % Change record number to be one higher than the last used.

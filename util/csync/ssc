@@ -20,12 +20,12 @@ PLD=/home/tferrett/cml/data/ldpc/*
 PRD=wcrlcluster.csee.wvu.edu:/home/tferrett/cml/data/ldpc
 
 # copy local scenarios to cluster
-scp -r $PLD $PRD
+#scp -r $PLD $PRD
 
 
 
 # path to pcs PCM's
 PPCSD=pcs@wcrlcluster.csee.wvu.edu:/home/pcs/projects/cml/data/ldpc
 
-# copy local scenarios to cluster
-scp -r $PLD $PPCSD
+# copy local parity check matrices to cluster
+#scp -r $PLD $PPCSD

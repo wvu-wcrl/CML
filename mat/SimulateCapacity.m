@@ -93,11 +93,11 @@ while( continue_simulation )
     end
     
 
-     
+    if strcmp(sim_param.sim_type, 'exit' )
     sim_state = set_det_sim_to_complete( sim_param, sim_state, snrpoint );
     sim_state = set_dec_sim_to_complete( sim_param, sim_state, snrpoint );
     save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
-      
+    end  
     
     snrpoint = snrpoint + 1;
     elapsed_time = toc;

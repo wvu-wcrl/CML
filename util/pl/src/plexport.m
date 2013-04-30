@@ -17,8 +17,19 @@ switch it
         pdffn = [figpath '.pdf'];
         cmd = ['mv' ' ' tmppdf ' ' pdffn];
         system(cmd);
+    case 'png'
+        pngfn = [figpath '.png'];
+        
+        tmpprefix = '/var/tmp/tmpimg';
+        tmpeps = [tmpprefix '.eps'];
+        print(fhd, '-depsc', tmpeps);
+        
+        cmd = ['convert' ' ' tmpeps ' ' pngfn];
+        system(cmd);
+    case {'', 'mfig'}
+        % do nothing
     otherwise
-        error('Image export type must be ''eps'' or ''pdf'' ');
+        error('Image export type must be {''eps'', ''pdf'', ''png''} ');
 end
 
 end

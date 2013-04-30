@@ -82,7 +82,7 @@ while( continue_simulation )
                 %%% receiver operations
                 switch sim_param.sim_type,
                     case 'capacity',
-                        cap = compute_frame_capacity( sim_param, code_param, symbol_likelihood, nc_data );
+                        cap = compute_frame_capacity( sim_param, code_param, sym_lh, nc_data );
                         [sim_state] = update_capacity_statistics( sim_state, cap, snrpoint );
                         
                     case 'exit',
@@ -105,9 +105,11 @@ while( continue_simulation )
     end
     
 
-     
+    if strcmp(sim_param.sim_type, 'exit' )
     sim_state = set_det_sim_to_complete( sim_param, sim_state, snrpoint );
     sim_state = set_dec_sim_to_complete( sim_param, sim_state, snrpoint );
+    end
+    
     save_simulation_state_capacity( sim_state, sim_param, code_param, snrpoint, verbosity, tempfile );
       
     
@@ -223,22 +225,25 @@ end
 
 
 
-function cap = compute_frame_capacity( sim_param, code_param, symbol_likelihood, data )
+function cap = compute_frame_capacity( sim_param, code_param, sym_lh, nc_data )
 
 switch sim_param.bicm
     
     case 1,
         
         if (code_param.bpsk)
-            bit_likelihood = symbol_likelihood;
+            ex_llr = symbol_likelihood;
         else
-            bit_likelihood = Somap( symbol_likelihood, sim_param.demod_type );
+            % genereate a-priori somap input
+            %  assume BICM capacity, I_a = 0            
+            ap_llr = CmlInitSomap(sim_param, code_param);       
+            
+            [ ex_llr ] = CmlTwrcRelaySomap( sym_lh, ap_llr, sim_param );
         end
-        cap = Capacity( bit_likelihood, data );
+        cap = Capacity( ex_llr, nc_data );
         
     otherwise,
-        cap = Capacity( symbol_likelihood, data );
-        
+        cap = Capacity_DNC( sym_lh, sim_param.mod_order, nc_data);                
 end
 end
 

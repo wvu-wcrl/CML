@@ -6,9 +6,10 @@
 % it   image type {eps, pdf}
 % fp   full path to export
 
-function plfig(fhd, fs, zm, it, fp)
-plss(fhd);
-plfmt(fhd, fs);
-plsz(fhd, zm);
-plexport(fhd, it, fp);
+function plfig(fhd, fs, zm, lloc, it, fp)
+plss(fhd);       % set figure size
+plfmt(fhd, fs);  % set font size and line width
+plsl( fhd, lloc); % set legend location
+plsz(fhd, zm);   % set zoom
+plexport(fhd, it, fp); % export plot
 end

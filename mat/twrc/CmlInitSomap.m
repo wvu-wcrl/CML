@@ -19,6 +19,10 @@ switch sim_param.sim_type,
 
     case 'uncoded',
     ap_llr = zeros(1, code_param.data_bits_per_frame );
+    
+    case 'capacity'
+    ap_llr = zeros(1, code_param.data_bits_per_frame );
+    
 end
     
 end
