@@ -69,8 +69,8 @@ while ( continue_simulation )
                 
                 ap_llr = CmlInitSomap(sim_param, code_param);
                 
-                                
-                if sim_param.bicm == 2,       
+                
+                if sim_param.bicm == 2,
                     errors = zeros(bicmid_iterations,1);
                     for bicmid_iter = 1:bicmid_iterations,
                         
@@ -81,7 +81,7 @@ while ( continue_simulation )
                         [ detected_data, errors, ap_llr] = ...
                             CmlTwrcRelayDecode( ex_llr, nc_data, sim_param,...
                             code_param, errors, decoder_iterations, bicmid_iter, ldpc_decoder);
-                    echo_x_on_error( errors, code_param, verbosity );
+                        echo_x_on_error( errors, code_param, verbosity );
                         
                         ap_llr = Interleave_relay( ap_llr, sim_param, code_param);
                         
@@ -95,9 +95,9 @@ while ( continue_simulation )
                     ex_llr = Deinterleave_relay( ex_llr, sim_param, code_param );
                     [ detected_data, errors, ap_llr] = ...
                         CmlTwrcRelayDecode( ex_llr, nc_data, sim_param,...
-                        code_param, errors, decoder_iterations, bicmid_iter, ldpc_decoder);                    
+                        code_param, errors, decoder_iterations, bicmid_iter, ldpc_decoder);
                     echo_x_on_error( errors, code_param, verbosity );
-                end               
+                end
                 
                 [ sim_state ] =     update_bit_frame_error_rate( sim_state, code_param, snrpoint, errors );
                 
@@ -351,9 +351,9 @@ function continue_simulation = evaluate_simulation_stopping_conditions( sim_para
 c1 = snrpoint <= length(EsNo);
 
 if strcmp(sim_param.SimLocation, 'local' ) || strcmp(sim_param.SimLocation, 'clusterlocal' ),
-c2 = 1;
+    c2 = 1;
 elseif strcmp(sim_param.SimLocation, 'clusterworker' )
-c2 = session_time < sim_param.MaxRunTime;
+    c2 = session_time < sim_param.MaxRunTime;
 end
 
 
@@ -373,9 +373,9 @@ c1 =  sim_state.trials( code_param.max_iterations, snrpoint ) < sim_param.max_tr
 c2 =  sim_state.frame_errors(code_param.max_iterations, snrpoint) < sim_param.max_frame_errors(snrpoint);
 
 if strcmp( sim_param.SimLocation, 'local' ) || strcmp(sim_param.SimLocation, 'clusterlocal' ),
-  c3 = 1;
+    c3 = 1;
 elseif strcmp(sim_param.SimLocation, 'clusterworker' )
-  c3 = session_time < sim_param.MaxRunTime;
+    c3 = session_time < sim_param.MaxRunTime;
 end
 
 execute_this_snr = c1&c2&c3;

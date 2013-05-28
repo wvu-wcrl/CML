@@ -39,8 +39,7 @@ function [detected_data, errors, ldpc_decoder] = CmlDecode( symbol_likelihood, d
 %     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-
-if (code_param.coded)
+if (code_param.coded),
     
     % default values
     bicm_iterations = 1;
@@ -64,11 +63,11 @@ if (code_param.coded)
             end
             
             [N2,K2] = size( sim_param.g2 );
-            input_decoder_u = zeros(1, code_param.data_bits_per_frame );            
+            input_decoder_u = zeros(1, code_param.data_bits_per_frame );
             
             
-        case {2} % ldpc                        
-                bicm_iterations = code_param.max_iterations;            
+        case {2} % ldpc
+            bicm_iterations = code_param.max_iterations;
         case {3} % HSDPA
             % BICM-ID not supported
             bicm_iterations = 1;
@@ -153,7 +152,7 @@ if (code_param.coded)
                 end
                 
                 
-            case {2} % LDPC                
+            case {2} % LDPC
                 
                 
                 if strcmp(sim_param.ldpc_impl, 'new')
@@ -224,6 +223,7 @@ else
     errors = sum( error_positions );
 end
 end
+
 
 
 

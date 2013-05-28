@@ -16,6 +16,10 @@ function hmat_type = GetHmatType( pcm )
 if ~isempty(strfind( pcm, 'InitializeDVBS2' ))
     hmat_type = 'cml_dvbs2';
 
+% parity check matrix formed using CML 'WiMax' function
+elseif ~isempty(strfind( pcm, 'InitializeWiMaxLDPC' ))
+    hmat_type = 'cml_wimax';
+    
 % Radford Neal's .pchk format
 elseif strcmp( pcm(end-3:end), 'pchk')
     hmat_type = 'pchk';

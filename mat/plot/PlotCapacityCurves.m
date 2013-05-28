@@ -7,7 +7,11 @@ FigHandle = [FigHandle figure( FigNumber )];
 
 for i=1:length(sim_param)
     EsN0 = 10.^(sim_param(i).SNR/10); % assume SNR is Es/N0 in dB
-    EbN0 = EsN0./(sim_state(i).capacity_avg*log2(sim_param(i).mod_order));
+    capavg = sim_state(i).capacity_avg;
+    capavg(capavg<10^(-3)) = 0;
+    EbN0 = EsN0./(capavg*log2(sim_param(i).mod_order));
+    EbN0 = EsN0;
+    %EbN0 = EsN0./(sim_state(i).capacity_avg*log2(sim_param(i).mod_order));
     EbN0dB = 10*log10( EbN0 );
     plot( EbN0dB, log2(sim_param(i).mod_order)*sim_state(i).capacity_avg, sim_param(i).linetype );
     hold on
@@ -36,7 +40,7 @@ FigHandle = [FigHandle figure( FigNumber )];
 
 for i=1:length(sim_param)
     EsN0 = 10.^(sim_param(i).SNR/10); % assume SNR is Es/N0 in dB
-    EbN0 = EsN0./(sim_state(i).capacity_avg*log2(sim_param(i).mod_order));
+    EbN0 = EsN0 ./ (sim_state(i).capacity_avg*log2(sim_param(i).mod_order));
     EbN0dB = 10*log10( EbN0 );
     plot( sim_state(i).capacity_avg, EbN0dB, sim_param(i).linetype );
     hold on

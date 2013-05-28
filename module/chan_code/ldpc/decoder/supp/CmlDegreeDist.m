@@ -2,98 +2,109 @@
 % Computes valid LDPC degree distributions under the following
 %  assumptions:
 %
-%  Distinct variable node degrees D = 3
-%  d_v1 = 2
+%  Any number of constrained degrees
+%  Two free degrees
+%
+%  Example: WiMax
+%   dv,1 = 2
+%   dv,2 = 3
+%   dv,3 = <free>
+%   dv,4 = <free>
+%
 %
 %  Inputs
-%    d_v2_r      range of requested d_v2 values
-%    d_v3_r      range of requested d_v3 values
+%    dv_cn       M constrained degrees
+%                Mx1
+%    a_cn        Mx1 constrained degree distributions
+%    d_v1_r      Range of requested degrees for free degree 1
+%    d_v2_r      Range of requested degrees for free degree 2
 %    d_c         check node degree
 %    N           LDPC codeword length
 %    K           information sequence length
 %
 %   Outputs
-%    d_v1
-%    d_v2_v      valid d_v2 values      Mx1
-%    d_v3_v      valid d_v3 values      Mx1
-%    a_1         fraction of nodes      Mx1
-%                having degree d_v1_v   Mx1
-%    a_2         fraction of nodes      Mx1
-%                having degree d_v2_v
-%    a_3         fraction of nodes      Mx1
-%                having degree d_v3_v
+%    dv_out      Nx(M+2) matrix of valid degree tuples
+%    a_out       Nx(M+2) matrix of degree distributions
 %
 %
 %     Example:
-%     >> [d_v1 d_v2_v d_v3_v a_1 a_2 a_3] = ...
-%          DegreeDist([3:4], [1:25], 11, 64800, 38880);
+%
+%     >> [dv_out a_out] = ...
+%           DegreeDist( [2;3], [[1:25], [1:25], 11, 64800, 38880 )
 %
 %     Copyright (C) 2012, Terry R. Ferrett and Matthew C. Valenti
 %
 %     Last updated on August 12/04/2012.
-function [d_v1 d_v2_v d_v3_v a_1 a_2 a_3] = ...
-    DegreeDist(d_v2_r, d_v3_r, d_c, N, K)
+function [ dv_cn d_vDm1_v d_vD_v a_cn a_Dm1 a_D ] = ...
+    DegreeDist(dv_cn, a_cn, d_v1_r, d_v2_r,  d_c, N, K)
 
 
+% number of constrained degrees
+n_cn = length(dv_cn);
 
 % number of requested variable node degrees
+num_d_v1_r = length(d_v1_r);
 num_d_v2_r = length(d_v2_r);
-num_d_v3_r = length(d_v3_r);
 
 
-% set d_v1 and a_1
-d_v1 = 2;
-a_1 = (N-K)/N;
-c1 = d_v1*N/( (N-K)*d_c );
-b = [1-a_1; 1 - a_1*c1];
+%%% compute constants
+c1 = 1 - sum(a_cn);
+c2 = (N-K)/N*d_c - sum( dv_cn.*a_cn );
 
+c = [c1 ; c2 ];
+%%%
 
 vc = 1;
-for k = 1:num_d_v2_r,
-    for m = 1:num_d_v3_r,
+for k = 1:num_d_v1_r,
+    for m = 1:num_d_v2_r,        
         
-        %%% compute a_2 and a_3
-        c_2 = d_v2_r(k)*N/( (N-K)*d_c );
-        c_3 = d_v3_r(m)*N/( (N-K)*d_c );
-        
-        C = [1 1;
-            c_2 c_3];
+        % form D
+        D = [ 1       1;
+            d_v1_r(k)  d_v2_r(m) ];
         
         warning off;   % disable warnings regarding matrix singularity
-        A = C\b;    
+        A = D\c;
         warning on;
         
-        %%% check for valid a_2 and a_3
+        %%% check for valid a's
         dont_save = check_valid_degree_dist(A, N);
         
         
         %%% record degree distribution if valid
         if(~dont_save)
-            a_1(vc) = a_1(1);
-            a_2(vc) = A(1);
-            a_3(vc) = A(2);
+            a_Dm1(vc) = A(1);
+            a_D(vc) = A(2);            
             
-            d_v1(vc) = d_v1(1);
-            d_v2_v(vc) = d_v2_r(k);
-            d_v3_v(vc) = d_v3_r(m);
+            d_vDm1_v(vc) = d_v1_r(k);
+            d_vD_v(vc) = d_v2_r(m);
             vc = vc + 1;
         end
     end
 end
 
-no_distributions_found = ~exist('a_2', 'var');
+no_distributions_found = ~exist('a_Dm1', 'var');
 
 if( no_distributions_found )
     error('No valid degree distributions found.');
 end
 
 for k= 1:vc-1,
-fprintf('[%5.4f %5.4f %5.4f]\n', a_1(k), a_2(k), a_3(k));
+    fprintf('[ ');
+    for m = 1:n_cn,
+        fprintf('%5.4f ', a_cn(m));
+    end    
+fprintf('%5.4f %5.4f ]\n', a_Dm1(k), a_D(k));
 end
+
+
 
 fprintf('\n');
 for k= 1:vc-1,
-fprintf('[ %d  %d  %d ]\n', d_v1(k), d_v2_v(k), d_v3_v(k));
+    fprintf('[ ');
+    for m = 1:n_cn,
+        fprintf('%d ', dv_cn(m));
+    end    
+fprintf('%d %d ]\n', d_vDm1_v(k), d_vD_v(k));
 end
 
 end
