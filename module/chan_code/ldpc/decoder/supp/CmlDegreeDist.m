@@ -1,13 +1,13 @@
 % DegreeDist.m
 % Computes valid LDPC degree distributions under the following
 %  assumptions:
-%
 %  Any number of constrained degrees
 %  Two free degrees
 %
+%
 %  Example: WiMax
-%   dv,1 = 2
-%   dv,2 = 3
+%   dv,1 = 2     constrained
+%   dv,2 = 3     constrained
 %   dv,3 = <free>
 %   dv,4 = <free>
 %
@@ -27,14 +27,15 @@
 %    a_out       Nx(M+2) matrix of degree distributions
 %
 %
-%     Example:
+%     Example (From 802.16 WiMax, 2/3A N = 2304 code):
 %
 %     >> [dv_out a_out] = ...
-%           DegreeDist( [2;3], [[1:25], [1:25], 11, 64800, 38880 )
+%           CmlDegreeDist( [2:3], [672/2304 96/2304], 3, 6, 10, 2304, 1536)
 %
-%     Copyright (C) 2012, Terry R. Ferrett and Matthew C. Valenti
+%     Copyright (C) 2013, Terry R. Ferrett and Matthew C. Valenti
 %
-%     Last updated on August 12/04/2012.
+%     Last updated on August 6/7/2013.
+
 function [ dv_cn d_vDm1_v d_vD_v a_cn a_Dm1 a_D ] = ...
     DegreeDist(dv_cn, a_cn, d_v1_r, d_v2_r,  d_c, N, K)
 
@@ -56,7 +57,7 @@ c = [c1 ; c2 ];
 
 vc = 1;
 for k = 1:num_d_v1_r,
-    for m = 1:num_d_v2_r,        
+    for m = 1:num_d_v2_r,
         
         % form D
         D = [ 1       1;
@@ -73,7 +74,7 @@ for k = 1:num_d_v1_r,
         %%% record degree distribution if valid
         if(~dont_save)
             a_Dm1(vc) = A(1);
-            a_D(vc) = A(2);            
+            a_D(vc) = A(2);
             
             d_vDm1_v(vc) = d_v1_r(k);
             d_vD_v(vc) = d_v2_r(m);
@@ -91,9 +92,9 @@ end
 for k= 1:vc-1,
     fprintf('[ ');
     for m = 1:n_cn,
-        fprintf('%5.4f ', a_cn(m));
-    end    
-fprintf('%5.4f %5.4f ]\n', a_Dm1(k), a_D(k));
+        fprintf('%5.7f ', a_cn(m));
+    end
+    fprintf('%5.7f %5.7f ]\n', a_Dm1(k), a_D(k));
 end
 
 
@@ -103,8 +104,8 @@ for k= 1:vc-1,
     fprintf('[ ');
     for m = 1:n_cn,
         fprintf('%d ', dv_cn(m));
-    end    
-fprintf('%d %d ]\n', d_vDm1_v(k), d_vD_v(k));
+    end
+    fprintf('%d %d ]\n', d_vDm1_v(k), d_vD_v(k));
 end
 
 end
@@ -163,9 +164,6 @@ if( ~skip )
     end
 end
 end
-
-
-
 
 %     Function DegreeDist is part of the Iterative Solutions Coded Modulation
 %     Library (ISCML).
