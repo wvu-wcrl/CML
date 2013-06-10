@@ -65,7 +65,7 @@ function [sim_param code_param] = process_random( sim_param, code_param, cml_hom
 
 
 % Generate random H-matrix
-[H_rows, H_cols, data_bits_per_frame ] =...
+[H_rows, H_cols, H_rows_no_eira, H_cols_no_eira, data_bits_per_frame ] =...
     generate_random_H_matrix( sim_param, cml_home );
 
 
@@ -73,14 +73,17 @@ function [sim_param code_param] = process_random( sim_param, code_param, cml_hom
 h_mat_full_path = form_h_matrix_full_path( sim_param, cml_home );
 loc = determine_location;
 if strcmp(loc, 'clusterworker')
-    save_hmat_cluster( h_mat_full_path, H_rows, H_cols );
+    save_hmat_cluster( h_mat_full_path, H_rows, H_cols,...
+        H_rows_no_eira, H_cols_no_eira);
 elseif strcmp(loc, 'local')
-    save(h_mat_full_path,'H_rows','H_cols');
+    save(h_mat_full_path,'H_rows','H_cols',...
+        'H_rows_no_eira', 'H_cols_no_eira');
 end
 
 
 % modify this noise
-code_param = assign_pcm_code_param( code_param, H_rows, H_cols );
+code_param = assign_pcm_code_param( code_param, H_rows, H_cols,...
+    H_rows_no_eira, H_cols_no_eira);
 code_param.data_bits_per_frame = data_bits_per_frame;
 
 code_param.P_matrix = CreatePMatrix( sim_param );
@@ -106,15 +109,18 @@ end
 
 function [ sim_param code_param ] = process_dvb_cml( sim_param, code_param )
 
-[code_param.H_rows, code_param.H_cols, code_param.P_matrix ] = eval( sim_param.parity_check_matrix );
+[code_param.H_rows_no_eira, code_param.H_cols_no_eira, code_param.P_matrix ] =...
+    eval( sim_param.parity_check_matrix );
 
-code_param.data_bits_per_frame = length(code_param.H_cols) - length( code_param.P_matrix );
+code_param.data_bits_per_frame = length(code_param.H_cols_no_eira) - length( code_param.P_matrix );
 
 %  Append dual-diagonal 1 locations to H-cols
-code_param.H_cols = DvbCreateFullHcols( code_param.H_cols, code_param.H_rows );
+code_param.H_cols = ...
+    DvbCreateFullHcols( code_param.H_cols_no_eira, code_param.H_rows_no_eira );
 
 % Append dual-diagonal 1 locations to H-rows
-code_param.H_rows = DvbCreateFullHrows( code_param.H_cols, code_param.H_rows );
+code_param.H_rows = ...
+    DvbCreateFullHrows( code_param.H_cols_no_eira, code_param.H_rows_no_eira );
 
 end
 
@@ -122,18 +128,19 @@ end
 
 function [ sim_param code_param ] = process_wimax_cml( sim_param, code_param )
 
-[code_param.H_rows, code_param.H_cols, code_param.P_matrix ] = eval( sim_param.parity_check_matrix );
+[code_param.H_rows_no_eira, code_param.H_cols_no_eira, code_param.P_matrix] =...
+    eval( sim_param.parity_check_matrix );
 
-code_param.data_bits_per_frame = length(code_param.H_cols) - length( code_param.P_matrix );
+code_param.data_bits_per_frame = length(code_param.H_cols_no_eira) - length( code_param.P_matrix );
 
 % append eira matrix
 %  Append dual-diagonal 1 locations to H-cols
 code_param.H_cols = WiMaxCreateFullHcols( sim_param,...
-    code_param.H_cols, code_param.H_rows );
+    code_param.H_cols_no_eira, code_param.H_rows_no_eira );
 
 % Append dual-diagonal 1 locations to H-rows
 code_param.H_rows = WiMaxCreateFullHrows( sim_param,...
-    code_param.H_cols, code_param.H_rows );
+    code_param.H_cols, code_param.H_rows_no_eira );
 
 end
 
@@ -172,7 +179,7 @@ pchk_path_file = [pchk_path filesep pcm];
 load(pchk_path_file);   % assume mat file contains H_rows, H_cols
 
 code_param = assign_pcm_code_param( code_param, ...
-    H_rows, H_cols );
+    H_rows, H_cols, H_rows_no_eira, H_cols_no_eira );
 code_param.data_bits_per_frame =...
     sim_param.framesize*sim_param.ldpc_param.rate;
 
@@ -182,7 +189,8 @@ end
 
 
 
-function [H_rows, H_cols, K] = generate_random_H_matrix( sim_param, cml_home )
+function [H_rows, H_cols, H_rows_no_eira, H_cols_no_eira, K] = ...
+    generate_random_H_matrix( sim_param, cml_home )
 
 % change
 error_check_input(sim_param);
@@ -206,10 +214,11 @@ h_matrix_exists = exist( h_mat_full_path, 'file' );
 if( h_matrix_exists )
     load(h_mat_full_path);
 else
-    [H_rows H_cols] = gen_random_ldpc_code(C, K, dv, a,  ...
+    [H_rows_no_eira H_cols_no_eira] = gen_random_ldpc_code(C, K, dv, a,  ...
         cml_home, h_mat_full_path, constraint);
     
-    [H_rows H_cols] = ApplyEiraRandom( sim_param, H_rows, H_cols );
+    [H_rows H_cols H_rows_no_eira] = ...
+        ApplyEiraRandom( sim_param, H_rows_no_eira, H_cols_no_eira );
 end
 
 
@@ -219,7 +228,8 @@ end
 
 
 
-function [H_rows H_cols] = ApplyEiraRandom( sim_param, H_rows, H_cols )
+function [H_rows H_cols H_rows_no_eira] = ...
+    ApplyEiraRandom( sim_param, H_rows_no_eira, H_cols_no_eira )
 
 
 switch sim_param.ldpc_param.constraint,
@@ -233,11 +243,16 @@ switch sim_param.ldpc_param.constraint,
         %
         %  Last N - K columns
         
-        %  Append dual-diagonal 1 locations to H-cols
-        H_cols = WiMaxCreateFullHcols( sim_param, H_cols, H_rows );
+        %  Append dual-diagonal 1 locations to H_cols
+        H_cols = WiMaxCreateFullHcols( sim_param, H_cols_no_eira, H_rows_no_eira );
         
-        % Append dual-diagonal 1 locations to H-rows
-        H_rows = WiMaxCreateFullHrows( sim_param, H_cols, H_rows );
+        % Append dual-diagonal 1 locations to H_rows.
+        H_rows = WiMaxCreateFullHrows( sim_param, H_cols, H_rows_no_eira );
+        
+        % Append last z entries (denoted H0 in the standard) to H_rows_no_eira.
+        %  This step is for encoding.
+        %  Terry 6/7/2013
+        H_rows_no_eira = WiMaxAppendH0( sim_param, H_rows_no_eira, H_cols );
         
     case 'dvbs2'
         
@@ -251,11 +266,11 @@ switch sim_param.ldpc_param.constraint,
         %  Append to last N - K columns
         
         %  Append dual-diagonal 1 locations to H-cols
-        H_cols = DvbCreateFullHcols( H_cols, H_rows );
+        H_cols = DvbCreateFullHcols( H_cols_no_eira, H_rows_no_eira );
         
         % Append dual-diagonal 1 locations to H-rows
-        H_rows = DvbCreateFullHrows( H_cols, H_rows );
-        
+        H_rows = DvbCreateFullHrows( H_cols_no_eira, H_rows_no_eira );
+                
     otherwise
         error('H-matrix type ''%s'' not supported.', ...
             sim_param.ldpc_param.constraint)
@@ -389,43 +404,10 @@ m = rows;
 %  ...
 %1 0 1
 
-
-
 % append z columns of H_rows to randomly generated H_matrix
 hmat_type = GetHmatType(sim_param.parity_check_matrix);
-if strcmp( hmat_type, 'random' )
-    
-    firstInd = n - m + 1;
-    lastInd = n - m + z;
-    
-    [ H_rowsTmp H_colsTmp ] = InitializeWiMaxLDPC(sim_param.ldpc_param.rate,...
-        sim_param.framesize,...
-        sim_param.ldpc_param.ind);
-    
-    
-    % pad H_rows with 3 columns of zeros to ensure no entries are overwritten
-    H_rows = [ H_rows zeros(m, 3) ];
-    
-    
-    % Append nonzero eIRA values to H_rows
-    for cur_col = firstInd:lastInd,
-        EiraCol = H_colsTmp(cur_col, :);  % current eIRA column
-        for p = 1:3,
-            cur_row = EiraCol(p);
-            % find first zero entry in this row
-            indTmp = find(H_rows(cur_row,:));
-            zInd = indTmp(end) + 1;
-            H_rows( cur_row, zInd ) = cur_col;
-        end
-    end
-    
-    % remove zero columns so that maximum row weight is correct
-    [ rows cols ] = size(H_rows);
-    for k = cols:-1:1;
-        if sum(H_rows(:,k)) == 0,
-            H_rows = H_rows(:,1:end-1);
-        end
-    end
+if strcmp( hmat_type, 'random' )    
+    H_rows = AppendH0(n, m, z, sim_param, H_rows );    
 end
 %%%
 
@@ -461,7 +443,71 @@ end
 
 
 
+function H_rows_no_eira = WiMaxAppendH0( sim_param, H_rows_no_eira, H_cols )
+
+% 24 is a magic number from the wimax standard
+n = sim_param.framesize;
+z = n/24;
+
+%   maximum weight of each column
+[cols, max_col_weight]=size(H_cols);
+rows = size(H_rows_no_eira,1);
+n = cols;
+m = rows;
+
+H_rows_no_eira = AppendH0(n, m, z, sim_param, H_rows_no_eira );
+
+end
+
+
+
+
+function H_rows = AppendH0(n, m, z, sim_param, H_rows )
+
+firstInd = n - m + 1;
+lastInd = n - m + z;
+
+[ H_rowsTmp H_colsTmp ] = InitializeWiMaxLDPC(sim_param.ldpc_param.rate,...
+    sim_param.framesize,...
+    sim_param.ldpc_param.ind);
+
+
+% pad H_rows with 3 columns of zeros to ensure no entries are overwritten
+H_rows = [ H_rows zeros(m, 3) ];
+
+
+% Append nonzero eIRA values to H_rows
+for cur_col = firstInd:lastInd,
+    EiraCol = H_colsTmp(cur_col, :);  % current eIRA column
+    for p = 1:3,
+        cur_row = EiraCol(p);
+        % find first zero entry in this row
+        indTmp = find(H_rows(cur_row,:));
+        zInd = indTmp(end) + 1;
+        H_rows( cur_row, zInd ) = cur_col;
+    end
+end
+
+% remove zero columns so that maximum row weight is correct
+[ rows cols ] = size(H_rows);
+for k = cols:-1:1;
+    if sum(H_rows(:,k)) == 0,
+        H_rows = H_rows(:,1:end-1);
+    end
+end
+
+end
+
+
+
+
+
 function code_param = process_alist( sim_param, code_param, cml_home, pcm )
+
+% Processing requires modification to support eira type codes
+%  Terry 6/8/2013
+error('Parity check matrix format .alist not yet officially supported.');
+
 
 % convert alist to H_rows, H_cols
 pcm_path = [ cml_home filesep 'data' filesep 'ldpc' ];
@@ -697,9 +743,11 @@ end
 
 
 function code_param = assign_pcm_code_param( code_param, ...
-    H_rows, H_cols )
+    H_rows, H_cols, H_rows_no_eira, H_cols_no_eira )
 code_param.H_rows = H_rows;
 code_param.H_cols = H_cols;
+code_param.H_rows_no_eira = H_rows_no_eira;
+code_param.H_cols_no_eira = H_cols_no_eira;
 end
 
 

@@ -48,8 +48,8 @@ if (code_param.coded)
             end
         case {1,4} % PCCC 
             codeword = TurboEncode( data, code_param.code_interleaver, code_param.pun_pattern, code_param.tail_pattern, sim_param.g1, sim_param.nsc_flag1, sim_param.g2, sim_param.nsc_flag2 );
-        case {2} % LDPC
-            codeword = LdpcEncode( data, code_param.H_rows, code_param.P_matrix );
+        case {2} % LDPC         
+           codeword = LdpcEncode( data, code_param.H_rows_no_eira, code_param.P_matrix );                            
         case {3} % HSDPA
             % generate a turbo codeword
             turbo_codeword = TurboEncode( data, code_param.code_interleaver, code_param.pun_pattern, code_param.tail_pattern, sim_param.g1, sim_param.nsc_flag1, sim_param.g2, sim_param.nsc_flag2 );
