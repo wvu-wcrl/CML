@@ -18,7 +18,6 @@ function sim_state = FinalExitMetrics( sim_param, sim_state, trials,snrpoint )
 
 switch sim_param.exit_param.exit_type,
     case 'ldpc',
-
                
         % detector transfer curve
         P = polyfit(sim_state.exit_state.IA_det_sum(:,snrpoint)/trials, sim_state.exit_state.IE_det_sum(:,snrpoint)/trials, 3);
@@ -33,15 +32,16 @@ switch sim_param.exit_param.exit_type,
         
         b = dv.*dv_dist/( (1-rate) * dc);
 
-        
-        for m = 1:n,            
-            for k = 1:length( sim_param.exit_param.requested_IA )
-                sigma_IA = invJ1(sim_param.exit_param.requested_IA(k));
-                sim_state.exit_state.I_A_det(k,snrpoint) =J2( sqrt(dv(m)) * sigma_IA); % equation 20 in Brink paper, 2004
+	for k = 1:length( sim_param.exit_param.requested_IA )
+	       for m = 1:n,            
+                sigma_IA = invJ1(sim_param.exit_param.requested_IA(k)); 
+                sim_state.exit_state.I_A_det(k,snrpoint) =J2( sqrt(dv(m)) * sigma_IA); % equation 20 in Brink paper, 2004   % changes with m
                 sim_state.exit_state.I_E_det(k,snrpoint) = P(1)*sim_state.exit_state.I_A_det(k,snrpoint)^3 +...
                     P(2)*sim_state.exit_state.I_A_det(k,snrpoint)^2 +...
                     P(3)*sim_state.exit_state.I_A_det(k,snrpoint) +...
                     P(4); % equation 21 in Brink paper, 2004
+
+
                 sigma = (dv(m)-1)* sigma_IA^2 + (invJ1(sim_state.exit_state.I_E_det(k,snrpoint)))^2;
                 sim_state.exit_state.IE_vnd(k,snrpoint) = sim_state.exit_state.IE_vnd(k,snrpoint) + b(m)*J2(sqrt(sigma));  % equation 22 in Brink paper, 2004
             end           
