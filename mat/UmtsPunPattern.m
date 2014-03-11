@@ -1,3 +1,21 @@
+% UmtsPunPattern determines the pun_pattern and tail_pattern vectors 
+% used by the turbo codec according to the UMTS standard.
+%
+%   The calling syntax is:
+%      [pun_pattern,  tail_pattern ] = UmtsPunPattern( framesize, code_bits_per_frame )
+%
+%      framesize: the length of data bits (input to rate matching)
+%      code_bits_per_frame: the desired length of the code block (output of rate matching)
+%
+%      pun_pattern: the puncturing pattern for all but the tail
+%      tail_pattern: the puncturing pattern just for the tail
+%
+% Copyright (C) 2005-2014, Matthew C. Valenti
+%
+% Last updated on Mar. 10, 2014
+%
+% Licensed under the Lesser GPL.  See source code file for more detail.
+
 function [pun_pattern, tail_pattern] = UmtsPunPattern( framesize, code_bits_per_frame )
 
 N = 3*framesize+12;
@@ -32,6 +50,26 @@ pun_pattern(3,:) = zeros(1,framesize);
 pun_pattern(4,:) = total_pattern(3,1:framesize);
 
 tail_pattern = reshape( total_pattern(:,framesize+1:X_i),4, 3 );
+
+end
+
+% Function UmtsPunPattern is part of the Iterative Solutions Coded Modulation
+% Library (ISCML).  
+%
+% The Iterative Solutions Coded Modulation Library is free software;
+% you can redistribute it and/or modify it under the terms of 
+% the GNU Lesser General Public License as published by the 
+% Free Software Foundation; either version 2.1 of the License, 
+% or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this library; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 

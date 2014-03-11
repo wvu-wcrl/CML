@@ -1,45 +1,27 @@
-function [detected_data, errors, ldpc_decoder] = CmlDecode( symbol_likelihood, data,...
-    sim_param, code_param, ldpc_decoder)
-
 % CmlDecode demaps and decodes a single received codeword
 %
 % The calling syntax is:
-%     [detected_data, errors] = CmlDecode( symbol_likelihood, data, max_iterations, sim_param, code_param )
+%     [detected_data, errors] = CmlDecode( symbol_likelihood, data, sim_param, code_param, ldpc_decoder )
 %
-%     Outputs:
-%     detected_data = a row vector containing the detected data
-%     errors = a column vector containing the number of errors per iteration
+%     detected_data: a row vector containing the detected data
+%     errors: a column vector containing the number of errors per iteration
 %
-%     Required inputs:
-%     symbol_likelihood = a M-row matrix containing the symbol log-likelihoods
-%     data = the row vector of data bits (used to count errors and for early halting of iterative decoding)
-%     sim_param = A structure containing simulation parameters.
-%     code_param = A structure containing the code paramaters.
+%     symbol_likelihood: a M-row matrix containing the symbol log-likelihoods
+%     data: the row vector of data bits (used to count errors and for early halting of iterative decoding)
+%     sim_param: A structure containing simulation parameters.
+%     code_param: A structure containing the code paramaters.
+%     ldpc_decoder: Not sure why this is a required argument?  (fix is on to do list)
 %
-%     Copyright (C) 2005-2008, Matthew C. Valenti
+% Copyright (C) 2005-2014, Matthew C. Valenti
 %
-%     Last updated on May 22, 2008
+% Last updated on Mar, 10, 2014
 %
-%     Function CmlDecode is part of the Iterative Solutions Coded Modulation
-%     Library (ISCML).
-%
-%     The Iterative Solutions Coded Modulation Library is free software;
-%     you can redistribute it and/or modify it under the terms of
-%     the GNU Lesser General Public License as published by the
-%     Free Software Foundation; either version 2.1 of the License,
-%     or (at your option) any later version.
-%
-%     This library is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-%     Lesser General Public License for more details.
-%
-%     You should have received a copy of the GNU Lesser General Public
-%     License along with this library; if not, write to the Free Software
-%     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% Licensed under the Lesser GPL.  See source code file for more detail.
 
+function [detected_data, errors, ldpc_decoder] = CmlDecode( symbol_likelihood, data,...
+    sim_param, code_param, ldpc_decoder)
 
-if (code_param.coded),
+if (code_param.coded)
     
     % default values
     bicm_iterations = 1;
@@ -54,7 +36,7 @@ if (code_param.coded),
             if ( length(code_param.max_iterations) )
                 bicm_iterations = code_param.max_iterations;
             end
-        case {1,4} % PCCC
+        case {1,4,8} % PCCC
             [N1,K1] = size( sim_param.g1 );
             if ( sim_param.bicm == 2 ) % bicm-id
                 bicm_iterations = code_param.max_iterations;
@@ -78,10 +60,7 @@ if (code_param.coded),
     end
     
     % initialize errors vector
-    
     errors = zeros(turbo_iterations*bicm_iterations,1);
-    
-    
     
     % initialize the extrinsic decoder input
     input_somap_c = zeros(1, code_param.code_bits_per_frame );
@@ -224,10 +203,6 @@ else
 end
 end
 
-
-
-
-
 function [ldpc_decoder detected_data errors] = LdpcDecode_bicm( ldpc_decoder,...
     max_iterations, input_decoder_c, data, errors )
 
@@ -238,9 +213,7 @@ for bicm_iter = 1:max_iterations,
     errors(bicm_iter) = sum(xor(detected_data(1:length(data)),  data));
     
 end
-
 end
-
 
 function [ldpc_decoder output_decoder_c detected_data errors] = ...
     LdpcDecode_bicmid(ldpc_decoder, bicm_iter, input_decoder_c,...
@@ -251,3 +224,21 @@ function [ldpc_decoder output_decoder_c detected_data errors] = ...
 
 errors(bicm_iter) = sum(xor(detected_data(1:length(data)), data));
 end
+
+%     Function CmlDecode is part of the Iterative Solutions Coded Modulation
+%     Library (ISCML).
+%
+%     The Iterative Solutions Coded Modulation Library is free software;
+%     you can redistribute it and/or modify it under the terms of
+%     the GNU Lesser General Public License as published by the
+%     Free Software Foundation; either version 2.1 of the License,
+%     or (at your option) any later version.
+%
+%     This library is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%     Lesser General Public License for more details.
+%
+%     You should have received a copy of the GNU Lesser General Public
+%     License along with this library; if not, write to the Free Software
+%     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA

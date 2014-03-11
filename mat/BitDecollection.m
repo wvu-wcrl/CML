@@ -1,40 +1,25 @@
-function [systematic_t, parity_1_t, parity_2_t] = BitDecollection( x, N_row, s, N_TTI, N_IR );
 % BitDecollection reverses the bit collection operation (used in HSDPA decoder)
 %
 % The calling syntax is:
 %     [systematic_t, parity_1_t, parity_2_t] = BitDecollection( x, N_row, s, N_TTI, N_IR );
 %
-%     systematic_t = the punctured systematic bits
-%     parity_1_t = the punctured upper parity bits
-%     parity_2_t = the punctured lower parity bits
+%     systematic_t: the punctured systematic bits
+%     parity_1_t: the punctured upper parity bits
+%     parity_2_t: the punctured lower parity bits
 %
-%     x = the received, punctured codeword 
-%     N_row = Number of rows in the internal matrix (2 for QPSK and 4 for QAM)
-%     s = RV flag that determines if priority placed on systematic (1) or parity (0) bits
-%     N_TTI = Length of the unpunctured turbo codeword
-%     N_IR = Size of the virtual IR buffer
+%     x: the received, punctured codeword 
+%     N_row: Number of rows in the internal matrix (2 for QPSK and 4 for QAM)
+%     s: RV flag that determines if priority placed on systematic (1) or parity (0) bits
+%     N_TTI: Length of the unpunctured turbo codeword
+%     N_IR: Size of the virtual IR buffer
 %
-% Copyright (C) 2005, Matthew C. Valenti
+% Copyright (C) 2005-2014, Matthew C. Valenti
 %
 % Last updated on Dec. 13, 2005
 %
-% Function BitDecollection is part of the Iterative Solutions Coded Modulation
-% Library (ISCML).  
-%
-% The Iterative Solutions Coded Modulation Library is free software;
-% you can redistribute it and/or modify it under the terms of 
-% the GNU Lesser General Public License as published by the 
-% Free Software Foundation; either version 2.1 of the License, 
-% or (at your option) any later version.
-%
-% This library is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-% Lesser General Public License for more details.
-%
-% You should have received a copy of the GNU Lesser General Public
-% License along with this library; if not, write to the Free Software
-% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% Licensed under the Lesser GPL.  See source code file for more detail.
+
+function [systematic_t, parity_1_t, parity_2_t] = BitDecollection( x, N_row, s, N_TTI, N_IR );
 
 % calculate constant values
 N_data = length( x );
@@ -101,6 +86,26 @@ parity = reshape( parity_temp(1:2*N_t_p1), 2, N_t_p1 );
 parity_1_t = parity(2,:);
 parity_2_t = parity(1,:);
 parity_2_t(N_t_p2) = parity_temp(N_t_p1+N_t_p2);
+
+end
+
+% Function BitDecollection is part of the Iterative Solutions Coded Modulation
+% Library (ISCML).  
+%
+% The Iterative Solutions Coded Modulation Library is free software;
+% you can redistribute it and/or modify it under the terms of 
+% the GNU Lesser General Public License as published by the 
+% Free Software Foundation; either version 2.1 of the License, 
+% or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this library; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 

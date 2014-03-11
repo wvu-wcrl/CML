@@ -1,22 +1,22 @@
-% CmlInit.m
-% Initialize the MATLAB environment to execute CML
+% CmlInit initialize the MATLAB environment to execute CML
 %
-% Inputs
-%  cml_home        path to CML source root
-%  SimLocation     execution location of code - 'local' or 'clusterworker'
+% The calling syntax is:
+%     CmlInit( cml_home, SimLocation, wid )
 %
-%  Local and cluster operation are differentiated by the manner in
-%    in which CmlHome.mat is saved in the function 'save_cml_home'/
+%     cml_home: path to CML source root
+%     SimLocation: execution location of code - 'local' or 'clusterworker'
+%     wid: Unknown input
 %
-%     Last updated on 7/26/2012
+%     Local and cluster operation are differentiated by the manner in
+%     in which CmlHome.mat is saved in the function 'save_cml_home'/
 %
-%    - Possible future update: add support for location 'clusterlocal'
+%     Possible future update: add support for location 'clusterlocal'
 %
-%     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
-%     For full copyright information see the bottom of this file.
-
-
-
+%  Copyright (C) 2012-2014, Terry Ferrett and Matthew C. Valenti
+%
+%  Last updated on 7/26/2012
+%
+% Licensed under the Lesser GPL.  See source code file for more detail.
 
 function CmlInit( cml_home, SimLocation, wid )
 
@@ -32,7 +32,6 @@ save_cml_home( SimLocation, save_flag, cml_home, wid );
 
 end
 
-
 function error_check_input( SimLocation )
 switch SimLocation,
     case 'local',
@@ -44,7 +43,6 @@ switch SimLocation,
 end
 end
 
-
 function save_flag = determine_matlab_version()
 % cml cluster init
 version_text = version;
@@ -54,7 +52,6 @@ else
     save_flag = '-mat';
 end
 end
-
 
 function set_cml_paths( cml_home, SimLocation )
 
@@ -96,9 +93,7 @@ end
 % this is the location of the mex directory for this architecture
 addpath( fullfile( cml_home, 'mex', lower(computer) ) );
 
-
 end
-
 
 function save_cml_home( SimLocation, save_flag, cml_home, wid )
 
@@ -118,14 +113,12 @@ end
 
 end
 
-
 function user = get_current_user( cml_home )
 [str1 str2] = strtok( cml_home, '/' );
 [str3 str4] = strtok(str2, '/');
 
 user = str3;
 end
-
 
 %     This library is free software;
 %     you can redistribute it and/or modify it under the terms of

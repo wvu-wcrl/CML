@@ -1,4 +1,3 @@
-function [sim_param_changeable, sim_param_unchangeable, sim_state_prototype] = DefineStructures
 % DefineStructures specifies the prototype structures.
 %
 % The calling syntax is:
@@ -10,29 +9,13 @@ function [sim_param_changeable, sim_param_unchangeable, sim_state_prototype] = D
 %
 %     Note: See readme.pdf for a description of the structure formats.
 %
-% Copyright (C) 2006-2008, Matthew C. Valenti
+% Copyright (C) 2006-2014, Matthew C. Valenti
 %
-% Last updated on May 22, 2008
+% Last updated on Mar. 10, 2014
 %
-% Function DefineStructures is part of the Iterative Solutions Coded Modulation
-% Library (ISCML).
-%
-% The Iterative Solutions Coded Modulation Library is free software;
-% you can redistribute it and/or modify it under the terms of
-% the GNU Lesser General Public License as published by the
-% Free Software Foundation; either version 2.1 of the License,
-% or (at your option) any later version.
-%
-% This library is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-% Lesser General Public License for more details.
-%
-% You should have received a copy of the GNU Lesser General Public
-% License along with this library; if not, write to the Free Software
-% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
-% USA
+% Licensed under the Lesser GPL.  See source code file for more detail.
 
+function [sim_param_changeable, sim_param_unchangeable, sim_state_prototype] = DefineStructures
 
 % unchangeable paramaters and their default values
 sim_param_unchangeable = struct(...
@@ -61,7 +44,7 @@ sim_param_unchangeable = struct(...
     'channel', 'AWGN', ...
     'blocks_per_frame', [], ...
     'N_IR', [], ...
-    'X_set', [], ...
+    'X_set', 0, ...
     'P', [], ...
     'combining_type', [], ...
     'rate', [], ...
@@ -121,3 +104,24 @@ sim_state_prototype = struct( ...
     'min_EbNodB', [],...
     'exit_state', [],...
     'timing_data', []);
+
+end
+
+% Function DefineStructures is part of the Iterative Solutions Coded Modulation
+% Library (ISCML).
+%
+% The Iterative Solutions Coded Modulation Library is free software;
+% you can redistribute it and/or modify it under the terms of
+% the GNU Lesser General Public License as published by the
+% Free Software Foundation; either version 2.1 of the License,
+% or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this library; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+% USA

@@ -1,40 +1,25 @@
-function [channel_streams] = HarqMatch( code_bits, X_RV, N_IR, modulation, P )
 % HarqMatch converts a UMTS turbo codeword into P punctured HSDPA streams
 %
 % The calling syntax is:
 %     [channel_streams] = HarqMatch( code_bits, X_RV, N_IR, modulation, P )
 %
-%     channel_streams = P by U matrix containing bits to be sent over the channel
-%                       where U=960 for QPSK and U=1920 for 16-QAM
+%     channel_streams: P by U matrix containing bits to be sent over the channel
+%                      where U=960 for QPSK and U=1920 for 16-QAM
 %
-%     code_bits = the output of the turbo encoder,
-%                 could contain multiple rows if multiple codewords.
-%     X_RV = The redundancy version (an integer from 0 to 7).
-%     N_IR = Size of the virtual IR buffer
-%     modulation = 0 for QPSK or 1 for QAM
-%     P = number of physical subchannels per turbo codeword
+%     code_bits: the output of the turbo encoder,
+%                could contain multiple rows if multiple codewords.
+%     X_RV: The redundancy version (an integer from 0 to 7).
+%     N_IR: Size of the virtual IR buffer
+%     modulation: 0 for QPSK or 1 for QAM
+%     P: number of physical subchannels per turbo codeword
 %
-% Copyright (C) 2005, Matthew C. Valenti
+% Copyright (C) 2005-2014, Matthew C. Valenti
 %
 % Last updated on June 21, 2006
 %
-% Function HarqMatch is part of the Iterative Solutions Coded Modulation
-% Library (ISCML).  
-%
-% The Iterative Solutions Coded Modulation Library is free software;
-% you can redistribute it and/or modify it under the terms of 
-% the GNU Lesser General Public License as published by the 
-% Free Software Foundation; either version 2.1 of the License, 
-% or (at your option) any later version.
-%
-% This library is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-% Lesser General Public License for more details.
-%
-% You should have received a copy of the GNU Lesser General Public
-% License along with this library; if not, write to the Free Software
-% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% Licensed under the Lesser GPL.  See source code file for more detail
+
+function [channel_streams] = HarqMatch( code_bits, X_RV, N_IR, modulation, P )
 
 % interleaver pattern for physical channel (table 7)
 p_interleaver = [0 20 10 5 15 25 3 13 23 8 18 28 1 11 21 6 16 26 4 14 24 19 9 29 12 2 7 22 27 17];
@@ -228,3 +213,24 @@ for codeword_index=1:number_codewords
     end
     channel_streams( (P*(codeword_index-1)+1):P*codeword_index, : ) = temp_channel_streams;
 end
+
+end
+
+% Function HarqMatch is part of the Iterative Solutions Coded Modulation
+% Library (ISCML).  
+%
+% The Iterative Solutions Coded Modulation Library is free software;
+% you can redistribute it and/or modify it under the terms of 
+% the GNU Lesser General Public License as published by the 
+% Free Software Foundation; either version 2.1 of the License, 
+% or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this library; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+% USA

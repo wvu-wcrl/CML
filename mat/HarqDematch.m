@@ -1,42 +1,27 @@
-function [code_bits] = HarqDematch( channel_streams, X_RV, N_IR, N_TTI, B )
 % HarqDematch reassembles B UMTS turbo codewords from B*P received HSDPA streams
 %
 % The calling syntax is:
-%     [code_bits] = HarqDematch( channel_streams, X_RV, N_IR, N_TTI )
+%     code_bits = HarqDematch( channel_streams, X_RV, N_IR, N_TTI )
 %
-%     code_bits = the reassembled, received turbo codewords (input to decoder)
-%                 could be multiple rows if a long data sequence was
-%                 segmented into multiple turbo codewords
+%     code_bits: the reassembled, received turbo codewords (input to decoder)
+%                could be multiple rows if a long data sequence was
+%                segmented into multiple turbo codewords
 %
-%     channel_streams = B*P by U matrix containing bits received over the channel
-%                       where U=960 for QPSK and U=1920 for 16-QAM
-%                       and B is the number of turbo codewords.
-%     X_RV = The redundancy version (an integer from 0 to 7).
-%     N_IR = Size of the virtual IR buffer
-%     N_TTI = Length of each unpunctured turbo codeword
-%     B = the number of turbo codewords
+%     channel_streams: B*P by U matrix containing bits received over the channel
+%                      where U=960 for QPSK and U=1920 for 16-QAM
+%                      and B is the number of turbo codewords.
+%     X_RV: The redundancy version (an integer from 0 to 7).
+%     N_IR: Size of the virtual IR buffer
+%     N_TTI: Length of each unpunctured turbo codeword
+%     B: the number of turbo codewords
 %
-% Copyright (C) 2005, Matthew C. Valenti
+% Copyright (C) 2005-2014, Matthew C. Valenti
 %
 % Last updated on June 21, 2006
 %
-% Function HarqDematch is part of the Iterative Solutions Coded Modulation
-% Library (ISCML).  
-%
-% The Iterative Solutions Coded Modulation Library is free software;
-% you can redistribute it and/or modify it under the terms of 
-% the GNU Lesser General Public License as published by the 
-% Free Software Foundation; either version 2.1 of the License, 
-% or (at your option) any later version.
-%
-% This library is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-% Lesser General Public License for more details.
-%
-% You should have received a copy of the GNU Lesser General Public
-% License along with this library; if not, write to the Free Software
-% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% Licensed under the Lesser GPL.  See source code file for more detail
+
+function [code_bits] = HarqDematch( channel_streams, X_RV, N_IR, N_TTI, B )
 
 % sanity checks
 if ( rem( N_TTI, 3 ) )
@@ -250,3 +235,24 @@ for codeword_index=1:number_codewords
     code_bits( codeword_index, :)  = reshape( streams, 1, 3*X_i );
     
 end
+
+end
+
+% Function HarqDematch is part of the Iterative Solutions Coded Modulation
+% Library (ISCML).  
+%
+% The Iterative Solutions Coded Modulation Library is free software;
+% you can redistribute it and/or modify it under the terms of 
+% the GNU Lesser General Public License as published by the 
+% Free Software Foundation; either version 2.1 of the License, 
+% or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this library; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+% USA

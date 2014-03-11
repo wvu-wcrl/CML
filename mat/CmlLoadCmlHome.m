@@ -1,14 +1,18 @@
-function cml_home = CmlLoadCmlHome( SimLocation )
+% CmlLoadCmlHome loads the location of 'CmlHome' from disk to variable in workspace.
 %
-% Load location of 'CmlHome' from disk to variable in workspace.
+% The calling syntax is:
+%     cml_home = CmlLoadCmlHome( SimLocation )
+%
+%     SimLocation: ?
+%     cml_home: ?
+%
+% Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 % 
-% 'CmlHome' stored as MATLAB variable in 'CmlHome.mat'
+% Last updated on 3/10/2014
 %
-% Inputs
-%  No inputs.
-%
-%     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
-%     For full copyright information see the bottom of this file.
+% Licensed under the Lesser GPL.  See source code file for more detail.
+
+function cml_home = CmlLoadCmlHome( SimLocation )
 
 switch SimLocation
     

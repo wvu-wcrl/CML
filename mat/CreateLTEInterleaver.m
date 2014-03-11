@@ -1,34 +1,20 @@
-function alpha = CreateLTEInterleaver( K )
 % CreateLTEInterleaver produces an interleaver according to the UMTS-LTE spec.
 %
 % The calling syntax is:
-%     [alpha] = CreateLTEInterleaver( K )
+%     alpha = CreateLTEInterleaver( K )
 %
-%     alpha  = the interleaver in a length K vector 
+%     alpha: the interleaver in a length K vector 
 %
-%     K  = the size of the interleaver.  Must be one of the 188 values 
-%          listed on table 5.1.3-3 of TS 36.212.
+%     K: The size of the interleaver.  Must be one of the 188 values 
+%        listed on table 5.1.3-3 of TS 36.212.
 %
-% Copyright (C) 2007, Matthew C. Valenti
+% Copyright (C) 2007-2014, Matthew C. Valenti
 %
 % Last updated on Nov. 23, 2007
 %
-% Function CreateLTEInterleaver is part of the Iterative Solutions 
-% Coded Modulation Library. The Iterative Solutions Coded Modulation 
-% Library is free software; you can redistribute it and/or modify it 
-% under the terms of the GNU Lesser General Public License as published 
-% by the Free Software Foundation; either version 2.1 of the License, 
-% or (at your option) any later version.
-%
-% This library is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-% Lesser General Public License for more details.
-%  
-% You should have received a copy of the GNU Lesser General Public
-% License along with this library; if not, write to the Free Software
-% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
-% USA
+% Licensed under the Lesser GPL.  See source code file for more detail.
+
+function alpha = CreateLTEInterleaver( K )
 
 % table 5.1.3-3 from 36.212
 param_table = [40	3	10
@@ -234,3 +220,22 @@ for i=0:K-1
     % for a c-translation change to alpha(i) since c starts at 0.
     alpha(i+1) = mod( f1*i+f2*i*i, K );
 end
+
+end
+
+% Function CreateLTEInterleaver is part of the Iterative Solutions 
+% Coded Modulation Library. The Iterative Solutions Coded Modulation 
+% Library is free software; you can redistribute it and/or modify it 
+% under the terms of the GNU Lesser General Public License as published 
+% by the Free Software Foundation; either version 2.1 of the License, 
+% or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%  
+% You should have received a copy of the GNU Lesser General Public
+% License along with this library; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+% USA

@@ -1,37 +1,21 @@
-function pun_pattern = CreateDvbPuncturingPattern( Nbits_pun, Nbits_unpun )
 % CreateDvbPuncturingPattern creates the puncturing pattern for use with the duobinary
 % tailbiting turbo code from the DVB-RCS standard.
 %
 % The calling syntax is:
 %     pun_pattern = CreateDvbPuncturingPattern( Nbits_pun, Nbits_unpun )
 %
-%     pun_pattern = the puncturing pattern (length Nbits_pun vector)
+%     pun_pattern: the puncturing pattern (length Nbits_pun vector)
 %
-%     Nbits_pun = the number of bits after puncturing
-%     Nbits_unpun = the number of bits prior to puncturing 
+%     Nbits_pun: the number of bits after puncturing
+%     Nbits_unpun: the number of bits prior to puncturing 
 %
-% Copyright (C) 2007, Matthew C. Valenti and Shi Cheng
+% Copyright (C) 2007-2014, Matthew C. Valenti and Shi Cheng
 %
 % Last updated on Oct. 12, 2007
 %
-% Function CreateDvbPuncturingPattern is part of the Iterative Solutions Coded Modulation
-% Library (ISCML).  
-%
-% The Iterative Solutions Coded Modulation Library is free software;
-% you can redistribute it and/or modify it under the terms of 
-% the GNU Lesser General Public License as published by the 
-% Free Software Foundation; either version 2.1 of the License, 
-% or (at your option) any later version.
-%
-% This library is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-% Lesser General Public License for more details.
-%
-% You should have received a copy of the GNU Lesser General Public
-% License along with this library; if not, write to the Free Software
-% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
-% USA
+% Licensed under the Lesser GPL.  See source code file for more detail.
+
+function pun_pattern = CreateDvbPuncturingPattern( Nbits_pun, Nbits_unpun )
 
 N = Nbits_unpun/6; 
 
@@ -57,4 +41,25 @@ elseif ( abs( Nbits_pun - ceil( N/(6/7) ) * 2 ) < 1E-5)
 else
     disp('DVB interleaver: Wrong punctured size');
 end
+
+end
+
+% Function CreateDvbPuncturingPattern is part of the Iterative Solutions Coded Modulation
+% Library (ISCML).  
+%
+% The Iterative Solutions Coded Modulation Library is free software;
+% you can redistribute it and/or modify it under the terms of 
+% the GNU Lesser General Public License as published by the 
+% Free Software Foundation; either version 2.1 of the License, 
+% or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this library; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+% USA
 

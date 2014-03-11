@@ -1,37 +1,22 @@
-function y = BitCollection( systematic_t, parity_1_t, parity_2_t, N_row )
 % BitCollection performs the bit collection operation (used in HSDPA encoder)
 %
 % The calling syntax is:
 %     y = BitCollection( systematic_t, parity_1_t, parity_2_t, N_row )
 %
-%     y = the punctured codeword formed by collecting the systematic and parity bits
+%     y: the punctured codeword formed by collecting the systematic and parity bits
 %
-%     systematic_t = the punctured systematic bits
-%     parity_1_t = the punctured upper parity bits
-%     parity_2_t = the punctured lower parity bits
-%     N_row = Number of rows in the internal matrix (2 for QPSK and 4 for QAM)
+%     systematic_t: the punctured systematic bits
+%     parity_1_t: the punctured upper parity bits
+%     parity_2_t: the punctured lower parity bits
+%     N_row: Number of rows in the internal matrix (2 for QPSK and 4 for QAM)
 %
-% Copyright (C) 2005, Matthew C. Valenti
+% Copyright (C) 2005-2014, Matthew C. Valenti
 %
 % Last updated on Dec. 13, 2005
 %
-% Function BitCollection is part of the Iterative Solutions Coded Modulation
-% Library (ISCML).  
-%
-% The Iterative Solutions Coded Modulation Library is free software;
-% you can redistribute it and/or modify it under the terms of 
-% the GNU Lesser General Public License as published by the 
-% Free Software Foundation; either version 2.1 of the License, 
-% or (at your option) any later version.
-%
-% This library is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-% Lesser General Public License for more details.
-%
-% You should have received a copy of the GNU Lesser General Public
-% License along with this library; if not, write to the Free Software
-% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% Licensed under the Lesser GPL.  See source code file for more detail.
+
+function y = BitCollection( systematic_t, parity_1_t, parity_2_t, N_row )
 
 % calculate constant values
 N_t_sys = length( systematic_t );
@@ -80,4 +65,23 @@ end
 % form the codeword as a row vector
 y = reshape( w, 1, N_data );
 
+end
+
+% Function BitCollection is part of the Iterative Solutions Coded Modulation
+% Library (ISCML).  
+%
+% The Iterative Solutions Coded Modulation Library is free software;
+% you can redistribute it and/or modify it under the terms of 
+% the GNU Lesser General Public License as published by the 
+% Free Software Foundation; either version 2.1 of the License, 
+% or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this library; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 

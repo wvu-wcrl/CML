@@ -1,4 +1,3 @@
-function [s, codeword] = CmlEncode( data, sim_param, code_param )
 % CmlEncode encodes and modulates a single codeword
 %
 % The calling syntax is:
@@ -13,27 +12,13 @@ function [s, codeword] = CmlEncode( data, sim_param, code_param )
 %     sim_param = A structure containing simulation parameters.
 %     code_param = A structure containing the code paramaters.
 %
-%     Copyright (C) 2005-2008, Matthew C. Valenti
+% Copyright (C) 2005-2014, Matthew C. Valenti
 %
-%     Last updated on May 22, 2008
+% Last updated on Mar. 10, 2014
 %
-%     Function CmlEncode is part of the Iterative Solutions Coded Modulation
-%     Library (ISCML).  
-%
-%     The Iterative Solutions Coded Modulation Library is free software;
-%     you can redistribute it and/or modify it under the terms of 
-%     the GNU Lesser General Public License as published by the 
-%     Free Software Foundation; either version 2.1 of the License, 
-%     or (at your option) any later version.
-%
-%     This library is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-%     Lesser General Public License for more details.
-%
-%     You should have received a copy of the GNU Lesser General Public
-%     License along with this library; if not, write to the Free Software
-%     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% Licensed under the Lesser GPL.  See source code file for more detail.
+
+function [s, codeword] = CmlEncode( data, sim_param, code_param )
 
 if (code_param.coded)
     switch sim_param.code_configuration
@@ -46,10 +31,10 @@ if (code_param.coded)
                 codeword = reshape( codeword, N, length(codeword)/N );
                 codeword = Puncture( codeword, sim_param.pun_pattern1, sim_param.tail_pattern1 );
             end
-        case {1,4} % PCCC 
+        case {1,4,8} % PCCC 
             codeword = TurboEncode( data, code_param.code_interleaver, code_param.pun_pattern, code_param.tail_pattern, sim_param.g1, sim_param.nsc_flag1, sim_param.g2, sim_param.nsc_flag2 );
-        case {2} % LDPC         
-           codeword = LdpcEncode( data, code_param.H_rows_no_eira, code_param.P_matrix );                            
+        case {2} % LDPC
+            codeword = LdpcEncode( data, code_param.H_rows, code_param.P_matrix );
         case {3} % HSDPA
             % generate a turbo codeword
             turbo_codeword = TurboEncode( data, code_param.code_interleaver, code_param.pun_pattern, code_param.tail_pattern, sim_param.g1, sim_param.nsc_flag1, sim_param.g2, sim_param.nsc_flag2 );
@@ -78,4 +63,24 @@ end
 
 % modulate
 s = Modulate( codeword, code_param.S_matrix );
+
+end
+
+%     Function CmlEncode is part of the Iterative Solutions Coded Modulation
+%     Library (ISCML).  
+%
+%     The Iterative Solutions Coded Modulation Library is free software;
+%     you can redistribute it and/or modify it under the terms of 
+%     the GNU Lesser General Public License as published by the 
+%     Free Software Foundation; either version 2.1 of the License, 
+%     or (at your option) any later version.
+%
+%     This library is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%     Lesser General Public License for more details.
+%
+%     You should have received a copy of the GNU Lesser General Public
+%     License along with this library; if not, write to the Free Software
+%     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 

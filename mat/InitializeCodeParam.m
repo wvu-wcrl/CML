@@ -1,38 +1,23 @@
-function [sim_param, code_param] = InitializeCodeParam( sim_param, cml_home )
 % InitializeCodeParam sets up the code_param structure, which contains
 % information derived from the sim_param structure.
 %
 % The calling syntax is:
-%     code_param = InitializeCodeParam( sim_param )
+%     code_param = InitializeCodeParam( sim_param, cml_home )
 %
-%     sim_param = A structure containing simulation parameters. (input and output)
-%     code_param = A structure contining derived information.
+%     sim_param: A structure containing simulation parameters. (input and output)
+%     code_param: A structure contining derived information.
 %
-%     cml_home = location of cml_home directory
+%     cml_home: location of cml_home directory
 %
 %     Note: See readme.txt for a description of the structure formats.
 %
-% Copyright (C) 2006-2008, Matthew C. Valenti
+% Copyright (C) 2006-2014, Matthew C. Valenti
 %
-% Last updated on May 3, 2008
+% Last updated on March 10, 2014
 %
-% Function InitializeCodeParam is part of the Iterative Solutions Coded Modulation
-% Library (ISCML).
-%
-% The Iterative Solutions Coded Modulation Library is free software;
-% you can redistribute it and/or modify it under the terms of
-% the GNU Lesser General Public License as published by the
-% Free Software Foundation; either version 2.1 of the License,
-% or (at your option) any later version.
-%
-% This library is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-% Lesser General Public License for more details.
-%
-% You should have received a copy of the GNU Lesser General Public
-% License along with this library; if not, write to the Free Software
-% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% Licensed under the Lesser GPL.  See source code file for more detail.
+
+function [sim_param, code_param] = InitializeCodeParam( sim_param, cml_home )
 
 % initialize code
 
@@ -210,6 +195,28 @@ if strcmp( sim_param.sim_type, 'coded' )
             code_param.code_interleaver = CreateDvbInterleaver( sim_param.framesize );
             code_param.data_bits_per_frame = sim_param.framesize;
             code_param.pun_pattern = CreateDvbPuncturingPattern( sim_param.code_bits_per_frame, 3*sim_param.framesize );
+        case {8} % LTE Turbo code
+            % generator polynomials for LTE
+            sim_param.g1 = [1 0 1 1
+                1 1 0 1];
+            sim_param.g2 = sim_param.g1;
+            sim_param.nsc_flag1 = 0;
+            sim_param.nsc_flag2 = 0;
+            
+            % the LTE code interleaver
+            sim_param.code_interleaver = ...
+                strcat( 'CreateLTEInterleaver(', int2str(sim_param.framesize ), ')' );
+            code_param.code_interleaver = eval( sim_param.code_interleaver );
+            code_param.data_bits_per_frame = length( code_param.code_interleaver );
+            
+            % the puncturing pattern
+            if length( sim_param.code_bits_per_frame )
+                [code_param.pun_pattern, code_param.tail_pattern] = LTEPunPattern( sim_param.framesize, sim_param.code_bits_per_frame, sim_param.X_set );
+            else
+                code_param.pun_pattern = [1 0 1 1]';
+                code_param.tail_pattern = ones(4,3);
+            end
+            
         otherwise % convolutional (0) or BTC (7)
             code_param.data_bits_per_frame = sim_param.framesize;
     end
@@ -282,3 +289,22 @@ end
 % need to let sim_param know what the rate is (for proper plotting)
 sim_param.rate = code_param.rate;
 end
+
+% Function InitializeCodeParam is part of the Iterative Solutions Coded Modulation
+% Library (ISCML).
+%
+% The Iterative Solutions Coded Modulation Library is free software;
+% you can redistribute it and/or modify it under the terms of
+% the GNU Lesser General Public License as published by the
+% Free Software Foundation; either version 2.1 of the License,
+% or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this library; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+% USA
