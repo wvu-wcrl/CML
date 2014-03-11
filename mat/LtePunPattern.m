@@ -59,26 +59,28 @@ for i=1:K_pi
     W_circularbuffer(K_pi+2*i) = parity2_block_interleaved(i);
 end
 
-% initialize the output of the rate matching
-RateMatchingOutput = zeros(1, code_bits_per_frame);
+% Extend the buffer, starting at the offset value
+ExtendedBuffer = W_circularbuffer( k_0+1:end);
 
-% bit selection
-k=1;
-j=0;
-while (k<=code_bits_per_frame)
-    index = mod(k_0+j,K_w);
-    if(W_circularbuffer(1+index)~=-1) % skiping dummy bits
-        RateMatchingOutput(k)=W_circularbuffer(1+index);
-        k=k+1;
-    end
-    j=j+1;
+while ( sum( ExtendedBuffer > 0 ) < code_bits_per_frame )
+    % Extend the buffer one more time
+    ExtendedBuffer = [ExtendedBuffer W_circularbuffer];
 end
 
-% generate pun_pattern and tail_pattern based on
-% the output of the Rate Matcher
-total_pattern = zeros(dk_length,3);
-total_pattern(RateMatchingOutput) = 1;
-PunPattern = total_pattern';
+% remove the dummy bits
+ExtendedBuffer = ExtendedBuffer( find( ExtendedBuffer > 0 ) );
+
+% truncate to the correct length
+ExtendedBuffer = ExtendedBuffer(1:code_bits_per_frame);
+
+% count how many times each integer occurs
+BitCounter = zeros(1,N); % initialize
+for i=1:N
+    BitCounter(i) = sum( ExtendedBuffer == i );
+end
+
+% put into a three row matrix
+PunPattern = reshape( BitCounter, dk_length, 3 )';
 
 % transform the three-row tail_pattern into four-row pattern
 tail_pattern_temp =  PunPattern(:,framesize+1:end);
