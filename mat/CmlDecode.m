@@ -114,7 +114,7 @@ if (code_param.coded)
                     output_decoder_c = reshape( output_decoder_c, N1, length(output_decoder_c)/N1 );
                     output_decoder_c = Puncture( output_decoder_c, sim_param.pun_pattern1, sim_param.tail_pattern1 );
                 end
-            case {1,4} % PCCC
+            case {1,4,8} % PCCC
                 [detected_data, turbo_errors, output_decoder_c, output_decoder_u ] =....
                     TurboDecode( input_decoder_c, data, turbo_iterations, sim_param.decoder_type,...
                     code_param.code_interleaver, code_param.pun_pattern, code_param.tail_pattern, sim_param.g1,...
@@ -131,8 +131,7 @@ if (code_param.coded)
                 end
                 
                 
-            case {2} % LDPC
-                
+            case {2} % LDPC        
                 
                 if strcmp(sim_param.ldpc_impl, 'new')
                     if( sim_param.bicm == 0  || sim_param.bicm == 1 )
@@ -144,16 +143,14 @@ if (code_param.coded)
                             LdpcDecode_bicmid(ldpc_decoder, bicm_iter, input_decoder_c,...
                             data, errors);
                     end
-                end
-                
+                end            
                 
                 if strcmp( sim_param.ldpc_impl, 'old' )
                     [x_hat errors] = MpDecode( -input_decoder_c, code_param.H_rows, code_param.H_cols, ...
                         code_param.max_iterations, sim_param.decoder_type, 1, 1, data );
                     detected_data = x_hat(code_param.max_iterations,:);
                     return; % BICM-ID is not supported for LDPC codes under the MpDecode implementation.
-                end
-                
+                end               
                 
             case {3} % HSDPA
                 % Dematch each H-ARQ transmission

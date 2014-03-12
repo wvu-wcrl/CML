@@ -211,7 +211,7 @@ if strcmp( sim_param.sim_type, 'coded' )
             
             % the puncturing pattern
             if length( sim_param.code_bits_per_frame )
-                [code_param.pun_pattern, code_param.tail_pattern] = LTEPunPattern( sim_param.framesize, sim_param.code_bits_per_frame, sim_param.X_set );
+                [code_param.pun_pattern, code_param.tail_pattern] = LtePunPattern( sim_param.framesize, sim_param.code_bits_per_frame, sim_param.X_set );
             else
                 code_param.pun_pattern = [1 0 1 1]';
                 code_param.tail_pattern = ones(4,3);
