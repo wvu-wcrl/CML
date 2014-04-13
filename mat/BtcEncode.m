@@ -1,4 +1,4 @@
-% BTCEncode encodes a data sequence using a block turbo encoder.  
+% BTCEncode encodes a data sequence using a block turbo encoder.
 %
 % The calling syntax is:
 %     codeword = BtcEncode( data, grows, gcolumns, k_per_row, k_per_column, B, Q )
@@ -46,12 +46,12 @@ codeword = codeword( B+1:length(codeword) );
 end
 
 % Function BtcEncode is part of the Iterative Solutions Coded Modulation
-% Library (ISCML).  
+% Library (ISCML).
 %
 % The Iterative Solutions Coded Modulation Library is free software;
-% you can redistribute it and/or modify it under the terms of 
-% the GNU Lesser General Public License as published by the 
-% Free Software Foundation; either version 2.1 of the License, 
+% you can redistribute it and/or modify it under the terms of
+% the GNU Lesser General Public License as published by the
+% Free Software Foundation; either version 2.1 of the License,
 % or (at your option) any later version.
 %
 % This library is distributed in the hope that it will be useful,
