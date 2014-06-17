@@ -222,7 +222,7 @@ end
 
 % convert job running file file to cml output file, copy to cml out, and leave
 % running file in place
-function  CopyJobOutToCmlOut( full_path_to_job_output_file, scenario_name, record )
+function  CopyJobOutToCmlOut( full_path_to_job_output_file, scenario_name, record_to_save )
 
 load( full_path_to_job_output_file );
 save_param = JobParam;
@@ -233,8 +233,7 @@ save_param = SetSimLocationLocal( save_param );
 eval( scenario_name );
 
 
-sim_param(record).filename
-save( [cml_home sim_param(record).filename], 'save_param', 'save_state');
+save( [cml_home sim_param(record_to_save).filename], 'save_param', 'save_state');
 
 end
 
