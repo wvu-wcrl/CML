@@ -1,26 +1,24 @@
-% CmlCreateHmatLocal creates a parity check matrix for use with
-%  LDPC decoding.
+% CmlCreateHmatLocal creates a parity check matrix for use with LDPC decoding.
 %
 % The calling syntax is:
-%     [ sim_param code_param ] = CmlCreateHmatLocal( sim_param, code_param, cml_home )
+%     [sim_param, code_param] = CmlCreateHmatLocal( sim_param, code_param, cml_home )
 %
-%     Input
-%       sim_param
-%       code_param
-%       cml_home
+%     sim_param: A structure containing simulation parameters.
+%     sim_state: A structure containing the simulation state.
 %
-%     Output
-%       sim_param
-%       code_param
+%     code_param: A structure contining derived information.
+%     cml_home: Location of the CML home directory
 %
 %     Note: The handling of H-matrices between the alist and pchk cases
-%            is not consistent with random generation.
-%            Solution:
-%             All H-matrices stored in data/ldpc/<scenario>
+%           is not consistent with random generation.
+%     Solution: All H-matrices stored in data/ldpc/<scenario>
 %
-%     Copyright (C) 2012, Terry R. Ferrett and Matthew C. Valenti
+% Copyright (C) 2012-2014, Terry R. Ferrett and Matthew C. Valenti
 %
-%     Last updated on 1/26/2013.
+% Last updated on 7/13/2014.
+%
+% Licensed under the Lesser GPL.  See source code file for more detail.
+
 
 function [sim_param code_param] = CmlCreateHmatLocal(sim_param, code_param, cml_home)
 
