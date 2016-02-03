@@ -246,10 +246,12 @@ end
 function save_simulation_state(sim_state, sim_param, code_param, snrpoint, verbosity, tempfile )
 % determine if it is time to save (either (1) last error, (2) last frame,
 % or (3) once per save_rate)
-condition1 = ( sim_state.frame_errors(code_param.max_iterations, snrpoint) == sim_param.max_frame_errors(snrpoint) );
-condition2 = ( sim_state.trials( code_param.max_iterations, snrpoint ) == sim_param.max_trials( snrpoint ) );
-condition3 = ~mod( sim_state.trials(code_param.max_iterations, snrpoint),sim_param.save_rate );
-if ( condition1|condition2|condition3 )
+c1 = ( sim_state.frame_errors(code_param.max_iterations, snrpoint) == sim_param.max_frame_errors(snrpoint) );
+c2 = ( sim_state.trials( code_param.max_iterations, snrpoint ) == sim_param.max_trials( snrpoint ) );
+c3 = ~mod( sim_state.trials(code_param.max_iterations, snrpoint),sim_param.save_rate );
+c4 = (sim_param.testing == 1); % never save if in testing mode
+
+if ( (c1|c2|c3)& ~c4 )
     
     CmlPrint('.',[], verbosity);
     %CmlPrint('Elapsed simulation time: %.2f s\n', sim_state.timing_data.elapsed_time, 'verbose');

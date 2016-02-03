@@ -32,7 +32,6 @@ sim_param(record).minBER = 1e-6;            % We want to simulate down to an err
 sim_param(record).SNR_type = 'Eb/No in dB'; % The SNR range is specified in energy-per-bit
 sim_param(record).SNR = [0:0.5:11];         % Desired SNR range in dB
 sim_param(record).framesize = 100000;       % Each frame contains 100,000 symbols
-
 % Maximum trials to execute per SNR point
 sim_param(record).max_trials = 100000*ones( size(sim_param(record).SNR) );
 % Maximum frame errors to gather at each SNR point
