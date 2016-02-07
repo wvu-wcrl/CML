@@ -1,24 +1,24 @@
 /* InitState_mx.c
-
-   Description: Initializes Tanner Graph state prior to first decoding
-                iteration for a received codeword.
-
-   The calling syntax is:
-      InitState_mx( input_decoder_c, row_one, col_one, 
-                    v_nodes, c_nodes, NumberParityBits);
-  
-   Where:
-      input_decoder_c  = vector of bit log-likelihoods from SOMAP
-	  row_one          = 
-	  col_one          = 
-	  v_nodes          = Tanner Graph variable nodes
-      c_nodes          = Tanner Graph check nodes
-      NumberParityBits = Number of parity bits per codeword
-
-   Copyright (C) 2012, Terry Ferrett, Xingyu Xiang and Matthew C. Valenti
-
-   Last updated on 11/14/2012
-*/
+ *
+ * Description: Initializes Tanner Graph state prior to first decoding
+ * iteration for a received codeword.
+ *
+ * The calling syntax is:
+ * InitState_mx( input_decoder_c, row_one, col_one,
+ * v_nodes, c_nodes, NumberParityBits);
+ *
+ * Where:
+ * input_decoder_c  = vector of bit log-likelihoods from SOMAP
+ * row_one          =
+ * col_one          =
+ * v_nodes          = Tanner Graph variable nodes
+ * c_nodes          = Tanner Graph check nodes
+ * NumberParityBits = Number of parity bits per codeword
+ *
+ * Copyright (C) 2012, Terry Ferrett, Xingyu Xiang and Matthew C. Valenti
+ *
+ * Last updated on 11/14/2012
+ */
 
 
 #include <stdlib.h>
@@ -58,8 +58,8 @@ void SetVnSt( v_node *v_nodes, c_node * c_nodes,
             
             for (c_index=0;c_index<*c_nodes[ v_nodes[i].index[j] ].degree;c_index++)
                 if ( c_nodes[ v_nodes[i].index[j] ].index[c_index] == i ) {
-                v_nodes[i].socket[j] = c_index;
-                break;
+                    v_nodes[i].socket[j] = c_index;
+                    break;
                 }
             
             v_nodes[i].message[j] = phi0( fabs(input_decoder_c[i]) );
@@ -69,7 +69,7 @@ void SetVnSt( v_node *v_nodes, c_node * c_nodes,
             else
                 v_nodes[i].sign[j] = 0;
         }
-    }  
+    }
     
 }
 
@@ -85,8 +85,8 @@ void SetCnSock( c_node *c_nodes, v_node *v_nodes,
         for (j=0;j<*c_nodes[i].degree;j++) {
             for (v_index=0; v_index < *v_nodes[ c_nodes[i].index[j] ].degree; v_index++)
                 if (v_nodes[ c_nodes[i].index[j] ].index[v_index] == i ) {
-                c_nodes[i].socket[j] = v_index;
-                break;
+                    c_nodes[i].socket[j] = v_index;
+                    break;
                 }
         }
     }
@@ -98,31 +98,35 @@ void mexFunction( int nlhs,
         int nrhs,
         const mxArray *prhs[])
 {
-    const mxArray *input_decoder_c_mx;      /* named MX pointers to inputs */
+    /* MX pointers to inputs */
+    const mxArray *input_decoder_c_mx;      
     const mxArray *row_one_mx;
     const mxArray *col_one_mx;
     const mxArray *v_nodes_mx;
     const mxArray *c_nodes_mx;
     
-    double *input_decoder_c;                /* named C pointers to inputs */
+    /* C pointers to inputs */
+    double *input_decoder_c;                
     double *row_one;
     double *col_one;
     v_node *v_nodes;
     c_node *c_nodes;
     
-    int CodeLength;                  /* derived parameters */
+    /* derived parameters */
+    int CodeLength;                  
     int NumberParityBits;
     int NumberCodeBits;
     
-    
-    input_decoder_c_mx = prhs[0];           /* assign input pointers */
+    /* assign input pointers to MX pointers */
+    input_decoder_c_mx = prhs[0];           
     row_one_mx = prhs[1];
     col_one_mx = prhs[2];
     v_nodes_mx = prhs[3];
     c_nodes_mx = prhs[4];
     
-    
-    input_decoder_c = mxGetPr( input_decoder_c_mx );  /* read inputs and derived params */
+        
+    /* assign MX pointers to C pointers and get array sizes */
+    input_decoder_c = mxGetPr( input_decoder_c_mx );  
     CodeLength = mxGetN( input_decoder_c_mx );
     
     row_one = mxGetPr( row_one_mx );
@@ -132,40 +136,42 @@ void mexFunction( int nlhs,
     NumberCodeBits   = mxGetM( col_one_mx );
     
     
-    v_nodes = calloc( CodeLength, sizeof(v_node) );  /* assign mx structs to c structs */
+    /* allocate memory for v nodes and c nodes. get C pointers for mx structs */
+    v_nodes = calloc( CodeLength, sizeof(v_node) );  
     GetVnPtrs( CodeLength, v_nodes_mx, v_nodes );
     c_nodes = calloc( NumberParityBits, sizeof(c_node) );
     GetCnPtrs( NumberParityBits, c_nodes_mx, c_nodes );
     
     
-    SetCnInd( c_nodes, NumberParityBits, row_one );    /* initialize tanner graph state */
+    /* initialize tanner graph state */
+    SetCnInd( c_nodes, NumberParityBits, row_one );    
     SetVnSt( v_nodes, c_nodes, CodeLength, col_one, NumberCodeBits, input_decoder_c );
     SetCnSock( c_nodes, v_nodes, NumberParityBits );
     
     
-    free(v_nodes);                                           /* free allocated memory */
+    /* free allocated memory */
+    free(v_nodes);
     free(c_nodes);
     
     return;
 }
 
 
-
 /*
-   Function InitState_mx is part of the Iterative Solutions 
-   Coded Modulation Library. The Iterative Solutions Coded Modulation 
-   Library is free software; you can redistribute it and/or modify it 
-   under the terms of the GNU Lesser General Public License as published 
-   by the Free Software Foundation; either version 2.1 of the License, 
-   or (at your option) any later version.
-
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-  
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-*/
+ * Function InitState_mx is part of the Iterative Solutions
+ * Coded Modulation Library. The Iterative Solutions Coded Modulation
+ * Library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation; either version 2.1 of the License,
+ * or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */

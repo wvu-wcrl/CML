@@ -27,7 +27,7 @@
 function [ row_one, col_one ] = PostProcessH( H_rows, H_cols )
 
 % subtract 1 from all values of H_rows and H_cols,
-%  converting indexing from MATLAB > C
+%  converting from MATLAB 1's based indexing to C 0-based
 row_one = H_rows - 1;
 col_one = H_cols - 1;
 

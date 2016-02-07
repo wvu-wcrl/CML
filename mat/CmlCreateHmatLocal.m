@@ -118,7 +118,8 @@ code_param.H_cols = ...
 
 % Append dual-diagonal 1 locations to H-rows
 code_param.H_rows = ...
-    DvbCreateFullHrows( code_param.H_cols_no_eira, code_param.H_rows_no_eira );
+    DvbCreateFullHrows( code_param.H_cols_no_eira, code_param.H_rows_no_eira,...
+    sim_param.framesize);
 
 end
 
@@ -303,23 +304,26 @@ end
 
 
 
-function H_rows = DvbCreateFullHrows( H_cols, H_rows )
+function H_rows = DvbCreateFullHrows( H_cols, H_rows, framesize )
+% All indices contained in H_rows and H_cols are 1's based
 
 %   maximum weight of each column
-[n, max_col_weight]=size(H_cols);
+[t1, max_col_weight]=size(H_cols);
 
 m = size(H_rows,1);
-k=n-m;
+k = framesize - m;
 
-% Add location of dual-diagonl 1's to H_rows
+% Add dual-diagonal 1 to first row
+row_weight = sum(H_rows(1,:)~=0);
+H_rows(1, row_weight+1)=k + 1;
+
+% Add location of dual-diagonal 1's to remaining rows
 for j=2:m
     row_weight = sum(H_rows(j,:)~=0);
     H_rows(j, row_weight+1) = k + j-1;
     H_rows(j, row_weight+2) = k + j;
 end
 
-% Final row
-H_rows(1,row_weight(1)+1)=k + 1;
 
 end
 
