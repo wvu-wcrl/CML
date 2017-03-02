@@ -7,7 +7,6 @@
 %     Last updated on 7/26/2012
 %
 % CML version:   1.12
-% SVN revision:  802 
 %
 %     Copyright (C) 2012, Terry Ferrett and Matthew C. Valenti
 %     For full copyright information see the bottom of this file.
