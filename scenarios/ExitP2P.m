@@ -58,8 +58,8 @@ sim_param(record).sim_type = 'exit';
 sim_param(record).SNR = [0:0.5:10];
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).framesize = 64800;
-sim_param(record).modulation = 'PSK';
-sim_param(record).mod_order = 4;
+sim_param(record).modulation = 'QAM';
+sim_param(record).mod_order = 16;
 sim_param(record).channel = 'AWGN';
 sim_param(record).bicm = 0;
 sim_param(record).demod_type = 4; % does not matter if not BICM
@@ -83,13 +83,13 @@ sim_param(record).MaxRunTime = 3*60;
 
 
 record = 3;
-sim_param(record).comment = 'EXIT analysis of 16-QAM in AWGN';
+sim_param(record).comment = 'EXIT analysis of 64-QAM in AWGN';
 sim_param(record).sim_type = 'exit';
 sim_param(record).SNR = [0:0.5:10];
 sim_param(record).SNR_type = 'Eb/No in dB';
 sim_param(record).framesize = 64800;
-sim_param(record).modulation = 'PSK';
-sim_param(record).mod_order = 4;
+sim_param(record).modulation = 'QAM';
+sim_param(record).mod_order = 64;
 sim_param(record).channel = 'AWGN';
 sim_param(record).bicm = 0;
 sim_param(record).demod_type = 4; % does not matter if not BICM
