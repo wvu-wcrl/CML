@@ -1,1 +1,4 @@
-Testing Jekyll theme for CML project site.
+---
+layout: post
+title: Testing Jekyll blog posting functionality.
+---
